@@ -1,7 +1,7 @@
 #include "Tests.h"
 
 #include "TrivialTestKit.h"
-#include "AssertFail.h"
+#include "AssertFails.h"
 
 #include <stdio.h>
 #include <stdlib.h> 
@@ -31,8 +31,8 @@ class Output {
 public:
     Output() : m_out(nullptr) {}
 
-    explicit Output(const std::string& filename) : m_out(nullptr) {
-        if (fopen_s(&m_out, filename.c_str(), "w") != 0) m_out = nullptr;
+    explicit Output(const std::wstring& filename) : m_out(nullptr) {
+        if (_wfopen_s(&m_out, filename.c_str(), L"w") != 0) m_out = nullptr;
     }
 
     virtual ~Output() {
@@ -266,12 +266,88 @@ void TestTTK_LoadSaveFileContent() {
         const std::string content = TTK_LoadFromFile(filename);
         assert(content == "");
     }
+
+    // === utf16 === //
+
+    // existing file
+    {
+        const std::wstring filename          = L"log/SaveLoadTest\u0444.txt";
+        const std::wstring expected_content  = L"Some text to save.\nAnother line.\n";
+
+        TTK_DeleteFile(filename);
+        assert(TTK_IsFileExist(filename) == false);
+
+        assert(TTK_SaveToFile(filename, expected_content));
+
+        bool is_success = false;
+        const std::wstring content = TTK_LoadFromFile(filename, &is_success);
+        assert(is_success);
+        assert(content == expected_content);
+    }
+
+    // existing file no success info
+    {
+        const std::wstring filename          = L"log/SaveLoadTest\u0444.txt";
+        const std::wstring expected_content  = L"Some text to save.\nAnother line.\n";
+
+        TTK_DeleteFile(filename);
+        assert(TTK_IsFileExist(filename) == false);
+
+        assert(TTK_SaveToFile(filename, expected_content));
+
+        const std::wstring content = TTK_LoadFromFile(filename);
+        assert(content == expected_content);
+    }
+
+    // overriding file
+    {
+        const std::wstring filename          = L"log/SaveLoadTest\u0444.txt";
+        const std::wstring initial_content   = L"Initial text to save.";
+        const std::wstring expected_content  = L"Some text to save.\nAnother line.\n";
+
+        TTK_DeleteFile(filename);
+        assert(TTK_IsFileExist(filename) == false);
+
+        assert(TTK_SaveToFile(filename, initial_content));
+        assert(TTK_SaveToFile(filename, expected_content));
+
+        bool is_success = false;
+        const std::wstring content = TTK_LoadFromFile(filename, &is_success);
+        assert(is_success);
+        assert(content == expected_content);
+    }
+
+    // load not existing file
+    {
+        const std::wstring filename          = L"log/NotExistingSaveLoadTest\u0444.txt";
+
+        TTK_DeleteFile(filename);
+        assert(TTK_IsFileExist(filename) == false);
+
+        bool is_success = false;
+        const std::wstring content = TTK_LoadFromFile(filename, &is_success);
+        assert(is_success == false);
+        assert(content == L"");
+    }
+
+    // load not existing file no success info
+    {
+        const std::wstring filename          = L"log/NotExistingSaveLoadTest\u0444.txt";
+
+        TTK_DeleteFile(filename);
+        assert(TTK_IsFileExist(filename) == false);
+
+        const std::wstring content = TTK_LoadFromFile(filename);
+        assert(content == L"");
+    }
 }
 
 void TestTTK_Assert() {
     puts(__func__);
 
-    const std::string output_filename = "log/Out.txt";
+    const std::wstring output_filename = L"log/Out.txt";
+
+    // assert success
     {
         bool is_finished = true;
         {
@@ -280,16 +356,115 @@ void TestTTK_Assert() {
 
             TTK_SetCommunitationOutput(output.Access());
 
-            FailAssertSimple(is_finished);
+            SuccessAssert(is_finished);
         }
+        assert(is_finished);
 
+        const std::wstring communitate = TTK_LoadFromFile(output_filename);
+
+        assert(communitate == L"");
+    }
+
+    // assert success with return
+    {
+        bool is_finished = true;
+        {
+            Output output = Output(output_filename);
+            assert(output.Access());
+
+            TTK_SetCommunitationOutput(output.Access());
+
+            assert(SuccessAssertReturn(is_finished) == 0);
+        }
+        assert(is_finished);
+
+        const std::wstring communitate = TTK_LoadFromFile(output_filename);
+
+        assert(communitate == L"");
+    }
+
+    // assert fail
+    {
+        bool is_finished = true;
+        {
+            Output output = Output(output_filename);
+            assert(output.Access());
+
+            TTK_SetCommunitationOutput(output.Access());
+
+            FailAssert(is_finished);
+        }
         assert(is_finished == false);
 
-        const std::string communitate = TTK_LoadFromFile(output_filename);
-        puts(communitate.c_str());
-        wprintf(L"%s\n", TTK_GetCWD_UTF16().c_str());
-        wprintf(L"%s\n", GetDefSolutionDir().c_str());
-        fflush(stdout);
+        const std::wstring communitate = TTK_LoadFromFile(output_filename);
+
+        const std::wstring source_filename = GetDefSolutionDir() + L"\\Test\\src\\AssertFails.h";
+        const std::wstring expected_communitate = L"[fail] [line:14] [file:" + source_filename + L"] [condition:10 == 5]\n";
+
+        assert(communitate == expected_communitate);
+    }
+
+    // assert fail message
+    {
+        bool is_finished = true;
+        {
+            Output output = Output(output_filename);
+            assert(output.Access());
+
+            TTK_SetCommunitationOutput(output.Access());
+
+            FailAssertMessage(is_finished);
+        }
+        assert(is_finished == false);
+
+        const std::wstring communitate = TTK_LoadFromFile(output_filename);
+
+        const std::wstring source_filename = GetDefSolutionDir() + L"\\Test\\src\\AssertFails.h";
+        const std::wstring expected_communitate = L"[fail] [line:23] [file:" + source_filename + L"] [condition:10 == 5] [message:Some message.]\n";
+
+        assert(communitate == expected_communitate);
+    }
+
+    // assert fail return
+    {
+        bool is_finished = true;
+        {
+            Output output = Output(output_filename);
+            assert(output.Access());
+
+            TTK_SetCommunitationOutput(output.Access());
+
+            assert(FailAssertReturn(is_finished) == ASSERT_FAIL_RETURN);
+        }
+        assert(is_finished == false);
+
+        const std::wstring communitate = TTK_LoadFromFile(output_filename);
+
+        const std::wstring source_filename = GetDefSolutionDir() + L"\\Test\\src\\AssertFails.h";
+        const std::wstring expected_communitate = L"[fail] [line:32] [file:" + source_filename + L"] [condition:10 == 5]\n";
+
+        assert(communitate == expected_communitate);
+    }
+
+    // assert fail message return
+    {
+        bool is_finished = true;
+        {
+            Output output = Output(output_filename);
+            assert(output.Access());
+
+            TTK_SetCommunitationOutput(output.Access());
+
+            assert(FailAssertMessageReturn(is_finished) == ASSERT_FAIL_RETURN);
+        }
+        assert(is_finished == false);
+
+        const std::wstring communitate = TTK_LoadFromFile(output_filename);
+
+        const std::wstring source_filename = GetDefSolutionDir() + L"\\Test\\src\\AssertFails.h";
+        const std::wstring expected_communitate = L"[fail] [line:43] [file:" + source_filename + L"] [condition:10 == 5] [message:Some message.]\n";
+
+        assert(communitate == expected_communitate);
     }
 }
 

@@ -49,10 +49,18 @@
 #define TTK_AssertR(condition, return_statement)            if (!(condition)) { TKK_CommunicateAssertFail(TTK_ToData().communication_output, __LINE__, #condition, __FILE__, nullptr); return (return_statement); } (void)0
 #define TTK_AssertMR(condition, message, return_statement)  if (!(condition)) { TKK_CommunicateAssertFail(TTK_ToData().communication_output, __LINE__, #condition, __FILE__, message); return (return_statement); } (void)0
 
+#ifdef TTK_SHORT_NAMES
+#define Assert      TTK_Assert
+#define AssertM     TTK_AssertM
+#define AssertR     TTK_AssertR
+#define AssertMR    TTK_AssertMR
+#endif // TTK_SHORT_NAMES
+
 // filename         Name of the file from which content will be loaded.
 // is_success       (optional) If is not nullptr then stores at pointer location: true - when content has been loaded from file, false - otherwise.
 // return           Content of the file.
 std::string TTK_LoadFromFile(const std::string& filename, bool* is_success = nullptr);
+std::wstring TTK_LoadFromFile(const std::wstring& filename, bool* is_success = nullptr);
 
 // filename         Name of the file to which content will be saved. 
 //                  If file not exist, then will be created. 
@@ -61,6 +69,7 @@ std::string TTK_LoadFromFile(const std::string& filename, bool* is_success = nul
 // return           true    - when content has been saved to file; 
 //                  false   - otherwise.
 bool TTK_SaveToFile(const std::string& filename, const std::string& content);
+bool TTK_SaveToFile(const std::wstring& filename, const std::wstring& content);
 
 // filename     Name of the File with absolute or relative path to it.
 // return       true    - if file exists; 
@@ -107,7 +116,7 @@ inline TTK_Data& TTK_ToData() {
 inline void TKK_CommunicateAssertFail(FILE* communication_output, unsigned line, const char* condition, const char* filename, const char* message) {
     if (communication_output) {
         if (message) {
-            fprintf(communication_output, "[fail] [line:%d] [file:%s] [condition:%s] [message:%s] \n", line, filename, condition, message);
+            fprintf(communication_output, "[fail] [line:%d] [file:%s] [condition:%s] [message:%s]\n", line, filename, condition, message);
         } else {
             fprintf(communication_output, "[fail] [line:%d] [file:%s] [condition:%s]\n", line, filename, condition);
         }
@@ -125,9 +134,28 @@ inline std::string TTK_LoadFromFile(const std::string& filename, bool* is_succes
     std::string content;
 
     FILE* file = nullptr;
-    if (fopen_s(&file, filename.c_str(), "r") == 0 && file) {
+    if ((fopen_s(&file, filename.c_str(), "r") == 0) && file) {
         char c;
         while ((c = fgetc(file)) != EOF) {
+            content += c;
+        }
+        fclose(file);
+
+        if (is_success) *is_success = true;
+    } else {
+        if (is_success) *is_success = false;
+    }
+
+    return content;
+}
+
+inline std::wstring TTK_LoadFromFile(const std::wstring& filename, bool* is_success) {
+    std::wstring content;
+
+    FILE* file = nullptr;
+    if ((_wfopen_s(&file, filename.c_str(), L"r") == 0) && file) {
+        wchar_t c;
+        while ((c = fgetwc(file)) != WEOF) {
             content += c;
         }
         fclose(file);
@@ -147,6 +175,21 @@ inline bool TTK_SaveToFile(const std::string& filename, const std::string& conte
             fclose(file);
             return true;
         }
+    }
+    return false;
+}
+
+inline bool TTK_SaveToFile(const std::wstring& filename, const std::wstring& content) {
+    FILE* file = nullptr;
+    if (_wfopen_s(&file, filename.c_str(), L"w") == 0 && file) {
+        for (const auto& sign : content) {
+            if (fputwc(sign, file) == WEOF) {
+                fclose(file);
+                return false;
+            }
+        }
+        fclose(file);
+        return true;
     }
     return false;
 }

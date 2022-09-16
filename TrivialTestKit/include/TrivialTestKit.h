@@ -179,7 +179,7 @@ inline bool TTK_DeleteFile(const std::wstring filename) {
 
 //------------------------------------------------------------------------------
 
-inline void TTK_SetCommunitateOut(FILE* communication_output) {
+inline void TTK_SetCommunitationOut(FILE* communication_output) {
     TTK_ToData().communication_output = communication_output;
 }
 

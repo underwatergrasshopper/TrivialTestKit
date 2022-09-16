@@ -4,17 +4,151 @@
 #include <stdlib.h> 
 #include <assert.h>
 
+void SystemMakeFile(const std::string& filename) {
+    const std::string command = std::string() + "if not exist \"" + filename + "\" echo. > \"" + filename + "\"";
+    system(command.c_str());
+}
+
+void SystemMakeFile(const std::wstring& filename) {
+    const std::wstring command = std::wstring() + L"if not exist \"" + filename + L"\" echo. > \"" + filename + L"\"";
+    _wsystem(command.c_str());
+}
+
+void SystemMakeFolder(const std::string& foldername) {
+    const std::string command = std::string() + "if not exist \"" + foldername + "\" md \"" + foldername + "\"";
+    system(command.c_str());
+}
+
+void SystemMakeFolder(const std::wstring& foldername) {
+    const std::wstring command = std::wstring() + L"if not exist \"" + foldername + L"\" md \"" + foldername + L"\"";
+    _wsystem(command.c_str());
+}
+
+void TestTTK_IsFileExist() {
+    puts(__func__);
+
+    // existing
+    {
+        const std::string file_url = "log/ExistingFile.txt";
+        SystemMakeFile(file_url);
+        assert(TTK_IsFileExist(file_url));
+    }
+
+    // not existing
+    {
+        assert(TTK_IsFileExist("log/NotExistingFile.txt") == false);
+    }
+
+    // wrong type
+    {
+        const std::string folder_url = "log/ExistingFolder";
+        SystemMakeFolder(folder_url);
+        assert(TTK_IsFileExist(folder_url) == false);
+    }
+
+    // utf16 existing
+    {
+        const std::wstring file_url = L"log/ExistingFile.txt";
+        SystemMakeFile(file_url);
+        assert(TTK_IsFileExist(file_url));
+    }
+
+    // utf16 not existing
+    {
+        assert(TTK_IsFileExist(L"log/NotExistingFile\u0444.txt") == false);
+    }
+
+    // utf16 wrong type
+    {
+        const std::wstring folder_url = L"log/ExistingFolder\u0444";
+        SystemMakeFolder(folder_url);
+        assert(TTK_IsFileExist(folder_url) == false);
+    }
+}
+
+void TestTTK_IsFolderExist() {
+    puts(__func__);
+
+    // existing
+    {
+        const std::string folder_url = "log/ExistingFolder";
+        SystemMakeFolder(folder_url);
+        assert(TTK_IsFolderExist(folder_url));
+    }
+
+    // not existing
+    {
+        assert(TTK_IsFolderExist("log/NonExistingFile") == false);
+    }
+
+    // wrong type
+    {
+        const std::string file_url = "log/ExistingFile.txt";
+        SystemMakeFile(file_url);
+        assert(TTK_IsFolderExist(file_url) == false);
+    }
+    
+    // utf16 existing
+    {
+        const std::wstring folder_url = L"log/ExistingFolder\u0444";
+        SystemMakeFolder(folder_url);
+        assert(TTK_IsFolderExist(folder_url));
+    }
+    
+    // utf16 not existing
+    {
+        assert(TTK_IsFolderExist(L"log/NonExistingFile\u0444") == false);
+    }
+
+    // utf16 wrong type
+    {
+        const std::wstring file_url = L"log/ExistingFile.txt";
+        SystemMakeFile(file_url);
+        assert(TTK_IsFolderExist(file_url) == false);
+    }
+}
+
+
+void TestTTK_DeleteFile() {
+    puts(__func__);
+
+    // existing
+    {
+        const std::string file_url = "log/FileToDelete.txt";
+        SystemMakeFile(file_url);
+        assert(TTK_IsFileExist(file_url));
+        assert(TTK_DeleteFile(file_url));
+        assert(TTK_IsFileExist(file_url) == false);
+    }
+
+    // not existing
+    {
+        const std::string file_url = "log/NotExistingFileToDelete.txt";
+        assert(TTK_DeleteFile(file_url) == false);
+    }
+
+    // utf16 existing
+    {
+        const std::wstring file_url = L"log/FileToDelete\u0444.txt";
+        SystemMakeFile(file_url);
+        assert(TTK_IsFileExist(file_url));
+        assert(TTK_DeleteFile(file_url));
+        assert(TTK_IsFileExist(file_url) == false);
+    }
+
+    // utf16 not existing
+    {
+        const std::wstring file_url = L"log/NotExistingFileToDelete\u0444.txt";
+        assert(TTK_DeleteFile(file_url) == false);
+    }
+}
+
 int main() {
     system("if not exist log mkdir log");
 
-    {
-        system("if not exist log/ExistingFile.txt echo. > log/ExistingFile.txt");
-        assert(TTK_IsFileExist("log/ExistingFile.txt"));
-    }
-
-    {
-        assert(TTK_IsFileExist("log/NonExistingFile.txt") == false);
-    }
+    TestTTK_IsFileExist();
+    TestTTK_IsFolderExist();
+    TestTTK_DeleteFile();
 
     {
         const std::string filename          = "log/SaveLoadTest.txt";

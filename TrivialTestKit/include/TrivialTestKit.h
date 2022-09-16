@@ -33,6 +33,9 @@
 #define TRIVIALTESTKIT_H_
 
 #include <stdio.h>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#undef WIN32_LEAN_AND_MEAN
 #include <string>
 
 
@@ -96,6 +99,12 @@ inline bool TTK_SaveContentToFile(const std::string& filename, const std::string
     }
     return false;
 }
+
+inline bool TTK_IsFileExist(const std::string& filename) {
+    DWORD attributes = GetFileAttributesA(filename.c_str());
+    return attributes != INVALID_FILE_ATTRIBUTES && !(attributes & FILE_ATTRIBUTE_DIRECTORY);
+}
+
 
 #define TTK_Assert(condition) if (!(condition)) { TKK_CommunicateAssertFail(TTK_ToData().communicate_output, __LINE__, #condition, __FILE__, nullptr); } (void)0
 #define TTK_AssertM(condition, message) if (!(condition)) { TKK_CommunicateAssertFail(TTK_ToData().communicate_output, __LINE__, #condition, __FILE__, message); } (void)0

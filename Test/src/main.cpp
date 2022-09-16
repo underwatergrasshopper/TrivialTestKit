@@ -8,6 +8,15 @@ int main() {
     system("if not exist log mkdir log");
 
     {
+        system("if not exist log/ExistingFile.txt echo. > log/ExistingFile.txt");
+        assert(TTK_IsFileExist("log/ExistingFile.txt"));
+    }
+
+    {
+        assert(TTK_IsFileExist("log/NonExistingFile.txt") == false);
+    }
+
+    {
         const std::string filename          = "log/SaveLoadTest.txt";
         const std::string expected_content  = "Some text to save.";
 

@@ -48,7 +48,7 @@ void TestTTK_IsFileExist() {
 
     // utf16 existing
     {
-        const std::wstring file_url = L"log/ExistingFile.txt";
+        const std::wstring file_url = L"log/ExistingFile\u0444.txt";
         SystemMakeFile(file_url);
         assert(TTK_IsFileExist(file_url));
     }
@@ -108,7 +108,6 @@ void TestTTK_IsFolderExist() {
     }
 }
 
-
 void TestTTK_DeleteFile() {
     puts(__func__);
 
@@ -143,16 +142,16 @@ void TestTTK_DeleteFile() {
     }
 }
 
-int main() {
-    system("if not exist log mkdir log");
+void TestTTK_LoadSaveFileContent() {
+    puts(__func__);
 
-    TestTTK_IsFileExist();
-    TestTTK_IsFolderExist();
-    TestTTK_DeleteFile();
-
+    // existing file
     {
         const std::string filename          = "log/SaveLoadTest.txt";
-        const std::string expected_content  = "Some text to save.";
+        const std::string expected_content  = "Some text to save.\nAnother line.\n";
+
+        TTK_DeleteFile(filename);
+        assert(TTK_IsFileExist(filename) == false);
 
         assert(TTK_SaveContentToFile(filename, expected_content));
 
@@ -162,8 +161,73 @@ int main() {
         assert(content == expected_content);
     }
 
-    TTK_Assert(1 == 2);
-    TTK_AssertM(3 == 5, "This is stupid.");
+    // existing file no success info
+    {
+        const std::string filename          = "log/SaveLoadTest.txt";
+        const std::string expected_content  = "Some text to save.\nAnother line.\n";
 
+        TTK_DeleteFile(filename);
+        assert(TTK_IsFileExist(filename) == false);
+
+        assert(TTK_SaveContentToFile(filename, expected_content));
+
+        const std::string content = TKK_LoadContentFromFile(filename);
+        assert(content == expected_content);
+    }
+
+    // overriding file
+    {
+        const std::string filename          = "log/SaveLoadTest.txt";
+        const std::string initial_content   = "Initial text to save.";
+        const std::string expected_content  = "Some text to save.\nAnother line.\n";
+
+        TTK_DeleteFile(filename);
+        assert(TTK_IsFileExist(filename) == false);
+
+        assert(TTK_SaveContentToFile(filename, initial_content));
+        assert(TTK_SaveContentToFile(filename, expected_content));
+
+        bool is_success = false;
+        const std::string content = TKK_LoadContentFromFile(filename, &is_success);
+        assert(is_success);
+        assert(content == expected_content);
+    }
+
+    // load not existing file
+    {
+        const std::string filename          = "log/NotExistingSaveLoadTest.txt";
+
+        TTK_DeleteFile(filename);
+        assert(TTK_IsFileExist(filename) == false);
+
+        bool is_success = false;
+        const std::string content = TKK_LoadContentFromFile(filename, &is_success);
+        assert(is_success == false);
+        assert(content == "");
+    }
+
+    // load not existing file no success info
+    {
+        const std::string filename          = "log/NotExistingSaveLoadTest.txt";
+
+        TTK_DeleteFile(filename);
+        assert(TTK_IsFileExist(filename) == false);
+
+        const std::string content = TKK_LoadContentFromFile(filename);
+        assert(content == "");
+    }
+}
+
+void RunAllTests() {
+    system("if not exist log mkdir log");
+
+    TestTTK_IsFileExist();
+    TestTTK_IsFolderExist();
+    TestTTK_DeleteFile();
+    TestTTK_LoadSaveFileContent();
+}
+
+int main() {
+    RunAllTests();
     return 0;
 }

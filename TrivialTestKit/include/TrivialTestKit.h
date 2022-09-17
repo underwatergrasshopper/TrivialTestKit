@@ -122,16 +122,16 @@ class TTK_LocaleUTF8_Guardian {
 public:
     TTK_LocaleUTF8_Guardian() {
         const char* locale = setlocale(LC_ALL, nullptr);
-        if (locale) m_locale = locale;
+        if (locale) m_prev_locale_backup = locale;
 
         setlocale(LC_ALL, ".utf8");
     }
 
     virtual ~TTK_LocaleUTF8_Guardian() {
-        setlocale(LC_ALL, m_locale.c_str());
+        setlocale(LC_ALL, m_prev_locale_backup.c_str());
     }
 private:
-    std::string m_locale;
+    std::string m_prev_locale_backup;
 };
 
 // Enables unicode codepage for functions from wprintf family in a scope where it's placed. 
@@ -177,10 +177,10 @@ inline void TKK_CommunicateAssertFail(unsigned line, const char* condition, cons
 }
 
 inline void TTK_InnerTraceTest(const std::string& caller_name) {
-    TTK_GuardLocaleUTF8();
+    TTK_Data& data = TTK_ToData();
 
-    fprintf(TTK_ToData().output, "[test:%s]\n", caller_name.c_str());
-    fflush(TTK_ToData().output);
+    fprintf(data.output, "[test:%s]\n", caller_name.c_str());
+    fflush(data.output);
 }
 
 //------------------------------------------------------------------------------

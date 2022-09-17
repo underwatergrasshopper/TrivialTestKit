@@ -490,7 +490,7 @@ void TestTTK_Assert() {
 }
 
 void TestDummy() {
-    TTK_TraceTest();
+    TTK_NotifyTest();
 }
 
 void TestTTK_TraceTest() {

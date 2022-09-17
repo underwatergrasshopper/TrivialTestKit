@@ -33,10 +33,17 @@
 #define TRIVIALTESTKIT_H_
 
 #include <stdio.h>
+#include <locale.h>
+
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #undef WIN32_LEAN_AND_MEAN
+
 #include <string>
+
+// Makes regular character array literal a wide character array literal.
+#define TTK_INNER_WIDE(text) L##text
+#define TTK_WIDE(text) TTK_INNER_WIDE(text)
 
 // Note: The 'If' statement inside TTK_AssertM macro must be in macro. Message can be fetched only after condition fail, because don't exist before fail.
 
@@ -44,10 +51,10 @@
 // condition            Any expression which is castable to bool.
 // message              An additional message which will be communicated when condition is false.
 // return_statement     Result of this statement will be returned by calling function when condition fails.
-#define TTK_Assert(condition)                               if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, __FILE__);          return; } (void)0
-#define TTK_AssertM(condition, message)                     if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, __FILE__, message); return; } (void)0
-#define TTK_AssertR(condition, return_statement)            if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, __FILE__);          return (return_statement); } (void)0
-#define TTK_AssertMR(condition, message, return_statement)  if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, __FILE__, message); return (return_statement); } (void)0
+#define TTK_Assert(condition)                               if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_WIDE(__FILE__));          return; } (void)0
+#define TTK_AssertM(condition, message)                     if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_WIDE(__FILE__), message); return; } (void)0
+#define TTK_AssertR(condition, return_statement)            if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_WIDE(__FILE__));          return (return_statement); } (void)0
+#define TTK_AssertMR(condition, message, return_statement)  if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_WIDE(__FILE__), message); return (return_statement); } (void)0
 
 #ifdef TTK_SHORT_NAMES
 #define Assert      TTK_Assert
@@ -111,13 +118,35 @@ inline TTK_Data& TTK_ToData() {
     return s_data;
 }
 
+class TTK_LocaleUTF8_Guardian {
+public:
+    TTK_LocaleUTF8_Guardian() {
+        const char* locale = setlocale(LC_ALL, nullptr);
+        if (locale) m_locale = locale;
+
+        setlocale(LC_ALL, ".utf8");
+    }
+
+    virtual ~TTK_LocaleUTF8_Guardian() {
+        setlocale(LC_ALL, m_locale.c_str());
+    }
+private:
+    std::string m_locale;
+};
+
+// Enables unicode codepage for functions from wprintf family in a scope where it's placed. 
+// Restores previous codepage when exits the scope.
+#define TTK_GuardLocaleUTF8() TTK_LocaleUTF8_Guardian locale_utf8_guardian
+
 //------------------------------------------------------------------------------
 
-inline void TKK_CommunicateAssertFail(unsigned line, const char* condition, const char* file_name, const std::string& message = "") {
+inline void TKK_CommunicateAssertFail(unsigned line, const char* condition, const std::wstring& file_name, const std::string& message = "") {
+    TTK_GuardLocaleUTF8();
+
     TTK_Data& data = TTK_ToData();
 
     if (data.output) {
-        fprintf(data.output, "    [fail] [line:%d] [file:%s] [condition:%s]", line, file_name, condition);
+        fprintf(data.output, "    [fail] [line:%d] [file:%ws] [condition:%s]", line, file_name.c_str(), condition);
 
         if (message.length() > 0) {
             fprintf(data.output, " [message:%s]\n", message.c_str());
@@ -129,7 +158,27 @@ inline void TKK_CommunicateAssertFail(unsigned line, const char* condition, cons
     }
 }
 
+inline void TKK_CommunicateAssertFail(unsigned line, const char* condition, const std::wstring& file_name, const std::wstring& message) {
+    TTK_GuardLocaleUTF8();
+
+    TTK_Data& data = TTK_ToData();
+
+    if (data.output) {
+        fprintf(data.output, "    [fail] [line:%d] [file:%ws] [condition:%s]", line, file_name.c_str(), condition);
+
+        if (message.length() > 0) {
+            fprintf(data.output, " [message:%ws]\n", message.c_str());
+        } else {
+            fprintf(data.output, "\n");
+        }
+
+        fflush(data.output);
+    }
+}
+
 inline void TTK_InnerTraceTest(const std::string& caller_name) {
+    TTK_GuardLocaleUTF8();
+
     fprintf(TTK_ToData().output, "[test:%s]\n", caller_name.c_str());
     fflush(TTK_ToData().output);
 }
@@ -156,6 +205,8 @@ inline std::string TTK_LoadFromFile(const std::string& file_name, bool* is_succe
 }
 
 inline std::wstring TTK_LoadFromFile(const std::wstring& file_name, bool* is_success) {
+    TTK_GuardLocaleUTF8();
+
     std::wstring content;
 
     FILE* file = nullptr;
@@ -186,6 +237,8 @@ inline bool TTK_SaveToFile(const std::string& file_name, const std::string& cont
 }
 
 inline bool TTK_SaveToFile(const std::wstring& file_name, const std::wstring& content) {
+    TTK_GuardLocaleUTF8();
+
     FILE* file = nullptr;
     if (_wfopen_s(&file, file_name.c_str(), L"w") == 0 && file) {
         for (const auto& sign : content) {

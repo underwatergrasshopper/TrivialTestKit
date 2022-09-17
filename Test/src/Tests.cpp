@@ -272,7 +272,7 @@ void TestTTK_LoadSaveFileContent() {
     // existing file
     {
         const std::wstring file_name          = L"log/SaveLoadTest\u0444.txt";
-        const std::wstring expected_content  = L"Some text to save.\nAnother line.\n";
+        const std::wstring expected_content  = L"Some text to save.\nAnother line.\u0444\n";
 
         TTK_DeleteFile(file_name);
         assert(TTK_IsFileExist(file_name) == false);
@@ -288,7 +288,7 @@ void TestTTK_LoadSaveFileContent() {
     // existing file no success info
     {
         const std::wstring file_name          = L"log/SaveLoadTest\u0444.txt";
-        const std::wstring expected_content  = L"Some text to save.\nAnother line.\n";
+        const std::wstring expected_content  = L"Some text to save.\nAnother line.\u0444\n";
 
         TTK_DeleteFile(file_name);
         assert(TTK_IsFileExist(file_name) == false);
@@ -303,7 +303,7 @@ void TestTTK_LoadSaveFileContent() {
     {
         const std::wstring file_name          = L"log/SaveLoadTest\u0444.txt";
         const std::wstring initial_content   = L"Initial text to save.";
-        const std::wstring expected_content  = L"Some text to save.\nAnother line.\n";
+        const std::wstring expected_content  = L"Some text to save.\nAnother line.\u0444\n";
 
         TTK_DeleteFile(file_name);
         assert(TTK_IsFileExist(file_name) == false);
@@ -463,6 +463,27 @@ void TestTTK_Assert() {
 
         const std::wstring source_file_name = GetDefSolutionDir() + L"\\Test\\src\\AssertFails.h";
         const std::wstring expected_communitate = L"    [fail] [line:43] [file:" + source_file_name + L"] [condition:10 == 5] [message:Some message.]\n";
+
+        assert(communitate == expected_communitate);
+    }
+
+    // assert fail message utf16
+    {
+        bool is_finished = true;
+        {
+            Output output = Output(output_file_name);
+            assert(output.Access());
+
+            TTK_SetOutput(output.Access());
+
+            FailAssertMessageUTF16(is_finished);
+        }
+        assert(is_finished == false);
+
+        const std::wstring communitate = TTK_LoadFromFile(output_file_name);
+
+        const std::wstring source_file_name = GetDefSolutionDir() + L"\\Test\\src\\AssertFails.h";
+        const std::wstring expected_communitate = L"    [fail] [line:74] [file:" + source_file_name + L"] [condition:10 == 5] [message:Some message\u0444.]\n";
 
         assert(communitate == expected_communitate);
     }

@@ -129,22 +129,6 @@ inline void TKK_CommunicateAssertFail(unsigned line, const char* condition, cons
     }
 }
 
-inline void TKK_CommunicateAssertFail(unsigned line, const char* condition, const char* file_name, const std::wstring& message) {
-    TTK_Data& data = TTK_ToData();
-
-    if (data.output) {
-        fprintf(data.output, "    [fail] [line:%d] [file:%s] [condition:%s]", line, file_name, condition);
-
-        if (message.length() > 0) {
-            fwprintf(data.output, L" [message:%s]\n", message.c_str());
-        } else {
-            fprintf(data.output, "\n");
-        }
-
-        fflush(data.output);
-    }
-}
-
 inline void TTK_InnerTraceTest(const std::string& caller_name) {
     fprintf(TTK_ToData().output, "[test:%s]\n", caller_name.c_str());
     fflush(TTK_ToData().output);

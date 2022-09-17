@@ -56,6 +56,8 @@
 #define TTK_AssertR(condition, return_statement)            if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_WIDE(__FILE__));          return (return_statement); } (void)0
 #define TTK_AssertMR(condition, message, return_statement)  if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_WIDE(__FILE__), message); return (return_statement); } (void)0
 
+#define TTK_TraceTest()                                     TTK_InnerTraceTest(__func__)
+
 #ifdef TTK_SHORT_NAMES
 #define Assert      TTK_Assert
 #define AssertM     TTK_AssertM
@@ -179,7 +181,7 @@ inline void TKK_CommunicateAssertFail(unsigned line, const char* condition, cons
 inline void TTK_InnerTraceTest(const std::string& caller_name) {
     TTK_Data& data = TTK_ToData();
 
-    fprintf(data.output, "[test:%s]\n", caller_name.c_str());
+    fprintf(data.output, "[test] %s\n", caller_name.c_str());
     fflush(data.output);
 }
 

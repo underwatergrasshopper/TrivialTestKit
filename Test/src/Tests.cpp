@@ -489,6 +489,32 @@ void TestTTK_Assert() {
     }
 }
 
+void TestDummy() {
+    TTK_TraceTest();
+}
+
+void TestTTK_TraceTest() {
+    const std::wstring output_file_name = L"log/Out.txt";
+
+    // assert success
+    {
+        bool is_finished = true;
+        {
+            Output output = Output(output_file_name);
+            assert(output.Access());
+
+            TTK_SetOutput(output.Access());
+
+            TestDummy();
+        }
+
+        const std::wstring expected_communicate = L"[test] TestDummy\n";
+        const std::wstring communitate = TTK_LoadFromFile(output_file_name);
+
+        assert(expected_communicate == communitate);
+    }
+}
+
 void RunAllTests() {
     system("if not exist log mkdir log");
 
@@ -497,4 +523,5 @@ void RunAllTests() {
     TestTTK_DeleteFile();
     TestTTK_LoadSaveFileContent();
     TestTTK_Assert();
+    TestTTK_TraceTest();
 }

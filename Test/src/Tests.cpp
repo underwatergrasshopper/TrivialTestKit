@@ -354,7 +354,7 @@ void TestTTK_Assert() {
             Output output = Output(output_file_name);
             assert(output.Access());
 
-            TTK_SetCommunitationOutput(output.Access());
+            TTK_SetOutput(output.Access());
 
             SuccessAssert(is_finished);
         }
@@ -372,7 +372,7 @@ void TestTTK_Assert() {
             Output output = Output(output_file_name);
             assert(output.Access());
 
-            TTK_SetCommunitationOutput(output.Access());
+            TTK_SetOutput(output.Access());
 
             assert(SuccessAssertReturn(is_finished) == 0);
         }
@@ -390,7 +390,7 @@ void TestTTK_Assert() {
             Output output = Output(output_file_name);
             assert(output.Access());
 
-            TTK_SetCommunitationOutput(output.Access());
+            TTK_SetOutput(output.Access());
 
             FailAssert(is_finished);
         }
@@ -411,7 +411,7 @@ void TestTTK_Assert() {
             Output output = Output(output_file_name);
             assert(output.Access());
 
-            TTK_SetCommunitationOutput(output.Access());
+            TTK_SetOutput(output.Access());
 
             FailAssertMessage(is_finished);
         }
@@ -432,7 +432,7 @@ void TestTTK_Assert() {
             Output output = Output(output_file_name);
             assert(output.Access());
 
-            TTK_SetCommunitationOutput(output.Access());
+            TTK_SetOutput(output.Access());
 
             assert(FailAssertReturn(is_finished) == ASSERT_FAIL_RETURN);
         }
@@ -453,7 +453,7 @@ void TestTTK_Assert() {
             Output output = Output(output_file_name);
             assert(output.Access());
 
-            TTK_SetCommunitationOutput(output.Access());
+            TTK_SetOutput(output.Access());
 
             assert(FailAssertMessageReturn(is_finished) == ASSERT_FAIL_RETURN);
         }

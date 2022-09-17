@@ -56,8 +56,6 @@
 #define AssertMR    TTK_AssertMR
 #endif // TTK_SHORT_NAMES
 
-//void TTK_InnerTrace(const std::string caller_name, )
-
 // file_name        Name of the file from which content will be loaded.
 // is_success       (optional) If is not nullptr then stores at pointer location: true - when content has been loaded from file, false - otherwise.
 // return           Content of the file.
@@ -129,6 +127,12 @@ inline void TKK_CommunicateAssertFail(FILE* communication_output, unsigned line,
 inline void TKK_CommunicateAssertFail(FILE* communication_output, unsigned line, const char* condition, const char* file_name, const std::string& message) {
     TKK_CommunicateAssertFail(communication_output, line, condition, file_name, message);
 }
+
+
+inline void TTK_InnerTraceTest(const std::string& caller_name) {
+    fprintf(TTK_ToData().communication_output, "[test:%s]\n", caller_name.c_str());
+}
+
 
 //------------------------------------------------------------------------------
 

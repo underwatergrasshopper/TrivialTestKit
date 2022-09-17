@@ -56,38 +56,40 @@
 #define AssertMR    TTK_AssertMR
 #endif // TTK_SHORT_NAMES
 
-// filename         Name of the file from which content will be loaded.
+//void TTK_InnerTrace(const std::string caller_name, )
+
+// file_name        Name of the file from which content will be loaded.
 // is_success       (optional) If is not nullptr then stores at pointer location: true - when content has been loaded from file, false - otherwise.
 // return           Content of the file.
-std::string TTK_LoadFromFile(const std::string& filename, bool* is_success = nullptr);
-std::wstring TTK_LoadFromFile(const std::wstring& filename, bool* is_success = nullptr);
+std::string TTK_LoadFromFile(const std::string& file_name, bool* is_success = nullptr);
+std::wstring TTK_LoadFromFile(const std::wstring& file_name, bool* is_success = nullptr);
 
-// filename         Name of the file to which content will be saved. 
+// file_name        Name of the file to which content will be saved. 
 //                  If file not exist, then will be created. 
 //                  If file exists then its content will be overridden.
 // content          New content of the file.
 // return           true    - when content has been saved to file; 
 //                  false   - otherwise.
-bool TTK_SaveToFile(const std::string& filename, const std::string& content);
-bool TTK_SaveToFile(const std::wstring& filename, const std::wstring& content);
+bool TTK_SaveToFile(const std::string& file_name, const std::string& content);
+bool TTK_SaveToFile(const std::wstring& file_name, const std::wstring& content);
 
-// filename     Name of the File with absolute or relative path to it.
+// file_name    Name of the File with absolute or relative path to it.
 // return       true    - if file exists; 
 //              false   - if file doesn't exist or it's not a file.
-bool TTK_IsFileExist(const std::string& filename);
-bool TTK_IsFileExist(const std::wstring& filename);
+bool TTK_IsFileExist(const std::string& file_name);
+bool TTK_IsFileExist(const std::wstring& file_name);
 
-// foldername   Name of the folder with absolute or relative path to it.
+// folder_name  Name of the folder with absolute or relative path to it.
 // return       true    - if folder exists; 
 //              false   - if folder doesn't exist or it's not a folder.
-bool TTK_IsFolderExist(const std::string& foldername);
-bool TTK_IsFolderExist(const std::wstring& foldername);
+bool TTK_IsFolderExist(const std::string& folder_name);
+bool TTK_IsFolderExist(const std::wstring& folder_name);
 
-// filename     Name of the File with absolute or relative path to it.
+// file_name    Name of the File with absolute or relative path to it.
 // return       true    - if file exists; 
 //              false   - if file doesn't exist or it's not a file.
-bool TTK_DeleteFile(const std::string filename);
-bool TTK_DeleteFile(const std::wstring filename);
+bool TTK_DeleteFile(const std::string file_name);
+bool TTK_DeleteFile(const std::wstring file_name);
 
 // return       Current working directory.
 std::wstring TTK_GetCWD_UTF16();
@@ -113,28 +115,28 @@ inline TTK_Data& TTK_ToData() {
 
 //------------------------------------------------------------------------------
 
-inline void TKK_CommunicateAssertFail(FILE* communication_output, unsigned line, const char* condition, const char* filename, const char* message) {
+inline void TKK_CommunicateAssertFail(FILE* communication_output, unsigned line, const char* condition, const char* file_name, const char* message) {
     if (communication_output) {
         if (message) {
-            fprintf(communication_output, "[fail] [line:%d] [file:%s] [condition:%s] [message:%s]\n", line, filename, condition, message);
+            fprintf(communication_output, "[fail] [line:%d] [file:%s] [condition:%s] [message:%s]\n", line, file_name, condition, message);
         } else {
-            fprintf(communication_output, "[fail] [line:%d] [file:%s] [condition:%s]\n", line, filename, condition);
+            fprintf(communication_output, "[fail] [line:%d] [file:%s] [condition:%s]\n", line, file_name, condition);
         }
         fflush(communication_output);
     }
 }
 
-inline void TKK_CommunicateAssertFail(FILE* communication_output, unsigned line, const char* condition, const char* filename, const std::string& message) {
-    TKK_CommunicateAssertFail(communication_output, line, condition, filename, message);
+inline void TKK_CommunicateAssertFail(FILE* communication_output, unsigned line, const char* condition, const char* file_name, const std::string& message) {
+    TKK_CommunicateAssertFail(communication_output, line, condition, file_name, message);
 }
 
 //------------------------------------------------------------------------------
 
-inline std::string TTK_LoadFromFile(const std::string& filename, bool* is_success) {
+inline std::string TTK_LoadFromFile(const std::string& file_name, bool* is_success) {
     std::string content;
 
     FILE* file = nullptr;
-    if ((fopen_s(&file, filename.c_str(), "r") == 0) && file) {
+    if ((fopen_s(&file, file_name.c_str(), "r") == 0) && file) {
         char c;
         while ((c = fgetc(file)) != EOF) {
             content += c;
@@ -149,11 +151,11 @@ inline std::string TTK_LoadFromFile(const std::string& filename, bool* is_succes
     return content;
 }
 
-inline std::wstring TTK_LoadFromFile(const std::wstring& filename, bool* is_success) {
+inline std::wstring TTK_LoadFromFile(const std::wstring& file_name, bool* is_success) {
     std::wstring content;
 
     FILE* file = nullptr;
-    if ((_wfopen_s(&file, filename.c_str(), L"r") == 0) && file) {
+    if ((_wfopen_s(&file, file_name.c_str(), L"r") == 0) && file) {
         wchar_t c;
         while ((c = fgetwc(file)) != WEOF) {
             content += c;
@@ -168,9 +170,9 @@ inline std::wstring TTK_LoadFromFile(const std::wstring& filename, bool* is_succ
     return content;
 }
 
-inline bool TTK_SaveToFile(const std::string& filename, const std::string& content) {
+inline bool TTK_SaveToFile(const std::string& file_name, const std::string& content) {
     FILE* file = nullptr;
-    if (fopen_s(&file, filename.c_str(), "w") == 0 && file) {
+    if (fopen_s(&file, file_name.c_str(), "w") == 0 && file) {
         if (fwrite(content.c_str(), sizeof(char), content.length(), file) == content.length()) {
             fclose(file);
             return true;
@@ -179,9 +181,9 @@ inline bool TTK_SaveToFile(const std::string& filename, const std::string& conte
     return false;
 }
 
-inline bool TTK_SaveToFile(const std::wstring& filename, const std::wstring& content) {
+inline bool TTK_SaveToFile(const std::wstring& file_name, const std::wstring& content) {
     FILE* file = nullptr;
-    if (_wfopen_s(&file, filename.c_str(), L"w") == 0 && file) {
+    if (_wfopen_s(&file, file_name.c_str(), L"w") == 0 && file) {
         for (const auto& sign : content) {
             if (fputwc(sign, file) == WEOF) {
                 fclose(file);
@@ -196,32 +198,32 @@ inline bool TTK_SaveToFile(const std::wstring& filename, const std::wstring& con
 
 //------------------------------------------------------------------------------
 
-inline bool TTK_IsFileExist(const std::string& filename) {
-    DWORD attributes = GetFileAttributesA(filename.c_str());
+inline bool TTK_IsFileExist(const std::string& file_name) {
+    DWORD attributes = GetFileAttributesA(file_name.c_str());
     return attributes != INVALID_FILE_ATTRIBUTES && !(attributes & FILE_ATTRIBUTE_DIRECTORY);
 }
 
-inline bool TTK_IsFileExist(const std::wstring& filename) {
-    DWORD attributes = GetFileAttributesW(filename.c_str());
+inline bool TTK_IsFileExist(const std::wstring& file_name) {
+    DWORD attributes = GetFileAttributesW(file_name.c_str());
     return attributes != INVALID_FILE_ATTRIBUTES && !(attributes & FILE_ATTRIBUTE_DIRECTORY);
 }
 
-inline bool TTK_IsFolderExist(const std::string& foldername) {
-    DWORD attributes = GetFileAttributesA(foldername.c_str());
+inline bool TTK_IsFolderExist(const std::string& folder_name) {
+    DWORD attributes = GetFileAttributesA(folder_name.c_str());
     return attributes != INVALID_FILE_ATTRIBUTES && (attributes & FILE_ATTRIBUTE_DIRECTORY);
 }
 
-inline bool TTK_IsFolderExist(const std::wstring& foldername) {
-    DWORD attributes = GetFileAttributesW(foldername.c_str());
+inline bool TTK_IsFolderExist(const std::wstring& folder_name) {
+    DWORD attributes = GetFileAttributesW(folder_name.c_str());
     return attributes != INVALID_FILE_ATTRIBUTES && (attributes & FILE_ATTRIBUTE_DIRECTORY);
 }
 
-inline bool TTK_DeleteFile(const std::string filename) {
-    return DeleteFileA(filename.c_str());
+inline bool TTK_DeleteFile(const std::string file_name) {
+    return DeleteFileA(file_name.c_str());
 }
 
-inline bool TTK_DeleteFile(const std::wstring filename) {
-    return DeleteFileW(filename.c_str());
+inline bool TTK_DeleteFile(const std::wstring file_name) {
+    return DeleteFileW(file_name.c_str());
 }
 
 inline std::wstring TTK_GetCWD_UTF16() {

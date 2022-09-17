@@ -7,23 +7,23 @@
 #include <stdlib.h> 
 #include <assert.h>
 
-void SystemMakeFile(const std::string& filename) {
-    const std::string command = std::string() + "if not exist \"" + filename + "\" echo. > \"" + filename + "\"";
+void SystemMakeFile(const std::string& file_name) {
+    const std::string command = std::string() + "if not exist \"" + file_name + "\" echo. > \"" + file_name + "\"";
     system(command.c_str());
 }
 
-void SystemMakeFile(const std::wstring& filename) {
-    const std::wstring command = std::wstring() + L"if not exist \"" + filename + L"\" echo. > \"" + filename + L"\"";
+void SystemMakeFile(const std::wstring& file_name) {
+    const std::wstring command = std::wstring() + L"if not exist \"" + file_name + L"\" echo. > \"" + file_name + L"\"";
     _wsystem(command.c_str());
 }
 
-void SystemMakeFolder(const std::string& foldername) {
-    const std::string command = std::string() + "if not exist \"" + foldername + "\" md \"" + foldername + "\"";
+void SystemMakeFolder(const std::string& folder_name) {
+    const std::string command = std::string() + "if not exist \"" + folder_name + "\" md \"" + folder_name + "\"";
     system(command.c_str());
 }
 
-void SystemMakeFolder(const std::wstring& foldername) {
-    const std::wstring command = std::wstring() + L"if not exist \"" + foldername + L"\" md \"" + foldername + L"\"";
+void SystemMakeFolder(const std::wstring& folder_name) {
+    const std::wstring command = std::wstring() + L"if not exist \"" + folder_name + L"\" md \"" + folder_name + L"\"";
     _wsystem(command.c_str());
 }
 
@@ -31,8 +31,8 @@ class Output {
 public:
     Output() : m_out(nullptr) {}
 
-    explicit Output(const std::wstring& filename) : m_out(nullptr) {
-        if (_wfopen_s(&m_out, filename.c_str(), L"w") != 0) m_out = nullptr;
+    explicit Output(const std::wstring& file_name) : m_out(nullptr) {
+        if (_wfopen_s(&m_out, file_name.c_str(), L"w") != 0) m_out = nullptr;
     }
 
     virtual ~Output() {
@@ -197,73 +197,73 @@ void TestTTK_LoadSaveFileContent() {
 
     // existing file
     {
-        const std::string filename          = "log/SaveLoadTest.txt";
+        const std::string file_name          = "log/SaveLoadTest.txt";
         const std::string expected_content  = "Some text to save.\nAnother line.\n";
 
-        TTK_DeleteFile(filename);
-        assert(TTK_IsFileExist(filename) == false);
+        TTK_DeleteFile(file_name);
+        assert(TTK_IsFileExist(file_name) == false);
 
-        assert(TTK_SaveToFile(filename, expected_content));
+        assert(TTK_SaveToFile(file_name, expected_content));
 
         bool is_success = false;
-        const std::string content = TTK_LoadFromFile(filename, &is_success);
+        const std::string content = TTK_LoadFromFile(file_name, &is_success);
         assert(is_success);
         assert(content == expected_content);
     }
 
     // existing file no success info
     {
-        const std::string filename          = "log/SaveLoadTest.txt";
+        const std::string file_name          = "log/SaveLoadTest.txt";
         const std::string expected_content  = "Some text to save.\nAnother line.\n";
 
-        TTK_DeleteFile(filename);
-        assert(TTK_IsFileExist(filename) == false);
+        TTK_DeleteFile(file_name);
+        assert(TTK_IsFileExist(file_name) == false);
 
-        assert(TTK_SaveToFile(filename, expected_content));
+        assert(TTK_SaveToFile(file_name, expected_content));
 
-        const std::string content = TTK_LoadFromFile(filename);
+        const std::string content = TTK_LoadFromFile(file_name);
         assert(content == expected_content);
     }
 
     // overriding file
     {
-        const std::string filename          = "log/SaveLoadTest.txt";
+        const std::string file_name          = "log/SaveLoadTest.txt";
         const std::string initial_content   = "Initial text to save.";
         const std::string expected_content  = "Some text to save.\nAnother line.\n";
 
-        TTK_DeleteFile(filename);
-        assert(TTK_IsFileExist(filename) == false);
+        TTK_DeleteFile(file_name);
+        assert(TTK_IsFileExist(file_name) == false);
 
-        assert(TTK_SaveToFile(filename, initial_content));
-        assert(TTK_SaveToFile(filename, expected_content));
+        assert(TTK_SaveToFile(file_name, initial_content));
+        assert(TTK_SaveToFile(file_name, expected_content));
 
         bool is_success = false;
-        const std::string content = TTK_LoadFromFile(filename, &is_success);
+        const std::string content = TTK_LoadFromFile(file_name, &is_success);
         assert(is_success);
         assert(content == expected_content);
     }
 
     // load not existing file
     {
-        const std::string filename          = "log/NotExistingSaveLoadTest.txt";
+        const std::string file_name          = "log/NotExistingSaveLoadTest.txt";
 
-        TTK_DeleteFile(filename);
-        assert(TTK_IsFileExist(filename) == false);
+        TTK_DeleteFile(file_name);
+        assert(TTK_IsFileExist(file_name) == false);
 
         bool is_success = false;
-        const std::string content = TTK_LoadFromFile(filename, &is_success);
+        const std::string content = TTK_LoadFromFile(file_name, &is_success);
         assert(is_success == false);
         assert(content == "");
     }
 
     // load not existing file no success info
     {
-        const std::string filename          = "log/NotExistingSaveLoadTest.txt";
+        const std::string file_name          = "log/NotExistingSaveLoadTest.txt";
 
-        TTK_DeleteFile(filename);
-        assert(TTK_IsFileExist(filename) == false);
+        TTK_DeleteFile(file_name);
+        assert(TTK_IsFileExist(file_name) == false);
 
-        const std::string content = TTK_LoadFromFile(filename);
+        const std::string content = TTK_LoadFromFile(file_name);
         assert(content == "");
     }
 
@@ -271,73 +271,73 @@ void TestTTK_LoadSaveFileContent() {
 
     // existing file
     {
-        const std::wstring filename          = L"log/SaveLoadTest\u0444.txt";
+        const std::wstring file_name          = L"log/SaveLoadTest\u0444.txt";
         const std::wstring expected_content  = L"Some text to save.\nAnother line.\n";
 
-        TTK_DeleteFile(filename);
-        assert(TTK_IsFileExist(filename) == false);
+        TTK_DeleteFile(file_name);
+        assert(TTK_IsFileExist(file_name) == false);
 
-        assert(TTK_SaveToFile(filename, expected_content));
+        assert(TTK_SaveToFile(file_name, expected_content));
 
         bool is_success = false;
-        const std::wstring content = TTK_LoadFromFile(filename, &is_success);
+        const std::wstring content = TTK_LoadFromFile(file_name, &is_success);
         assert(is_success);
         assert(content == expected_content);
     }
 
     // existing file no success info
     {
-        const std::wstring filename          = L"log/SaveLoadTest\u0444.txt";
+        const std::wstring file_name          = L"log/SaveLoadTest\u0444.txt";
         const std::wstring expected_content  = L"Some text to save.\nAnother line.\n";
 
-        TTK_DeleteFile(filename);
-        assert(TTK_IsFileExist(filename) == false);
+        TTK_DeleteFile(file_name);
+        assert(TTK_IsFileExist(file_name) == false);
 
-        assert(TTK_SaveToFile(filename, expected_content));
+        assert(TTK_SaveToFile(file_name, expected_content));
 
-        const std::wstring content = TTK_LoadFromFile(filename);
+        const std::wstring content = TTK_LoadFromFile(file_name);
         assert(content == expected_content);
     }
 
     // overriding file
     {
-        const std::wstring filename          = L"log/SaveLoadTest\u0444.txt";
+        const std::wstring file_name          = L"log/SaveLoadTest\u0444.txt";
         const std::wstring initial_content   = L"Initial text to save.";
         const std::wstring expected_content  = L"Some text to save.\nAnother line.\n";
 
-        TTK_DeleteFile(filename);
-        assert(TTK_IsFileExist(filename) == false);
+        TTK_DeleteFile(file_name);
+        assert(TTK_IsFileExist(file_name) == false);
 
-        assert(TTK_SaveToFile(filename, initial_content));
-        assert(TTK_SaveToFile(filename, expected_content));
+        assert(TTK_SaveToFile(file_name, initial_content));
+        assert(TTK_SaveToFile(file_name, expected_content));
 
         bool is_success = false;
-        const std::wstring content = TTK_LoadFromFile(filename, &is_success);
+        const std::wstring content = TTK_LoadFromFile(file_name, &is_success);
         assert(is_success);
         assert(content == expected_content);
     }
 
     // load not existing file
     {
-        const std::wstring filename          = L"log/NotExistingSaveLoadTest\u0444.txt";
+        const std::wstring file_name          = L"log/NotExistingSaveLoadTest\u0444.txt";
 
-        TTK_DeleteFile(filename);
-        assert(TTK_IsFileExist(filename) == false);
+        TTK_DeleteFile(file_name);
+        assert(TTK_IsFileExist(file_name) == false);
 
         bool is_success = false;
-        const std::wstring content = TTK_LoadFromFile(filename, &is_success);
+        const std::wstring content = TTK_LoadFromFile(file_name, &is_success);
         assert(is_success == false);
         assert(content == L"");
     }
 
     // load not existing file no success info
     {
-        const std::wstring filename          = L"log/NotExistingSaveLoadTest\u0444.txt";
+        const std::wstring file_name          = L"log/NotExistingSaveLoadTest\u0444.txt";
 
-        TTK_DeleteFile(filename);
-        assert(TTK_IsFileExist(filename) == false);
+        TTK_DeleteFile(file_name);
+        assert(TTK_IsFileExist(file_name) == false);
 
-        const std::wstring content = TTK_LoadFromFile(filename);
+        const std::wstring content = TTK_LoadFromFile(file_name);
         assert(content == L"");
     }
 }
@@ -345,13 +345,13 @@ void TestTTK_LoadSaveFileContent() {
 void TestTTK_Assert() {
     puts(__func__);
 
-    const std::wstring output_filename = L"log/Out.txt";
+    const std::wstring output_file_name = L"log/Out.txt";
 
     // assert success
     {
         bool is_finished = true;
         {
-            Output output = Output(output_filename);
+            Output output = Output(output_file_name);
             assert(output.Access());
 
             TTK_SetCommunitationOutput(output.Access());
@@ -360,7 +360,7 @@ void TestTTK_Assert() {
         }
         assert(is_finished);
 
-        const std::wstring communitate = TTK_LoadFromFile(output_filename);
+        const std::wstring communitate = TTK_LoadFromFile(output_file_name);
 
         assert(communitate == L"");
     }
@@ -369,7 +369,7 @@ void TestTTK_Assert() {
     {
         bool is_finished = true;
         {
-            Output output = Output(output_filename);
+            Output output = Output(output_file_name);
             assert(output.Access());
 
             TTK_SetCommunitationOutput(output.Access());
@@ -378,7 +378,7 @@ void TestTTK_Assert() {
         }
         assert(is_finished);
 
-        const std::wstring communitate = TTK_LoadFromFile(output_filename);
+        const std::wstring communitate = TTK_LoadFromFile(output_file_name);
 
         assert(communitate == L"");
     }
@@ -387,7 +387,7 @@ void TestTTK_Assert() {
     {
         bool is_finished = true;
         {
-            Output output = Output(output_filename);
+            Output output = Output(output_file_name);
             assert(output.Access());
 
             TTK_SetCommunitationOutput(output.Access());
@@ -396,10 +396,10 @@ void TestTTK_Assert() {
         }
         assert(is_finished == false);
 
-        const std::wstring communitate = TTK_LoadFromFile(output_filename);
+        const std::wstring communitate = TTK_LoadFromFile(output_file_name);
 
-        const std::wstring source_filename = GetDefSolutionDir() + L"\\Test\\src\\AssertFails.h";
-        const std::wstring expected_communitate = L"[fail] [line:14] [file:" + source_filename + L"] [condition:10 == 5]\n";
+        const std::wstring source_file_name = GetDefSolutionDir() + L"\\Test\\src\\AssertFails.h";
+        const std::wstring expected_communitate = L"[fail] [line:14] [file:" + source_file_name + L"] [condition:10 == 5]\n";
 
         assert(communitate == expected_communitate);
     }
@@ -408,7 +408,7 @@ void TestTTK_Assert() {
     {
         bool is_finished = true;
         {
-            Output output = Output(output_filename);
+            Output output = Output(output_file_name);
             assert(output.Access());
 
             TTK_SetCommunitationOutput(output.Access());
@@ -417,10 +417,10 @@ void TestTTK_Assert() {
         }
         assert(is_finished == false);
 
-        const std::wstring communitate = TTK_LoadFromFile(output_filename);
+        const std::wstring communitate = TTK_LoadFromFile(output_file_name);
 
-        const std::wstring source_filename = GetDefSolutionDir() + L"\\Test\\src\\AssertFails.h";
-        const std::wstring expected_communitate = L"[fail] [line:23] [file:" + source_filename + L"] [condition:10 == 5] [message:Some message.]\n";
+        const std::wstring source_file_name = GetDefSolutionDir() + L"\\Test\\src\\AssertFails.h";
+        const std::wstring expected_communitate = L"[fail] [line:23] [file:" + source_file_name + L"] [condition:10 == 5] [message:Some message.]\n";
 
         assert(communitate == expected_communitate);
     }
@@ -429,7 +429,7 @@ void TestTTK_Assert() {
     {
         bool is_finished = true;
         {
-            Output output = Output(output_filename);
+            Output output = Output(output_file_name);
             assert(output.Access());
 
             TTK_SetCommunitationOutput(output.Access());
@@ -438,10 +438,10 @@ void TestTTK_Assert() {
         }
         assert(is_finished == false);
 
-        const std::wstring communitate = TTK_LoadFromFile(output_filename);
+        const std::wstring communitate = TTK_LoadFromFile(output_file_name);
 
-        const std::wstring source_filename = GetDefSolutionDir() + L"\\Test\\src\\AssertFails.h";
-        const std::wstring expected_communitate = L"[fail] [line:32] [file:" + source_filename + L"] [condition:10 == 5]\n";
+        const std::wstring source_file_name = GetDefSolutionDir() + L"\\Test\\src\\AssertFails.h";
+        const std::wstring expected_communitate = L"[fail] [line:32] [file:" + source_file_name + L"] [condition:10 == 5]\n";
 
         assert(communitate == expected_communitate);
     }
@@ -450,7 +450,7 @@ void TestTTK_Assert() {
     {
         bool is_finished = true;
         {
-            Output output = Output(output_filename);
+            Output output = Output(output_file_name);
             assert(output.Access());
 
             TTK_SetCommunitationOutput(output.Access());
@@ -459,10 +459,10 @@ void TestTTK_Assert() {
         }
         assert(is_finished == false);
 
-        const std::wstring communitate = TTK_LoadFromFile(output_filename);
+        const std::wstring communitate = TTK_LoadFromFile(output_file_name);
 
-        const std::wstring source_filename = GetDefSolutionDir() + L"\\Test\\src\\AssertFails.h";
-        const std::wstring expected_communitate = L"[fail] [line:43] [file:" + source_filename + L"] [condition:10 == 5] [message:Some message.]\n";
+        const std::wstring source_file_name = GetDefSolutionDir() + L"\\Test\\src\\AssertFails.h";
+        const std::wstring expected_communitate = L"[fail] [line:43] [file:" + source_file_name + L"] [condition:10 == 5] [message:Some message.]\n";
 
         assert(communitate == expected_communitate);
     }
@@ -476,6 +476,4 @@ void RunAllTests() {
     TestTTK_DeleteFile();
     TestTTK_LoadSaveFileContent();
     TestTTK_Assert();
-
-
 }

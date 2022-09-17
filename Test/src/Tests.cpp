@@ -399,7 +399,7 @@ void TestTTK_Assert() {
         const std::wstring communitate = TTK_LoadFromFile(output_file_name);
 
         const std::wstring source_file_name = GetDefSolutionDir() + L"\\Test\\src\\AssertFails.h";
-        const std::wstring expected_communitate = L"[fail] [line:14] [file:" + source_file_name + L"] [condition:10 == 5]\n";
+        const std::wstring expected_communitate = L"    [fail] [line:14] [file:" + source_file_name + L"] [condition:10 == 5]\n";
 
         assert(communitate == expected_communitate);
     }
@@ -420,7 +420,7 @@ void TestTTK_Assert() {
         const std::wstring communitate = TTK_LoadFromFile(output_file_name);
 
         const std::wstring source_file_name = GetDefSolutionDir() + L"\\Test\\src\\AssertFails.h";
-        const std::wstring expected_communitate = L"[fail] [line:23] [file:" + source_file_name + L"] [condition:10 == 5] [message:Some message.]\n";
+        const std::wstring expected_communitate = L"    [fail] [line:23] [file:" + source_file_name + L"] [condition:10 == 5] [message:Some message.]\n";
 
         assert(communitate == expected_communitate);
     }
@@ -441,7 +441,7 @@ void TestTTK_Assert() {
         const std::wstring communitate = TTK_LoadFromFile(output_file_name);
 
         const std::wstring source_file_name = GetDefSolutionDir() + L"\\Test\\src\\AssertFails.h";
-        const std::wstring expected_communitate = L"[fail] [line:32] [file:" + source_file_name + L"] [condition:10 == 5]\n";
+        const std::wstring expected_communitate = L"    [fail] [line:32] [file:" + source_file_name + L"] [condition:10 == 5]\n";
 
         assert(communitate == expected_communitate);
     }
@@ -462,7 +462,7 @@ void TestTTK_Assert() {
         const std::wstring communitate = TTK_LoadFromFile(output_file_name);
 
         const std::wstring source_file_name = GetDefSolutionDir() + L"\\Test\\src\\AssertFails.h";
-        const std::wstring expected_communitate = L"[fail] [line:43] [file:" + source_file_name + L"] [condition:10 == 5] [message:Some message.]\n";
+        const std::wstring expected_communitate = L"    [fail] [line:43] [file:" + source_file_name + L"] [condition:10 == 5] [message:Some message.]\n";
 
         assert(communitate == expected_communitate);
     }

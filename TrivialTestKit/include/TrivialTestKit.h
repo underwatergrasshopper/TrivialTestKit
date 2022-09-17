@@ -116,9 +116,9 @@ inline TTK_Data& TTK_ToData() {
 inline void TKK_CommunicateAssertFail(FILE* communication_output, unsigned line, const char* condition, const char* file_name, const char* message) {
     if (communication_output) {
         if (message) {
-            fprintf(communication_output, "[fail] [line:%d] [file:%s] [condition:%s] [message:%s]\n", line, file_name, condition, message);
+            fprintf(communication_output, "    [fail] [line:%d] [file:%s] [condition:%s] [message:%s]\n", line, file_name, condition, message);
         } else {
-            fprintf(communication_output, "[fail] [line:%d] [file:%s] [condition:%s]\n", line, file_name, condition);
+            fprintf(communication_output, "    [fail] [line:%d] [file:%s] [condition:%s]\n", line, file_name, condition);
         }
         fflush(communication_output);
     }

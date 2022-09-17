@@ -50,7 +50,8 @@
 // Checks condition. If condition is false then communicate an assertion fail message (by default to stdout) and exits from calling function.
 // condition            Any expression which is castable to bool.
 // message              An additional message which will be communicated when condition is false.
-// return_statement     Result of this statement will be returned by calling function when condition fails.
+//                      Either c-string, std::string or std::wstring.
+// return_statement     This statement will be returned by calling function when condition fails.
 #define TTK_Assert(condition)                               if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_WIDE(__FILE__));          return; } (void)0
 #define TTK_AssertM(condition, message)                     if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_WIDE(__FILE__), message); return; } (void)0
 #define TTK_AssertR(condition, return_statement)            if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_WIDE(__FILE__));          return (return_statement); } (void)0
@@ -59,11 +60,20 @@
 // Place as first line in each test function.
 #define TTK_NotifyTest()                                    TTK_InnerNotifyTest(__func__)
 
+// Communicates location in the code and message.
+// message          Either c-string, std::string or std::wstring.
+#define TTK_Trace(message)                                  TTK_InnerTrace(__func__, message)
+#define TTK_FullTrace(message)                              TTK_InnerFullTrace(__LINE__, __func__, TTK_WIDE(__FILE__), message)
+
 #ifdef TTK_SHORT_NAMES
 #define Assert      TTK_Assert
 #define AssertM     TTK_AssertM
 #define AssertR     TTK_AssertR
 #define AssertMR    TTK_AssertMR
+
+#define NotifyTest  TTK_NotifyTest
+#define Trace       TTK_Trace
+#define FullTrace   TTK_FullTrace
 #endif // TTK_SHORT_NAMES
 
 // file_name        Name of the file from which content will be loaded.
@@ -183,6 +193,42 @@ inline void TTK_InnerNotifyTest(const std::string& caller_name) {
     TTK_Data& data = TTK_ToData();
 
     fprintf(data.output, "[test] %s\n", caller_name.c_str());
+    fflush(data.output);
+}
+
+inline void TTK_InnerTrace(const std::string& caller_name, const std::string& message) {
+    TTK_GuardLocaleUTF8();
+
+    TTK_Data& data = TTK_ToData();
+
+    fprintf(data.output, "[trace] [function:%s] %s\n", caller_name.c_str(), message.c_str());
+    fflush(data.output);
+}
+
+inline void TTK_InnerTrace(const std::string& caller_name,  const std::wstring& message) {
+    TTK_GuardLocaleUTF8();
+
+    TTK_Data& data = TTK_ToData();
+
+    fprintf(data.output, "[trace] [function:%s] %ws\n", caller_name.c_str(), message.c_str());
+    fflush(data.output);
+}
+
+inline void TTK_InnerFullTrace(unsigned line, const std::string& caller_name, const std::wstring& file_name, const std::string& message) {
+    TTK_GuardLocaleUTF8();
+
+    TTK_Data& data = TTK_ToData();
+
+    fprintf(data.output, "[trace] [line:%d] [function:%s] [file:%ws] %s\n", line, caller_name.c_str(), file_name.c_str(), message.c_str());
+    fflush(data.output);
+}
+
+inline void TTK_InnerFullTrace(unsigned line, const std::string& caller_name, const std::wstring& file_name, const std::wstring& message) {
+    TTK_GuardLocaleUTF8();
+
+    TTK_Data& data = TTK_ToData();
+
+    fprintf(data.output, "[trace] [line:%d] [function:%s] [file:%ws] %ws\n", line, caller_name.c_str(), file_name.c_str(), message.c_str());
     fflush(data.output);
 }
 

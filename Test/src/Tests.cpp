@@ -493,7 +493,9 @@ void TestDummy() {
     TTK_NotifyTest();
 }
 
-void TestTTK_TraceTest() {
+void TestTTK_NotifyTest() {
+    puts(__func__);
+
     const std::wstring output_file_name = L"log/Out.txt";
 
     // assert success
@@ -515,6 +517,96 @@ void TestTTK_TraceTest() {
     }
 }
 
+inline void TestDummyTrace() {
+    TTK_Trace("Some message.");
+}
+
+inline void TestDummyTraceUTF16() {
+    TTK_Trace(L"Some message\u0444.");
+}
+
+void TestTTK_Trace() {
+    puts(__func__);
+
+    const std::wstring output_file_name = L"log/Out.txt";
+
+    // trace
+    {
+        bool is_finished = true;
+        {
+            Output output = Output(output_file_name);
+            assert(output.Access());
+
+            TTK_SetOutput(output.Access());
+
+            TestDummyTrace();
+        }
+
+        const std::wstring expected_communicate = L"[trace] [function:TestDummyTrace] Some message.\n";
+        const std::wstring communitate = TTK_LoadFromFile(output_file_name);
+
+        assert(expected_communicate == communitate);
+    }
+
+    // trace utf16
+    {
+        bool is_finished = true;
+        {
+            Output output = Output(output_file_name);
+            assert(output.Access());
+
+            TTK_SetOutput(output.Access());
+
+            TestDummyTraceUTF16();
+        }
+
+        const std::wstring expected_communicate = L"[trace] [function:TestDummyTraceUTF16] Some message\u0444.\n";
+        const std::wstring communitate = TTK_LoadFromFile(output_file_name);
+
+        assert(expected_communicate == communitate);
+    }
+
+    // full trace
+    {
+        bool is_finished = true;
+        {
+            Output output = Output(output_file_name);
+            assert(output.Access());
+
+            TTK_SetOutput(output.Access());
+
+            TestDummyFullTrace();
+        }
+
+        const std::wstring source_file_name = GetDefSolutionDir() + L"\\Test\\src\\AssertFails.h";
+
+        const std::wstring expected_communicate = L"[trace] [line:81] [function:TestDummyFullTrace] [file:" + source_file_name + L"] Some message.\n";
+        const std::wstring communitate = TTK_LoadFromFile(output_file_name);
+
+        assert(expected_communicate == communitate);
+    }
+
+    // full trace utf16
+    {
+        bool is_finished = true;
+        {
+            Output output = Output(output_file_name);
+            assert(output.Access());
+
+            TTK_SetOutput(output.Access());
+
+            TestDummyFullTraceUTF16();
+        }
+
+        const std::wstring source_file_name = GetDefSolutionDir() + L"\\Test\\src\\AssertFails.h";
+
+        const std::wstring expected_communicate = L"[trace] [line:85] [function:TestDummyFullTraceUTF16] [file:" + source_file_name + L"] Some message\u0444.\n";
+        const std::wstring communitate = TTK_LoadFromFile(output_file_name);
+
+        assert(expected_communicate == communitate);
+    }
+}
+
 void RunAllTests() {
     system("if not exist log mkdir log");
 
@@ -523,5 +615,6 @@ void RunAllTests() {
     TestTTK_DeleteFile();
     TestTTK_LoadSaveFileContent();
     TestTTK_Assert();
-    TestTTK_TraceTest();
+    TestTTK_NotifyTest();
+    TestTTK_Trace();
 }

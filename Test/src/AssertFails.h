@@ -77,4 +77,12 @@ inline void FailAssertMessageUTF16(bool& is_finished) {
     is_finished = true;
 }
 
+inline void TestDummyFullTrace() {
+    TTK_FullTrace("Some message.");
+}
+
+inline void TestDummyFullTraceUTF16() {
+    TTK_FullTrace(L"Some message\u0444.");
+}
+
 #endif // ASSERTFAIL_H_

@@ -33,6 +33,7 @@
 #define TRIVIALTESTKIT_H_
 
 #include <stdio.h>
+#include <stdint.h>
 #include <locale.h>
 
 #define WIN32_LEAN_AND_MEAN
@@ -40,6 +41,10 @@
 #undef WIN32_LEAN_AND_MEAN
 
 #include <string>
+#include <utility>
+
+// Test function pointer type.
+using TTK_TestFnP_T = void (*)();
 
 // Makes regular character array literal a wide character array literal.
 #define TTK_INNER_WIDE(text) L##text
@@ -65,6 +70,11 @@
 #define TTK_Trace(message)                                  TTK_InnerTrace(__func__, message)
 #define TTK_FullTrace(message)                              TTK_InnerFullTrace(__LINE__, __func__, TTK_WIDE(__FILE__), message)
 
+// Runs provided tests and display result.
+// return   true - if all tests finished successfully; false - otherwise.
+template <uint64_t NUMBER> 
+bool TTK_RunTests(const TTK_TestFnP_T (&tests)[NUMBER]);
+
 #ifdef TTK_SHORT_NAMES
 #define Assert      TTK_Assert
 #define AssertM     TTK_AssertM
@@ -74,6 +84,7 @@
 #define NotifyTest  TTK_NotifyTest
 #define Trace       TTK_Trace
 #define FullTrace   TTK_FullTrace
+#define RunTests    TTK_RunTests
 #endif // TTK_SHORT_NAMES
 
 // file_name        Name of the file from which content will be loaded.
@@ -123,11 +134,21 @@ void TTK_SetOutput(FILE* output);
 //==============================================================================
 
 struct TTK_Data {
-    FILE* output;
+    FILE*       output;
+    uint64_t    number_of_executed_tests;
+    uint64_t    number_of_failed_tests;
 };
 
+inline TTK_Data TTK_MakeDefaultData() {
+    TTK_Data data = {};
+
+    data.output = stdout;
+
+    return data;
+}
+
 inline TTK_Data& TTK_ToData() {
-    static TTK_Data s_data = { stdout };
+    static TTK_Data s_data = TTK_MakeDefaultData();
     return s_data;
 }
 
@@ -158,6 +179,8 @@ inline void TKK_CommunicateAssertFail(unsigned line, const char* condition, cons
 
     TTK_Data& data = TTK_ToData();
 
+    data.number_of_failed_tests += 1;
+
     if (data.output) {
         fprintf(data.output, "    [fail] [line:%d] [file:%ws] [condition:%s]", line, file_name.c_str(), condition);
 
@@ -175,6 +198,8 @@ inline void TKK_CommunicateAssertFail(unsigned line, const char* condition, cons
     TTK_GuardLocaleUTF8();
 
     TTK_Data& data = TTK_ToData();
+
+    data.number_of_failed_tests += 1;
 
     if (data.output) {
         fprintf(data.output, "    [fail] [line:%d] [file:%ws] [condition:%s]", line, file_name.c_str(), condition);
@@ -230,6 +255,30 @@ inline void TTK_InnerFullTrace(unsigned line, const std::string& caller_name, co
 
     fprintf(data.output, "[trace] [line:%d] [function:%s] [file:%ws] %ws\n", line, caller_name.c_str(), file_name.c_str(), message.c_str());
     fflush(data.output);
+}
+
+template <uint64_t NUMBER> 
+bool TTK_RunTests(const TTK_TestFnP_T (&tests)[NUMBER]) {
+    TTK_Data& data = TTK_ToData();
+
+    data.number_of_executed_tests       = 0;
+    data.number_of_failed_tests    = 0;
+
+    fprintf(data.output, "%s", "--- TEST ---\n");
+
+    for (const auto& test : tests) {
+        test();
+    }
+
+    data.number_of_executed_tests = NUMBER;
+
+    const bool is_success = data.number_of_failed_tests == 0;
+
+    fprintf(data.output, "%s", (is_success ? "--- TEST SUCCESS ---\n" : "--- TEST FAIL ---\n"));
+    fprintf(data.output, "number of executed tests      : %lld\n", data.number_of_executed_tests);
+    fprintf(data.output, "number of failed tests        : %lld\n", data.number_of_failed_tests);
+
+    return is_success;
 }
 
 //------------------------------------------------------------------------------

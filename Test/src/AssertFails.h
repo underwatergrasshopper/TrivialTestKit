@@ -85,4 +85,13 @@ inline void TestDummyFullTraceUTF16() {
     TTK_FullTrace(L"Some message\u0444.");
 }
 
+inline void TestD_Fail() {
+    TTK_NotifyTest();
+
+    TTK_Assert(true);
+    TTK_Assert(5 == 7); // will fail
+    TTK_Assert(10 == 10);
+}
+
+
 #endif // ASSERTFAIL_H_

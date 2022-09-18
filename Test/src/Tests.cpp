@@ -7,6 +7,9 @@
 #include <stdlib.h> 
 #include <assert.h>
 
+#define _USE_MATH_DEFINES 
+#include <math.h>
+
 void SystemMakeFile(const std::string& file_name) {
     const std::string command = std::string() + "if not exist \"" + file_name + "\" echo. > \"" + file_name + "\"";
     system(command.c_str());
@@ -607,6 +610,105 @@ void TestTTK_Trace() {
     }
 }
 
+template <typename Anything>
+inline bool IsReal(Anything&& anything) {
+    return true;
+}
+
+
+void TestA() {
+    TTK_NotifyTest();
+
+    TTK_Assert(true);
+    TTK_Assert(2 == 2);
+    TTK_Assert(IsReal(M_PI));
+}
+
+void TestB() {
+    TTK_NotifyTest();
+
+    TTK_Assert(true);
+    TTK_Assert(5 == 5);
+    TTK_Assert(IsReal(M_PI));
+}
+
+void TestC() {
+    TTK_NotifyTest();
+
+    TTK_Assert(true);
+    TTK_Assert(8 == 8);
+    TTK_Assert(IsReal(M_PI));
+}
+
+
+void TestTTK_RunTests() {
+    puts(__func__);
+
+    const std::wstring output_file_name = L"log/Out.txt";
+
+    // success
+    {
+        {
+            Output output = Output(output_file_name);
+            assert(output.Access());
+
+            TTK_SetOutput(output.Access());
+
+            TTK_RunTests({
+                TestA,
+                TestB,
+                TestC
+            });
+        }
+
+        const std::wstring expected_communicate = 
+            L"--- TEST ---\n"
+            L"[test] TestA\n"
+            L"[test] TestB\n"
+            L"[test] TestC\n"
+            L"--- TEST SUCCESS ---\n"
+            L"number of executed tests      : 3\n"
+            L"number of failed tests        : 0\n";
+        const std::wstring communitate = TTK_LoadFromFile(output_file_name);
+
+        assert(expected_communicate == communitate);
+    }
+
+    // fail
+    {
+        {
+            Output output = Output(output_file_name);
+            assert(output.Access());
+
+            TTK_SetOutput(output.Access());
+
+            TTK_RunTests({
+                TestA,
+                TestB,
+                TestD_Fail,
+                TestC
+                });
+        }
+
+        const std::wstring source_file_name = GetDefSolutionDir() + L"\\Test\\src\\AssertFails.h";
+        const std::wstring expected_communicate = 
+            L"--- TEST ---\n"
+            L"[test] TestA\n"
+            L"[test] TestB\n"
+            L"[test] TestD_Fail\n"
+            L"    [fail] [line:92] [file:" + source_file_name + L"] [condition:5 == 7]\n"
+            L"[test] TestC\n"
+            L"--- TEST FAIL ---\n"
+            L"number of executed tests      : 4\n"
+            L"number of failed tests        : 1\n";
+
+        const std::wstring communitate = TTK_LoadFromFile(output_file_name);
+
+        assert(expected_communicate == communitate);
+    }
+}
+
+
 void RunAllTests() {
     system("if not exist log mkdir log");
 
@@ -617,4 +719,5 @@ void RunAllTests() {
     TestTTK_Assert();
     TestTTK_NotifyTest();
     TestTTK_Trace();
+    TestTTK_RunTests();
 }

@@ -122,7 +122,8 @@ bool TTK_DeleteFile(const std::wstring file_name);
 
 // return           Current working directory.
 std::wstring TTK_GetCWD_UTF16();
-std::string TTK_GetCWD();
+std::string TTK_GetCWD_UTF8();
+std::string TTK_GetCWD(); // As ASCII
 
 // output           Sets output where all generated communicates by this library will be sent. Can be stdout, stderr or opened file.
 //                  An communicate is: 
@@ -155,7 +156,8 @@ inline TTK_Data& TTK_ToData() {
 class TTK_LocaleUTF8_Guardian {
 public:
     TTK_LocaleUTF8_Guardian() {
-        const char* locale = setlocale(LC_ALL, nullptr);
+        const char* locale              = setlocale(LC_ALL, nullptr);
+
         if (locale) m_prev_locale_backup = locale;
 
         setlocale(LC_ALL, ".utf8");
@@ -174,6 +176,52 @@ private:
 
 //------------------------------------------------------------------------------
 
+inline std::wstring TTK_UTF8_ToUTF16(const std::string& text) {
+    std::wstring text_utf16;
+
+    enum { COUNT = 512 };
+    static wchar_t s_buffer[COUNT] = {};
+
+    wchar_t* buffer = nullptr;
+
+    if (text.length()) {
+        const int count = MultiByteToWideChar(CP_UTF8, 0, text.c_str(), -1, NULL, 0);
+
+        buffer = (count > COUNT) ? (new wchar_t[count]) : s_buffer;
+
+        if (MultiByteToWideChar(CP_UTF8, 0, text.c_str(), -1, buffer, count)) {
+            text_utf16 = std::wstring(buffer);
+        }
+
+        if (buffer != s_buffer) delete[] buffer;
+    }
+    return text_utf16;
+}
+
+inline std::string TTK_UTF16_ToUTF8(const std::wstring& text) {
+    std::string text_utf8;
+
+    enum { COUNT = 512 };
+    static char s_buffer[COUNT] = {};
+
+    char* buffer = nullptr;
+
+    if (text.length()) {
+        const int count = WideCharToMultiByte(CP_UTF8, 0, text.c_str(), -1, NULL, 0, NULL, NULL);
+
+        buffer = (count > COUNT) ? (new char[count]) : s_buffer;
+
+        if (WideCharToMultiByte(CP_UTF8, 0, text.c_str(), -1, buffer, count, NULL, NULL)) {
+            text_utf8 = std::string(buffer);
+        }
+
+        if (buffer != s_buffer) delete[] buffer;
+    }
+    return text_utf8;
+}
+
+//------------------------------------------------------------------------------
+
 inline void TKK_CommunicateAssertFail(unsigned line, const char* condition, const std::wstring& file_name, const std::string& message = "") {
     TTK_GuardLocaleUTF8();
 
@@ -182,7 +230,7 @@ inline void TKK_CommunicateAssertFail(unsigned line, const char* condition, cons
     data.number_of_failed_tests += 1;
 
     if (data.output) {
-        fprintf(data.output, "    [fail] [line:%d] [file:%ws] [condition:%s]", line, file_name.c_str(), condition);
+        fprintf(data.output, "    [fail] [line:%d] [file:%s] [condition:%s]", line,  TTK_UTF16_ToUTF8(file_name).c_str(), condition);
 
         if (message.length() > 0) {
             fprintf(data.output, " [message:%s]\n", message.c_str());
@@ -195,23 +243,7 @@ inline void TKK_CommunicateAssertFail(unsigned line, const char* condition, cons
 }
 
 inline void TKK_CommunicateAssertFail(unsigned line, const char* condition, const std::wstring& file_name, const std::wstring& message) {
-    TTK_GuardLocaleUTF8();
-
-    TTK_Data& data = TTK_ToData();
-
-    data.number_of_failed_tests += 1;
-
-    if (data.output) {
-        fprintf(data.output, "    [fail] [line:%d] [file:%ws] [condition:%s]", line, file_name.c_str(), condition);
-
-        if (message.length() > 0) {
-            fprintf(data.output, " [message:%ws]\n", message.c_str());
-        } else {
-            fprintf(data.output, "\n");
-        }
-
-        fflush(data.output);
-    }
+    TKK_CommunicateAssertFail(line, condition, file_name, TTK_UTF16_ToUTF8(message));
 }
 
 inline void TTK_InnerNotifyTest(const std::string& caller_name) {
@@ -231,12 +263,7 @@ inline void TTK_InnerTrace(const std::string& caller_name, const std::string& me
 }
 
 inline void TTK_InnerTrace(const std::string& caller_name,  const std::wstring& message) {
-    TTK_GuardLocaleUTF8();
-
-    TTK_Data& data = TTK_ToData();
-
-    fprintf(data.output, "[trace] [function:%s] %ws\n", caller_name.c_str(), message.c_str());
-    fflush(data.output);
+    TTK_InnerTrace(caller_name, TTK_UTF16_ToUTF8(message));
 }
 
 inline void TTK_InnerFullTrace(unsigned line, const std::string& caller_name, const std::wstring& file_name, const std::string& message) {
@@ -244,25 +271,20 @@ inline void TTK_InnerFullTrace(unsigned line, const std::string& caller_name, co
 
     TTK_Data& data = TTK_ToData();
 
-    fprintf(data.output, "[trace] [line:%d] [function:%s] [file:%ws] %s\n", line, caller_name.c_str(), file_name.c_str(), message.c_str());
+    fprintf(data.output, "[trace] [line:%d] [function:%s] [file:%s] %s\n", line, caller_name.c_str(), TTK_UTF16_ToUTF8(file_name).c_str(), message.c_str());
     fflush(data.output);
 }
 
 inline void TTK_InnerFullTrace(unsigned line, const std::string& caller_name, const std::wstring& file_name, const std::wstring& message) {
-    TTK_GuardLocaleUTF8();
-
-    TTK_Data& data = TTK_ToData();
-
-    fprintf(data.output, "[trace] [line:%d] [function:%s] [file:%ws] %ws\n", line, caller_name.c_str(), file_name.c_str(), message.c_str());
-    fflush(data.output);
+    TTK_InnerFullTrace(line, caller_name, file_name, TTK_UTF16_ToUTF8(message));
 }
 
 template <uint64_t NUMBER> 
 bool TTK_RunTests(const TTK_TestFnP_T (&tests)[NUMBER]) {
     TTK_Data& data = TTK_ToData();
 
-    data.number_of_executed_tests       = 0;
-    data.number_of_failed_tests    = 0;
+    data.number_of_executed_tests   = 0;
+    data.number_of_failed_tests     = 0;
 
     fprintf(data.output, "%s", "--- TEST ---\n");
 
@@ -284,6 +306,8 @@ bool TTK_RunTests(const TTK_TestFnP_T (&tests)[NUMBER]) {
 //------------------------------------------------------------------------------
 
 inline std::string TTK_LoadFromFile(const std::string& file_name, bool* is_success) {
+    TTK_GuardLocaleUTF8();
+
     std::string content;
 
     FILE* file = nullptr;
@@ -303,46 +327,25 @@ inline std::string TTK_LoadFromFile(const std::string& file_name, bool* is_succe
 }
 
 inline std::wstring TTK_LoadFromFile(const std::wstring& file_name, bool* is_success) {
-    TTK_GuardLocaleUTF8();
-
-    std::wstring content;
-
-    FILE* file = nullptr;
-    if ((_wfopen_s(&file, file_name.c_str(), L"r") == 0) && file) {
-        wchar_t c;
-        while ((c = fgetwc(file)) != WEOF) {
-            content += c;
-        }
-        fclose(file);
-
-        if (is_success) *is_success = true;
-    } else {
-        if (is_success) *is_success = false;
-    }
-
-    return content;
+    return TTK_UTF8_ToUTF16(TTK_LoadFromFile(TTK_UTF16_ToUTF8(file_name), is_success));
 }
 
 inline bool TTK_SaveToFile(const std::string& file_name, const std::string& content) {
+    TTK_GuardLocaleUTF8();
+
     FILE* file = nullptr;
     if (fopen_s(&file, file_name.c_str(), "w") == 0 && file) {
         const int count = fprintf(file, "%s", content.c_str());
         fclose(file);
+
         return count == content.length();
     }
+
     return false;
 }
 
 inline bool TTK_SaveToFile(const std::wstring& file_name, const std::wstring& content) {
-    TTK_GuardLocaleUTF8();
-
-    FILE* file = nullptr;
-    if (_wfopen_s(&file, file_name.c_str(), L"w") == 0 && file) {
-        const int count = fwprintf(file, L"%s", content.c_str());
-        fclose(file);
-        return count == content.length();
-    }
-    return false;
+    return TTK_SaveToFile(TTK_UTF16_ToUTF8(file_name), TTK_UTF16_ToUTF8(content));
 }
 
 //------------------------------------------------------------------------------
@@ -382,6 +385,10 @@ inline std::wstring TTK_GetCWD_UTF16() {
     std::wstring dir = std::wstring(buffer, count);
     auto pos = dir.find_last_of(L"\\");
     return dir.substr(0, pos);
+}
+
+inline std::string TTK_GetCWD_UTF8() {
+    return TTK_UTF16_ToUTF8(TTK_GetCWD_UTF16());
 }
 
 inline std::string TTK_GetCWD() {

@@ -75,10 +75,19 @@ inline std::wstring GetDefSolutionDir() {
     return cwd.substr(0, pos);
 }
 
+inline std::wstring GetSourceFileName() {
+#ifdef _MSC_VER
+    return GetDefSolutionDir() + L"\\Test\\src\\AssertFails.h";
+#else
+    return L"./src/AssertFails.h";
+#endif
+}
+
 //==============================================================================
 
 void TestTTK_IsFileExist() {
     puts(__func__);
+    fflush(stdout);
 
     // existing
     {
@@ -121,6 +130,7 @@ void TestTTK_IsFileExist() {
 
 void TestTTK_IsFolderExist() {
     puts(__func__);
+    fflush(stdout);
 
     // existing
     {
@@ -163,6 +173,7 @@ void TestTTK_IsFolderExist() {
 
 void TestTTK_DeleteFile() {
     puts(__func__);
+    fflush(stdout);
 
     // existing
     {
@@ -196,7 +207,8 @@ void TestTTK_DeleteFile() {
 }
 
 void TestTTK_LoadSaveFileContent() {
-    puts(__func__);
+    puts(__func__); 
+    fflush(stdout);
 
     // existing file
     {
@@ -274,24 +286,26 @@ void TestTTK_LoadSaveFileContent() {
 
     // existing file
     {
-        const std::wstring file_name          = L"log/SaveLoadTest\u0444.txt";
-        const std::wstring expected_content  = L"Some text to save.\nAnother line.\u0444\n";
+        const std::wstring file_name            = L"log/SaveLoadTest\u0444.txt";
+        const std::wstring expected_content     = L"Some text to save.\nAnother line.\u0444\n";
 
         TTK_DeleteFile(file_name);
         assert(TTK_IsFileExist(file_name) == false);
-
+        
         assert(TTK_SaveToFile(file_name, expected_content));
 
         bool is_success = false;
         const std::wstring content = TTK_LoadFromFile(file_name, &is_success);
         assert(is_success);
+        //wprintf(L"%s\n", content.c_str());
+        //wprintf(L"%s\n", expected_content.c_str());
         assert(content == expected_content);
     }
-
+    
     // existing file no success info
     {
-        const std::wstring file_name          = L"log/SaveLoadTest\u0444.txt";
-        const std::wstring expected_content  = L"Some text to save.\nAnother line.\u0444\n";
+        const std::wstring file_name            = L"log/SaveLoadTest\u0444.txt";
+        const std::wstring expected_content     = L"Some text to save.\nAnother line.\u0444\n";
 
         TTK_DeleteFile(file_name);
         assert(TTK_IsFileExist(file_name) == false);
@@ -347,6 +361,7 @@ void TestTTK_LoadSaveFileContent() {
 
 void TestTTK_Assert() {
     puts(__func__);
+    fflush(stdout);
 
     const std::wstring output_file_name = L"log/Out.txt";
 
@@ -401,8 +416,7 @@ void TestTTK_Assert() {
 
         const std::wstring communitate = TTK_LoadFromFile(output_file_name);
 
-        const std::wstring source_file_name = GetDefSolutionDir() + L"\\Test\\src\\AssertFails.h";
-        const std::wstring expected_communitate = L"    [fail] [line:14] [file:" + source_file_name + L"] [condition:10 == 5]\n";
+        const std::wstring expected_communitate = L"    [fail] [line:14] [file:" + GetSourceFileName() + L"] [condition:10 == 5]\n";
 
         assert(communitate == expected_communitate);
     }
@@ -422,8 +436,7 @@ void TestTTK_Assert() {
 
         const std::wstring communitate = TTK_LoadFromFile(output_file_name);
 
-        const std::wstring source_file_name = GetDefSolutionDir() + L"\\Test\\src\\AssertFails.h";
-        const std::wstring expected_communitate = L"    [fail] [line:23] [file:" + source_file_name + L"] [condition:10 == 5] [message:Some message.]\n";
+        const std::wstring expected_communitate = L"    [fail] [line:23] [file:" + GetSourceFileName() + L"] [condition:10 == 5] [message:Some message.]\n";
 
         assert(communitate == expected_communitate);
     }
@@ -443,8 +456,7 @@ void TestTTK_Assert() {
 
         const std::wstring communitate = TTK_LoadFromFile(output_file_name);
 
-        const std::wstring source_file_name = GetDefSolutionDir() + L"\\Test\\src\\AssertFails.h";
-        const std::wstring expected_communitate = L"    [fail] [line:32] [file:" + source_file_name + L"] [condition:10 == 5]\n";
+        const std::wstring expected_communitate = L"    [fail] [line:32] [file:" + GetSourceFileName() + L"] [condition:10 == 5]\n";
 
         assert(communitate == expected_communitate);
     }
@@ -464,8 +476,7 @@ void TestTTK_Assert() {
 
         const std::wstring communitate = TTK_LoadFromFile(output_file_name);
 
-        const std::wstring source_file_name = GetDefSolutionDir() + L"\\Test\\src\\AssertFails.h";
-        const std::wstring expected_communitate = L"    [fail] [line:43] [file:" + source_file_name + L"] [condition:10 == 5] [message:Some message.]\n";
+        const std::wstring expected_communitate = L"    [fail] [line:43] [file:" + GetSourceFileName() + L"] [condition:10 == 5] [message:Some message.]\n";
 
         assert(communitate == expected_communitate);
     }
@@ -485,8 +496,7 @@ void TestTTK_Assert() {
 
         const std::wstring communitate = TTK_LoadFromFile(output_file_name);
 
-        const std::wstring source_file_name = GetDefSolutionDir() + L"\\Test\\src\\AssertFails.h";
-        const std::wstring expected_communitate = L"    [fail] [line:74] [file:" + source_file_name + L"] [condition:10 == 5] [message:Some message\u0444.]\n";
+        const std::wstring expected_communitate = L"    [fail] [line:74] [file:" + GetSourceFileName() + L"] [condition:10 == 5] [message:Some message\u0444.]\n";
 
         assert(communitate == expected_communitate);
     }
@@ -498,6 +508,7 @@ void TestDummy() {
 
 void TestTTK_NotifyTest() {
     puts(__func__);
+    fflush(stdout);
 
     const std::wstring output_file_name = L"log/Out.txt";
 
@@ -530,6 +541,7 @@ inline void TestDummyTraceUTF16() {
 
 void TestTTK_Trace() {
     puts(__func__);
+    fflush(stdout);
 
     const std::wstring output_file_name = L"log/Out.txt";
 
@@ -581,9 +593,8 @@ void TestTTK_Trace() {
             TestDummyFullTrace();
         }
 
-        const std::wstring source_file_name = GetDefSolutionDir() + L"\\Test\\src\\AssertFails.h";
+        const std::wstring expected_communicate = L"[trace] [line:81] [function:TestDummyFullTrace] [file:" + GetSourceFileName() + L"] Some message.\n";
 
-        const std::wstring expected_communicate = L"[trace] [line:81] [function:TestDummyFullTrace] [file:" + source_file_name + L"] Some message.\n";
         const std::wstring communitate = TTK_LoadFromFile(output_file_name);
 
         assert(expected_communicate == communitate);
@@ -601,9 +612,8 @@ void TestTTK_Trace() {
             TestDummyFullTraceUTF16();
         }
 
-        const std::wstring source_file_name = GetDefSolutionDir() + L"\\Test\\src\\AssertFails.h";
+        const std::wstring expected_communicate = L"[trace] [line:85] [function:TestDummyFullTraceUTF16] [file:" + GetSourceFileName() + L"] Some message\u0444.\n";
 
-        const std::wstring expected_communicate = L"[trace] [line:85] [function:TestDummyFullTraceUTF16] [file:" + source_file_name + L"] Some message\u0444.\n";
         const std::wstring communitate = TTK_LoadFromFile(output_file_name);
 
         assert(expected_communicate == communitate);
@@ -643,6 +653,7 @@ void TestC() {
 
 void TestTTK_RunTests() {
     puts(__func__);
+    fflush(stdout);
 
     const std::wstring output_file_name = L"log/Out.txt";
 
@@ -690,13 +701,12 @@ void TestTTK_RunTests() {
                 });
         }
 
-        const std::wstring source_file_name = GetDefSolutionDir() + L"\\Test\\src\\AssertFails.h";
         const std::wstring expected_communicate = 
             L"--- TEST ---\n"
             L"[test] TestA\n"
             L"[test] TestB\n"
             L"[test] TestD_Fail\n"
-            L"    [fail] [line:92] [file:" + source_file_name + L"] [condition:5 == 7]\n"
+            L"    [fail] [line:92] [file:" + GetSourceFileName() + L"] [condition:5 == 7]\n"
             L"[test] TestC\n"
             L"--- TEST FAIL ---\n"
             L"number of executed tests      : 4\n"
@@ -708,10 +718,10 @@ void TestTTK_RunTests() {
     }
 }
 
-
 void RunAllTests() {
     system("if not exist log mkdir log");
 
+    puts("--- Test Begin ---");
     TestTTK_IsFileExist();
     TestTTK_IsFolderExist();
     TestTTK_DeleteFile();
@@ -720,4 +730,5 @@ void RunAllTests() {
     TestTTK_NotifyTest();
     TestTTK_Trace();
     TestTTK_RunTests();
+    puts("--- Test End ---");
 }

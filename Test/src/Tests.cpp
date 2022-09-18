@@ -35,7 +35,11 @@ public:
     Output() : m_out(nullptr) {}
 
     explicit Output(const std::wstring& file_name) : m_out(nullptr) {
+#ifdef TTK_WIDE_ORIENTED
         if (_wfopen_s(&m_out, file_name.c_str(), L"w") != 0) m_out = nullptr;
+#else
+        if (fopen_s(&m_out, TTK_UTF16_ToUTF8(file_name).c_str(), "w") != 0) m_out = nullptr;
+#endif
     }
 
     virtual ~Output() {
@@ -52,11 +56,23 @@ private:
 inline std::wstring GetDefSolutionBuildDirCutOff() {
 #ifdef _DEBUG
 
+#ifdef TTK_WIDE_ORIENTED
+
+#ifdef WIN32
+    return L"\\DebugWide";
+#else
+    return L"\\x64\\DebugWide";
+#endif
+
+#else
+
 #ifdef WIN32
     return L"\\Debug";
 #else
     return L"\\x64\\Debug";
 #endif
+
+#endif // TTK_WIDE_ORIENTED
 
 #else
 

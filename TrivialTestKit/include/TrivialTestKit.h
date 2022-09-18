@@ -132,6 +132,12 @@ std::string TTK_GetCWD(); // As ASCII
 //                      any statistic info from TTK_PrintResults, TTK_RunTests functions.
 void TTK_SetOutput(FILE* output);
 
+// Converts text from utf-8 encoding format to utf-16 encoding format.
+std::wstring TTK_UTF8_ToUTF16(const std::string& text);
+
+// Converts text from utf-16 encoding format to utf-8 encoding format.
+std::string TTK_UTF16_ToUTF8(const std::wstring& text);
+
 //==============================================================================
 
 struct TTK_Data {

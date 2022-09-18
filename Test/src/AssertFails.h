@@ -93,5 +93,18 @@ inline void TestD_Fail() {
     TTK_Assert(10 == 10);
 }
 
+inline void FailAssertMessageUTF8(bool& is_finished) {
+    is_finished = false;
+
+    TTK_AssertM(10 == 5, u8"Some message\u0444.");
+    TTK_AssertM(false, "");
+
+    is_finished = true;
+}
+
+inline void TestDummyFullTraceUTF8() {
+    TTK_FullTrace(u8"Some message\u0444.");
+}
+
 
 #endif // ASSERTFAIL_H_

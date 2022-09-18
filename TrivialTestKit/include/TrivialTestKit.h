@@ -52,10 +52,10 @@
 // message              An additional message which will be communicated when condition is false.
 //                      Either c-string, std::string or std::wstring.
 // return_statement     This statement will be returned by calling function when condition fails.
-#define TTK_Assert(condition)                               if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_WIDE(__FILE__));          return; } (void)0
-#define TTK_AssertM(condition, message)                     if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_WIDE(__FILE__), message); return; } (void)0
-#define TTK_AssertR(condition, return_statement)            if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_WIDE(__FILE__));          return (return_statement); } (void)0
-#define TTK_AssertMR(condition, message, return_statement)  if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_WIDE(__FILE__), message); return (return_statement); } (void)0
+#define TTK_Assert(condition)                               if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_WIDE(__FILE__));            return; } (void)0
+#define TTK_AssertM(condition, message)                     if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_WIDE(__FILE__), message);   return; } (void)0
+#define TTK_AssertR(condition, return_statement)            if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_WIDE(__FILE__));            return (return_statement); } (void)0
+#define TTK_AssertMR(condition, message, return_statement)  if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_WIDE(__FILE__), message);   return (return_statement); } (void)0
 
 // Place as first line in each test function.
 #define TTK_NotifyTest()                                    TTK_InnerNotifyTest(__func__)
@@ -277,10 +277,9 @@ inline std::wstring TTK_LoadFromFile(const std::wstring& file_name, bool* is_suc
 inline bool TTK_SaveToFile(const std::string& file_name, const std::string& content) {
     FILE* file = nullptr;
     if (fopen_s(&file, file_name.c_str(), "w") == 0 && file) {
-        if (fwrite(content.c_str(), sizeof(char), content.length(), file) == content.length()) {
-            fclose(file);
-            return true;
-        }
+        const int count = fprintf(file, "%s", content.c_str());
+        fclose(file);
+        return count == content.length();
     }
     return false;
 }
@@ -290,14 +289,9 @@ inline bool TTK_SaveToFile(const std::wstring& file_name, const std::wstring& co
 
     FILE* file = nullptr;
     if (_wfopen_s(&file, file_name.c_str(), L"w") == 0 && file) {
-        for (const auto& sign : content) {
-            if (fputwc(sign, file) == WEOF) {
-                fclose(file);
-                return false;
-            }
-        }
+        const int count = fwprintf(file, L"%s", content.c_str());
         fclose(file);
-        return true;
+        return count == content.length();
     }
     return false;
 }

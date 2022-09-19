@@ -1,7 +1,15 @@
 # TrivialTestKit
-A simple C++ library for unit testing code.
+A simple C++ library for testing code. 
+Allows to create unit tests and execute them with check if they compleated with or without fail.
 
-## Builds and Tests
+## HOWTO Run Tests 
+To run tests. Select in ***TrivialTestKIt/Test*** project a one of following ***Solution Configuration***:
+- ***Debug***, for test without definied `TTK_WIDE_ORIENTATION` \*;
+- ***DebugWide***, for test with definied `TTK_WIDE_ORIENTATION`.
+
+And then ***Start Without Debugging***.
+
+## Builds and Tests results
 
 | Platform | Compiler | Wide Oriented Stream \* | Build | Passing Tests
 |-|-|-|-|
@@ -11,3 +19,4 @@ Windows 10 | LLVM GCC 13.0.0 | No | <span style="color:green">Success</span> | <
 Windows 10 | LLVM GCC 13.0.0 | Yes | <span style="color:green">Success</span> | <span style="color:red">No</span>
 
 <sup>\* When using functions from wprintf family only (those for wide characters, which manipulate any stream).</sup>
+

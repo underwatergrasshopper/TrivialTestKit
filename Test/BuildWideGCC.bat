@@ -1,3 +1,3 @@
 @echo off
 
-call BuildGCC -D TTK_WIDE_ORIENTED
+call BuildGCC Wide

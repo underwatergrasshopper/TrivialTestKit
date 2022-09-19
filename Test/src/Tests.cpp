@@ -99,12 +99,20 @@ inline std::wstring GetSourceFileName() {
 #endif
 }
 
+#ifdef TTK_WIDE_ORIENTED
+#define Notice() wprintf(L"%ls\n", TTK_UTF8_ToUTF16(__func__).c_str()); fflush(stdout)
+// name     A c-string literal.
+#define NoticeWithName(name) wprintf(L"%ls\n", L##name); fflush(stdout)
+#else
 #define Notice() puts(__func__); fflush(stdout)
+// name     A c-string literal.
+#define NoticeWithName(name) puts(name); fflush(stdout)
+#endif
 
 //==============================================================================
 
 void TestTTK_UTF8_ToUTF16() {
-    Notice();
+    NoticeWithName("TestTTK_UTF8_ToUTF16");
 
     assert(TTK_UTF8_ToUTF16(u8"") == L"");
     assert(TTK_UTF8_ToUTF16(u8"Some text\u0444.") == L"Some text\u0444.");
@@ -125,7 +133,7 @@ void TestTTK_UTF8_ToUTF16() {
 }
 
 void TestTTK_UTF16_ToUTF8() {
-    Notice();
+    NoticeWithName("TestTTK_UTF8_ToUTF16");
 
     assert(TTK_UTF16_ToUTF8(L"") == u8"");
     assert(TTK_UTF16_ToUTF8(L"Some text\u0444.") == u8"Some text\u0444.");
@@ -904,11 +912,12 @@ void TestTTK_RunTests() {
 
             TTK_SetOutput(output.Access());
 
-            TTK_RunTests({
+            const bool is_success = TTK_RunTests({
                 TestA,
                 TestB,
                 TestC
             });
+            assert(is_success);
         }
 
         const std::wstring expected_communicate = 
@@ -938,7 +947,7 @@ void TestTTK_RunTests() {
                 TestD_Fail,
                 TestC
                 });
-            assert(is_success);
+            assert(!is_success);
         }
 
         const std::wstring expected_communicate = 

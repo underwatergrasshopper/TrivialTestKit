@@ -178,8 +178,8 @@ void TestTTK_IsFileExist() {
 
     // utf8 existing
     {
-        const std::wstring file_url = L"log/ExistingFile\u0444.txt";
-        SystemMakeFile(file_url);
+        const std::string file_url = u8"log/ExistingFile\u0444.txt";
+        SystemMakeFolder(TTK_UTF8_ToUTF16(file_url));
         assert(TTK_IsFileExist(file_url));
     }
 
@@ -191,13 +191,13 @@ void TestTTK_IsFileExist() {
     // utf8 wrong type
     {
         const std::string folder_url = u8"log/ExistingFolder\u0444";
-        SystemMakeFolder(folder_url);
+        SystemMakeFolder(TTK_UTF8_ToUTF16(folder_url));
         assert(TTK_IsFileExist(folder_url) == false);
     }
 
     // utf16 existing
     {
-        const std::string file_url = u8"log/ExistingFile\u0444.txt";
+        const std::wstring file_url = L"log/ExistingFile\u0444.txt";
         SystemMakeFile(file_url);
         assert(TTK_IsFileExist(file_url));
     }
@@ -278,7 +278,7 @@ void TestTTK_IsFolderExist() {
 
 void TestTTK_DeleteFile() {
     Notice();
-
+#if 1
     // existing
     {
         const std::string file_url = "log/FileToDelete.txt";
@@ -294,16 +294,16 @@ void TestTTK_DeleteFile() {
         assert(TTK_DeleteFile(file_url) == false);
     }
 
-    // utf16 existing
+    // utf8 existing
     {
         const std::string file_url = u8"log/FileToDelete\u0444.txt";
-        SystemMakeFile(file_url);
+        SystemMakeFile(TTK_UTF8_ToUTF16(file_url));
         assert(TTK_IsFileExist(file_url));
         assert(TTK_DeleteFile(file_url));
         assert(TTK_IsFileExist(file_url) == false);
     }
 
-    // utf16 not existing
+    // utf8 not existing
     {
         const std::string file_url = u8"log/NotExistingFileToDelete\u0444.txt";
         assert(TTK_DeleteFile(file_url) == false);
@@ -323,6 +323,7 @@ void TestTTK_DeleteFile() {
         const std::wstring file_url = L"log/NotExistingFileToDelete\u0444.txt";
         assert(TTK_DeleteFile(file_url) == false);
     }
+#endif
 }
 
 void TestTTK_LoadSaveFileContent() {
@@ -401,81 +402,81 @@ void TestTTK_LoadSaveFileContent() {
     }
 
     // === utf8 === //
-
+#if 1
     // existing file
     {
         const std::string file_name            = u8"log/SaveLoadTest\u0444.txt";
         const std::string expected_content     = u8"Some text to save.\nAnother line.\u0444\n";
-
+    
         TTK_DeleteFile(file_name);
         assert(TTK_IsFileExist(file_name) == false);
-
+    
         assert(TTK_SaveToFile(file_name, expected_content));
-
+    
         bool is_success = false;
         const std::string content = TTK_LoadFromFile(file_name, &is_success);
         assert(is_success);
         assert(content == expected_content);
     }
-
+    
     // existing file no success info
     {
         const std::string file_name            = u8"log/SaveLoadTest\u0444.txt";
         const std::string expected_content     = u8"Some text to save.\nAnother line.\u0444\n";
-
+    
         TTK_DeleteFile(file_name);
         assert(TTK_IsFileExist(file_name) == false);
-
+    
         assert(TTK_SaveToFile(file_name, expected_content));
-
+    
         const std::string content = TTK_LoadFromFile(file_name);
         assert(content == expected_content);
     }
-
+    
     // overriding file
     {
         const std::string file_name            = u8"log/SaveLoadTest\u0444.txt";
         const std::string initial_content      = u8"Initial text to save.";
         const std::string expected_content     = u8"Some text to save.\nAnother line.\u0444\n";
-
+    
         TTK_DeleteFile(file_name);
         assert(TTK_IsFileExist(file_name) == false);
-
+    
         assert(TTK_SaveToFile(file_name, initial_content));
         assert(TTK_SaveToFile(file_name, expected_content));
-
+    
         bool is_success = false;
         const std::string content = TTK_LoadFromFile(file_name, &is_success);
         assert(is_success);
         assert(content == expected_content);
     }
-
+    
     // load not existing file
     {
         const std::string file_name          = u8"log/NotExistingSaveLoadTest\u0444.txt";
-
+    
         TTK_DeleteFile(file_name);
         assert(TTK_IsFileExist(file_name) == false);
-
+    
         bool is_success = false;
         const std::string content = TTK_LoadFromFile(file_name, &is_success);
         assert(is_success == false);
         assert(content == u8"");
     }
-
+    
     // load not existing file no success info
     {
         const std::string file_name          = u8"log/NotExistingSaveLoadTest\u0444.txt";
-
+    
         TTK_DeleteFile(file_name);
         assert(TTK_IsFileExist(file_name) == false);
-
+    
         const std::string content = TTK_LoadFromFile(file_name);
         assert(content == u8"");
     }
-
+#endif
     // === utf16 === //
-
+#if 1
     // existing file
     {
         const std::wstring file_name            = L"log/SaveLoadTest\u0444.txt";
@@ -491,7 +492,7 @@ void TestTTK_LoadSaveFileContent() {
         assert(is_success);
         assert(content == expected_content);
     }
-    
+
     // existing file no success info
     {
         const std::wstring file_name            = L"log/SaveLoadTest\u0444.txt";
@@ -547,6 +548,7 @@ void TestTTK_LoadSaveFileContent() {
         const std::wstring content = TTK_LoadFromFile(file_name);
         assert(content == L"");
     }
+#endif
 }
 
 void TestTTK_Assert() {

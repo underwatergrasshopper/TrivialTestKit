@@ -54,12 +54,12 @@ using TTK_TestFnP_T = void (*)();
 #define TTK_INNER_L(text) L##text
 #define TTK_L(text) TTK_INNER_L(text)
 
-// Note: The 'If' statement inside TTK_AssertM macro must be in macro. Message can be fetched only after condition fail, because don't exist before fail.
+// Note: The 'if' statement inside TTK_AssertM macro must be in macro. Message can be fetched only after condition fail, because don't exist before fail.
 
 // Checks condition. If condition is false then communicate an assertion fail message (by default to stdout) and exits from calling function.
 // condition            Any expression which is castable to bool.
-// message              An additional message which will be communicated when condition is false.
-//                      Either c-string, std::string or std::wstring.
+// message              An additional message which will be communicated when condition is false. If it's a statement then will be invoked after the condition fail.
+//                      Either c-string (for utf-8), std::string (for utf-8) or std::wstring (for utf-16).
 // return_statement     This statement will be returned by calling function when condition fails.
 #define TTK_Assert(condition)                               if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__));             return; } (void)0
 #define TTK_AssertM(condition, message)                     if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), message);    return; } (void)0
@@ -70,12 +70,12 @@ using TTK_TestFnP_T = void (*)();
 #define TTK_NotifyTest()                                    TTK_InnerNotifyTest(__func__)
 
 // Communicates location in the code and message.
-// message          Either c-string, std::string or std::wstring.
+// message          Either c-string (for utf-8), std::string (for utf-8) or std::wstring (for utf-16).
 #define TTK_Trace(message)                                  TTK_InnerTrace(__func__, message)
 #define TTK_FullTrace(message)                              TTK_InnerFullTrace(__LINE__, __func__, TTK_L(__FILE__), message)
 
-// Runs provided tests and display result.
-// return   true - if all tests finished successfully; false - otherwise.
+// Runs provided tests and displays result.
+// return   true - if all tests finished without failing any assertion; false - otherwise.
 template <uint64_t NUMBER> 
 bool TTK_RunTests(const TTK_TestFnP_T (&tests)[NUMBER]);
 
@@ -91,13 +91,13 @@ bool TTK_RunTests(const TTK_TestFnP_T (&tests)[NUMBER]);
 #define RunTests    TTK_RunTests
 #endif // TTK_SHORT_NAMES
 
-// file_name        Name of the file from which content will be loaded.
+// file_name        Name of the file from which content will be loaded. Either in utf-8 or utf-16.
 // is_success       (optional) If is not nullptr then stores at pointer location: true - when content has been loaded from file, false - otherwise.
 // return           Content of the file.
 std::string TTK_LoadFromFile(const std::string& file_name, bool* is_success = nullptr);
 std::wstring TTK_LoadFromFile(const std::wstring& file_name, bool* is_success = nullptr);
 
-// file_name        Name of the file to which content will be saved. 
+// file_name        Name of the file to which content will be saved. Either in utf-8 or utf-16.
 //                  If file not exist, then will be created. 
 //                  If file exists then its content will be overridden.
 // content          New content of the file.
@@ -106,19 +106,19 @@ std::wstring TTK_LoadFromFile(const std::wstring& file_name, bool* is_success = 
 bool TTK_SaveToFile(const std::string& file_name, const std::string& content);
 bool TTK_SaveToFile(const std::wstring& file_name, const std::wstring& content);
 
-// file_name        Name of the File with absolute or relative path to it.
+// file_name        Name of the File with absolute or relative path to it. Either in utf-8 or utf-16.
 // return           true    - if file exists; 
 //                  false   - if file doesn't exist or it's not a file.
 bool TTK_IsFileExist(const std::string& file_name);
 bool TTK_IsFileExist(const std::wstring& file_name);
 
-// folder_name      Name of the folder with absolute or relative path to it.
+// folder_name      Name of the folder with absolute or relative path to it. Either in utf-8 or utf-16.
 // return           true    - if folder exists; 
 //                  false   - if folder doesn't exist or it's not a folder.
 bool TTK_IsFolderExist(const std::string& folder_name);
 bool TTK_IsFolderExist(const std::wstring& folder_name);
 
-// file_name        Name of the File with absolute or relative path to it.
+// file_name        Name of the File with absolute or relative path to it. Either in utf-8 or utf-16.
 // return           true    - if file exists; 
 //                  false   - if file doesn't exist or it's not a file.
 bool TTK_DeleteFile(const std::string file_name);
@@ -232,7 +232,7 @@ inline std::string TTK_UTF16_ToUTF8(const std::wstring& text) {
 
 //------------------------------------------------------------------------------
 
-// Note: _NoWide uses functions of printf family. _Wide uses functions of wprintf family.
+// Note: _NoWide uses functions from printf function family. _Wide uses functions from wprintf function family.
 
 inline void TKK_CommunicateAssertFail_NoWide(unsigned line, const char* condition, const std::wstring& file_name, const std::string& message = "") {
     TTK_GuardLocaleUTF8();
@@ -518,8 +518,7 @@ inline bool TTK_SaveToFile(const std::wstring& file_name, const std::wstring& co
 //------------------------------------------------------------------------------
 
 inline bool TTK_IsFileExist(const std::string& file_name) {
-    DWORD attributes = GetFileAttributesA(file_name.c_str());
-    return attributes != INVALID_FILE_ATTRIBUTES && !(attributes & FILE_ATTRIBUTE_DIRECTORY);
+    return TTK_IsFileExist(TTK_UTF8_ToUTF16(file_name));
 }
 
 inline bool TTK_IsFileExist(const std::wstring& file_name) {
@@ -528,8 +527,7 @@ inline bool TTK_IsFileExist(const std::wstring& file_name) {
 }
 
 inline bool TTK_IsFolderExist(const std::string& folder_name) {
-    DWORD attributes = GetFileAttributesA(folder_name.c_str());
-    return attributes != INVALID_FILE_ATTRIBUTES && (attributes & FILE_ATTRIBUTE_DIRECTORY);
+    return TTK_IsFolderExist(TTK_UTF8_ToUTF16(folder_name));
 }
 
 inline bool TTK_IsFolderExist(const std::wstring& folder_name) {
@@ -538,7 +536,7 @@ inline bool TTK_IsFolderExist(const std::wstring& folder_name) {
 }
 
 inline bool TTK_DeleteFile(const std::string file_name) {
-    return DeleteFileA(file_name.c_str());
+    return TTK_DeleteFile(TTK_UTF8_ToUTF16(file_name));
 }
 
 inline bool TTK_DeleteFile(const std::wstring file_name) {

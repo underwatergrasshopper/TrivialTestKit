@@ -1,16 +1,17 @@
 @echo off
 setlocal EnableDelayedExpansion
 
+:: For local GCC Compiler
+:: set PATH=C:\\MinGW_8_1_0\\bin;%PATH%
+
 echo === Build and Test on GCC ===
+cd Test
+
 echo Preparing...
 if not exist Release mkdir Relese
 
 echo Clearing... 
 if exist Release\\TestGCC.exe del Release\\TestGCC.exe 
-
-:: Custom GCC Compiler
-:: set PATH=C:\\MinGW_8_1_0\\bin;%PATH%
-:: -std=c++11 -O3
 
 set DEFINES=
 if "%1" equ "wide" (
@@ -18,7 +19,7 @@ if "%1" equ "wide" (
 )
 
 echo Building...
-set COMMAND=g++ !DEFINES! -I ./include -I ./../TrivialTestKit/include -I ./src  ./src/*.cpp -o ./Release/TestGCC.exe
+set COMMAND=g++ -std=c++11 -O3 !DEFINES! -I ./../TrivialTestKit/include -I ./include -I ./src ./src/*.cpp -o ./Release/TestGCC.exe
 echo %COMMAND%
 call %COMMAND%
 
@@ -27,6 +28,8 @@ if exist Release\\TestGCC.exe (
     echo Running...
     call Release\\TestGCC.exe
 )
+
+cd ..
 
 
 

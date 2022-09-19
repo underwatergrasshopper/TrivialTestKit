@@ -1,5 +1,5 @@
-#ifndef ASSERTFAIL_H_
-#define ASSERTFAIL_H_
+#ifndef LINEDEPENDENTS_H_
+#define LINEDEPENDENTS_H_
 
 #include "TrivialTestKit.h"
 
@@ -107,4 +107,4 @@ inline void TestDummyFullTraceUTF8() {
 }
 
 
-#endif // ASSERTFAIL_H_
+#endif // LINEDEPENDENTS_H_

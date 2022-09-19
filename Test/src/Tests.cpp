@@ -1,7 +1,7 @@
 #include "Tests.h"
 
 #include "TrivialTestKit.h"
-#include "AssertFails.h"
+#include "LineDependents.h"
 
 #include <stdio.h>
 #include <stdlib.h> 
@@ -85,28 +85,28 @@ inline std::wstring GetDefSolutionBuildDirCutOff() {
 
 #ifdef TTK_WIDE_ORIENTED
 
-#ifdef WIN32
-    return L"\\DebugWide";
-#else
+#ifdef _WIN64 
     return L"\\x64\\DebugWide";
+#else
+    return L"\\DebugWide";
 #endif
 
 #else
 
-#ifdef WIN32
-    return L"\\Debug";
-#else
+#ifdef _WIN64  
     return L"\\x64\\Debug";
+#else
+    return L"\\Debug";
 #endif
 
 #endif // TTK_WIDE_ORIENTED
 
 #else
 
-#ifdef WIN32
-    return L"\\Release";
-#else
+#ifdef _WIN64  
     return L"\\x64\\Release";
+#else
+    return L"\\Release";
 #endif
 
 #endif
@@ -120,9 +120,9 @@ inline std::wstring GetDefSolutionDir() {
 
 inline std::wstring GetSourceFileName() {
 #ifdef _MSC_VER
-    return GetDefSolutionDir() + L"\\Test\\src\\AssertFails.h";
+    return GetDefSolutionDir() + L"\\Test\\src\\LineDependents.h";
 #else
-    return L"./src/AssertFails.h";
+    return L"./src/LineDependents.h";
 #endif
 }
 
@@ -644,7 +644,6 @@ void TestTTK_Assert() {
         assert(is_finished == false);
 
         const std::wstring communitate = TTK_LoadFromFile(output_file_name);
-
         const std::wstring expected_communitate = L"    [fail] [line:14] [file:" + GetSourceFileName() + L"] [condition:10 == 5]\n";
 
         assert(communitate == expected_communitate);

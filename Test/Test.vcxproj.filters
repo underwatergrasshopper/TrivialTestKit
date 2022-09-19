@@ -26,7 +26,7 @@
     <ClInclude Include="src\Tests.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\AssertFails.h">
+    <ClInclude Include="src\LineDependents.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

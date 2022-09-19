@@ -932,12 +932,13 @@ void TestTTK_RunTests() {
 
             TTK_SetOutput(output.Access());
 
-            TTK_RunTests({
+            const bool is_success = TTK_RunTests({
                 TestA,
                 TestB,
                 TestD_Fail,
                 TestC
                 });
+            assert(is_success);
         }
 
         const std::wstring expected_communicate = 

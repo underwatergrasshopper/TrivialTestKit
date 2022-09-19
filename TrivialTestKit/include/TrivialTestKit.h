@@ -50,10 +50,6 @@
 // Test function pointer type.
 using TTK_TestFnP_T = void (*)();
 
-// Makes regular character array literal a wide character array literal.
-#define TTK_INNER_L(text) L##text
-#define TTK_L(text) TTK_INNER_L(text)
-
 // Note: The 'if' statement inside TTK_AssertM macro must be in macro. Message can be fetched only after condition fail, because don't exist before fail.
 
 // Checks condition. If condition is false then communicate an assertion fail message (by default to stdout) and exits from calling function.
@@ -144,6 +140,10 @@ std::string TTK_UTF16_ToUTF8(const std::wstring& text);
 
 //==============================================================================
 
+// Makes regular character array literal a wide character array literal.
+#define TTK_INNER_L(text) L##text
+#define TTK_L(text) TTK_INNER_L(text)
+
 struct TTK_Data {
     FILE*       output;
     uint64_t    number_of_executed_tests;
@@ -166,18 +166,46 @@ inline TTK_Data& TTK_ToData() {
 class TTK_LocaleUTF8_Guardian {
 public:
     TTK_LocaleUTF8_Guardian() {
-        const char* locale              = setlocale(LC_ALL, nullptr);
+#ifdef TTK_WIDE_ORIENTED
+        SetLocaleWide();
+#else
+        SetLocale();
+#endif
+    }
 
+    virtual ~TTK_LocaleUTF8_Guardian() {
+#ifdef TTK_WIDE_ORIENTED
+        RestoreLocaleWide();
+#else
+        RestoreLocale();
+#endif
+    }
+
+private:
+    void SetLocaleWide() {
+        const char* locale = setlocale(LC_ALL, nullptr);
         if (locale) m_prev_locale_backup = locale;
 
         setlocale(LC_ALL, ".utf8");
     }
 
-    virtual ~TTK_LocaleUTF8_Guardian() {
+    void SetLocale() {
+        const char* locale = setlocale(LC_ALL, nullptr);
+        if (locale) m_prev_locale_backup = locale;
+
+        setlocale(LC_ALL, ".utf8");
+    }
+
+    void RestoreLocaleWide() {
+        _wsetlocale(LC_ALL, m_prev_locale_backup_wide.c_str());
+    }
+
+    void RestoreLocale() {
         setlocale(LC_ALL, m_prev_locale_backup.c_str());
     }
-private:
-    std::string m_prev_locale_backup;
+
+    std::string     m_prev_locale_backup;
+    std::wstring    m_prev_locale_backup_wide;
 };
 
 // Enables unicode codepage for functions from wprintf family in a scope where it's placed. 

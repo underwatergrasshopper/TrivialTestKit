@@ -77,13 +77,13 @@ inline void FailAssertMessageUTF16(bool& is_finished) {
     is_finished = true;
 }
 
-inline void TestDummyFullTrace() {
-    TTK_FullTrace("Some message.");
-}
 
-inline void TestDummyFullTraceUTF16() {
-    TTK_FullTrace(L"Some message\u0444.");
-}
+
+
+
+
+
+
 
 inline void TestD_Fail() {
     TTK_NotifyTest();
@@ -101,10 +101,5 @@ inline void FailAssertMessageUTF8(bool& is_finished) {
 
     is_finished = true;
 }
-
-inline void TestDummyFullTraceUTF8() {
-    TTK_FullTrace(u8"Some message\u0444.");
-}
-
 
 #endif // LINEDEPENDENTS_H_

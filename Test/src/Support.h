@@ -132,44 +132,6 @@ inline void InnerNotice(const std::string& caller_name, const std::wstring& call
 
 //------------------------------------------------------------------------------
 
-#if 0
-inline bool CreateFile_UTF16(const std::wstring& file_name) {
-    HANDLE file_handle = CreateFileW(
-        file_name.c_str(), 
-        GENERIC_READ | GENERIC_WRITE,
-        0,
-        NULL,
-        CREATE_NEW,
-        FILE_ATTRIBUTE_NORMAL,
-        NULL);
-    const bool is_ok = file_handle != INVALID_HANDLE_VALUE;
-    if (is_ok) CloseHandle(file_handle);
-    return is_ok;
-}
-
-inline bool CreateFile_ASCII(const std::string& file_name) {
-    HANDLE file_handle = CreateFileA(
-        file_name.c_str(), 
-        GENERIC_READ | GENERIC_WRITE,
-        0,
-        NULL,
-        CREATE_NEW,
-        FILE_ATTRIBUTE_NORMAL,
-        NULL);
-    const bool is_ok = file_handle != INVALID_HANDLE_VALUE;
-    if (is_ok) CloseHandle(file_handle);
-    return is_ok;
-}
-
-inline bool DeleteFile_ASCII(const std::string file_name) {
-    return DeleteFileA(file_name.c_str());
-}
-
-inline bool DeleteFile_UTF16(const std::wstring file_name) {
-    return DeleteFileW(file_name.c_str());
-}
-#endif
-
 inline bool IsFileExist_ASCII(const std::string& file_name) {
     DWORD attributes = GetFileAttributesA(file_name.c_str());
     return attributes != INVALID_FILE_ATTRIBUTES && !(attributes & FILE_ATTRIBUTE_DIRECTORY);
@@ -180,26 +142,6 @@ inline bool IsFileExist_UTF16(const std::wstring& file_name) {
     return attributes != INVALID_FILE_ATTRIBUTES && !(attributes & FILE_ATTRIBUTE_DIRECTORY);
 }
 
-//------------------------------------------------------------------------------
-#if 0
-inline bool CreateFolder_UTF16(const std::wstring& folder_name) {
-    return CreateDirectoryW(folder_name.c_str(), 0);
-}
-
-inline bool CreateFolder_ASCII(const std::string& folder_name) {
-    return CreateDirectoryA(folder_name.c_str(), 0);
-}
-
-inline bool IsFolderExist_ASCII(const std::string& folder_name) {
-    DWORD attributes = GetFileAttributesA(folder_name.c_str());
-    return attributes != INVALID_FILE_ATTRIBUTES && (attributes & FILE_ATTRIBUTE_DIRECTORY);
-}
-
-inline bool IsFolderExist_UTF16(const std::wstring& folder_name) {
-    DWORD attributes = GetFileAttributesW(folder_name.c_str());
-    return attributes != INVALID_FILE_ATTRIBUTES && (attributes & FILE_ATTRIBUTE_DIRECTORY);
-}
-#endif
 //------------------------------------------------------------------------------
 
 class LocaleGuradianUTF8 {
@@ -219,7 +161,7 @@ private:
 };
 #define GuardLocaleUTF8() LocaleGuradianUTF8 locale_gurardian_utf8
 
-inline std::string LoadFromFile_UTF8(const std::string& file_name, bool* is_success) {
+inline std::string LoadFromFile_UTF8(const std::string& file_name, bool* is_success = nullptr) {
     GuardLocaleUTF8();
 
     std::string content;
@@ -241,28 +183,6 @@ inline std::string LoadFromFile_UTF8(const std::string& file_name, bool* is_succ
     return content;
 }
 
-inline std::wstring LoadFromFile_UTF16(const std::wstring& file_name, bool* is_success) {
-    GuardLocaleUTF8();
-
-    std::wstring content;
-
-    FILE* file = nullptr;
-
-    if ((_wfopen_s(&file, file_name.c_str(), L"r") == 0) && file) {
-        wchar_t c;
-        while ((c = fgetwc(file)) != WEOF) {
-            content += c;
-        }
-        fclose(file);
-
-        if (is_success) *is_success = true;
-    } else {
-        if (is_success) *is_success = false;
-    }
-
-    return content;
-}
-
 inline bool SaveToFile_UTF8(const std::string& file_name, const std::string& content) {
     GuardLocaleUTF8();
 
@@ -270,21 +190,6 @@ inline bool SaveToFile_UTF8(const std::string& file_name, const std::string& con
 
     if (fopen_s(&file, file_name.c_str(), "w") == 0 && file) {
         const int count = fprintf(file, "%s", content.c_str());
-        fclose(file);
-
-        return count == content.length();
-    }
-
-    return false;
-}
-
-inline bool SaveToFile_UTF16(const std::wstring& file_name, const std::wstring& content) {
-    GuardLocaleUTF8();
-
-    FILE* file = nullptr;
-
-    if (_wfopen_s(&file, file_name.c_str(), L"w") == 0 && file) {
-        const int count = fwprintf(file, L"%ls", content.c_str());
         fclose(file);
 
         return count == content.length();
@@ -348,6 +253,10 @@ inline std::wstring GetSourceFileName_UTF16() {
 #else
     return L"./src/LineDependents.h";
 #endif
+}
+
+inline std::string GetSourceFileName_UTF8() {
+    return ToUTF8(GetSourceFileName_UTF16());
 }
 
 #endif // SUPPORT_H_

@@ -15,7 +15,7 @@ if exist Release\\TestGCC.exe del Release\\TestGCC.exe
 
 set DEFINES=
 if "%1" equ "wide" (
-    set DEFINES=-D TTK_WIDE_ORIENTED
+    set DEFINES=-D WIDE_ORIENTED
 )
 
 echo Building...

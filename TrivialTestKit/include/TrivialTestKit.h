@@ -43,13 +43,6 @@
 #include <string>
 #include <utility>
 
-// Important !!!
-// TTK_WIDE_ORIENTED need to be defined if any function from wprintf family is used (wprintf, fwopen, getwc, ...). 
-// #define TTK_WIDE_ORIENTED
-
-// Test function pointer type.
-using TTK_TestFnP_T = void (*)();
-
 // Note: The 'if' statement inside TTK_AssertM macro must be in macro. Message can be fetched only after condition fail, because don't exist before fail.
 
 // Checks condition. If condition is false then communicate an assertion fail message (by default to stdout) and exits from calling function.
@@ -65,10 +58,8 @@ using TTK_TestFnP_T = void (*)();
 // Place as first line in each test function.
 #define TTK_NotifyTest()                                    TTK_InnerNotifyTest(__func__)
 
-// Communicates location in the code and message.
-// message          Either c-string (for utf-8), std::string (for utf-8) or std::wstring (for utf-16).
-#define TTK_Trace(message)                                  TTK_InnerTrace(__func__, message)
-#define TTK_FullTrace(message)                              TTK_InnerFullTrace(__LINE__, __func__, TTK_L(__FILE__), message)
+// Test function pointer type.
+using TTK_TestFnP_T = void (*)();
 
 // Runs provided tests and displays result.
 // return   true - if all tests finished without failing any assertion; false - otherwise.
@@ -86,21 +77,6 @@ bool TTK_RunTests(const TTK_TestFnP_T (&tests)[NUMBER]);
 #define FullTrace   TTK_FullTrace
 #define RunTests    TTK_RunTests
 #endif // TTK_SHORT_NAMES
-
-// file_name        Name of the file from which content will be loaded. Either in utf-8 or utf-16.
-// is_success       (optional) If is not nullptr then stores at pointer location: true - when content has been loaded from file, false - otherwise.
-// return           Content of the file.
-std::string TTK_LoadFromFile(const std::string& file_name, bool* is_success = nullptr);
-std::wstring TTK_LoadFromFile(const std::wstring& file_name, bool* is_success = nullptr);
-
-// file_name        Name of the file to which content will be saved. Either in utf-8 or utf-16.
-//                  If file not exist, then will be created. 
-//                  If file exists then its content will be overridden.
-// content          New content of the file.
-// return           true    - when content has been saved to file; 
-//                  false   - otherwise.
-bool TTK_SaveToFile(const std::string& file_name, const std::string& content);
-bool TTK_SaveToFile(const std::wstring& file_name, const std::wstring& content);
 
 // output           Sets output where all generated communicates by this library will be sent. Can be stdout, stderr or opened file.
 //                  An communicate is: 
@@ -320,78 +296,6 @@ inline void TTK_InnerNotifyTest(const std::string& caller_name) {
     fflush(data.output);
 }
 
-//------------------------------------------------------------------------------
-
-inline void TTK_InnerTrace_NoWide(const std::string& caller_name, const std::string& message) {
-    TTK_GuardLocaleUTF8();
-
-    TTK_Data& data = TTK_ToData();
-
-    fprintf(data.output, "[trace] [function:%s] %s\n", caller_name.c_str(), message.c_str());
-    fflush(data.output);
-}
-
-inline void TTK_InnerTrace_Wide(const std::string& caller_name,  const std::wstring& message) {
-    TTK_GuardLocaleUTF8();
-
-    TTK_Data& data = TTK_ToData();
-
-    fwprintf(data.output, L"[trace] [function:%ls] %ls\n", TTK_UTF8_ToUTF16(caller_name).c_str(), message.c_str());
-    fflush(data.output);
-}
-
-inline void TTK_InnerTrace(const std::string& caller_name, const std::string& message) {
-#ifdef TTK_WIDE_ORIENTED
-    TTK_InnerTrace_Wide(caller_name, TTK_UTF8_ToUTF16(message));
-#else
-    TTK_InnerTrace_NoWide(caller_name, message);
-#endif
-}
-
-inline void TTK_InnerTrace(const std::string& caller_name,  const std::wstring& message) {
-#ifdef TTK_WIDE_ORIENTED
-    TTK_InnerTrace_Wide(caller_name, message);
-#else
-    TTK_InnerTrace_NoWide(caller_name, TTK_UTF16_ToUTF8(message));
-#endif
-}
-
-//------------------------------------------------------------------------------
-
-inline void TTK_InnerFullTrace_NoWide(unsigned line, const std::string& caller_name, const std::wstring& file_name, const std::string& message) {
-    TTK_GuardLocaleUTF8();
-
-    TTK_Data& data = TTK_ToData();
-
-    fprintf(data.output, "[trace] [line:%d] [function:%s] [file:%s] %s\n", line, caller_name.c_str(), TTK_UTF16_ToUTF8(file_name).c_str(), message.c_str());
-    fflush(data.output);
-}
-
-inline void TTK_InnerFullTrace_Wide(unsigned line, const std::string& caller_name, const std::wstring& file_name, const std::wstring& message) {
-    TTK_GuardLocaleUTF8();
-
-    TTK_Data& data = TTK_ToData();
-
-    fwprintf(data.output, L"[trace] [line:%d] [function:%ls] [file:%ls] %ls\n", line, TTK_UTF8_ToUTF16(caller_name).c_str(), file_name.c_str(), message.c_str());
-    fflush(data.output);
-}
-
-inline void TTK_InnerFullTrace(unsigned line, const std::string& caller_name, const std::wstring& file_name, const std::string& message) {
-#ifdef TTK_WIDE_ORIENTED
-    TTK_InnerFullTrace_Wide(line, caller_name, file_name, TTK_UTF8_ToUTF16(message));
-#else
-    TTK_InnerFullTrace_NoWide(line, caller_name, file_name, message);
-#endif
-}
-
-inline void TTK_InnerFullTrace(unsigned line, const std::string& caller_name, const std::wstring& file_name, const std::wstring& message) {
-#ifdef TTK_WIDE_ORIENTED
-    TTK_InnerFullTrace_Wide(line, caller_name, file_name, message);
-#else
-    TTK_InnerFullTrace_NoWide(line, caller_name, file_name, TTK_UTF16_ToUTF8(message));
-#endif
-
-}
 
 //------------------------------------------------------------------------------
 

@@ -36,9 +36,9 @@ bool SystemMakeFile(const std::wstring& file_name) {
         CREATE_ALWAYS,
         FILE_ATTRIBUTE_NORMAL,
         NULL);
-    const bool is_created = file_handle == INVALID_HANDLE_VALUE;
-    CloseHandle(file_handle);
-    return is_created;
+    const bool is_ok = file_handle != INVALID_HANDLE_VALUE;
+    if (is_ok) CloseHandle(file_handle);
+    return is_ok;
 }
 
 bool SystemMakeFile(const std::string& file_name) {

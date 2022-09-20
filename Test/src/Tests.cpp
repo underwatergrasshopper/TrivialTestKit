@@ -435,18 +435,26 @@ void Test_TTK_RunTests() {
     }
 }
 
+
+
 void RunAllTests() {
-#ifdef WIDE_ORIENTED
-    _wsystem(L"if exist log @rd /S /Q log");
-    _wsystem(L"mkdir log");
+    if (IsWideOriented()) {
+        _wsystem(L"if exist log @rd /S /Q log");
+        _wsystem(L"mkdir log");
 
-    wprintf(L"%ls\n", L"--- Test Begin ---");
-#else
-    system("if exist log @rd /S /Q log");
-    system("mkdir log");
+        wprintf(L"%hs\n", "--- Wide Oriented ---");
+        wprintf(L"%hs\n", "--- Test Begin ---");
 
-    puts("--- Test Begin ---");
-#endif
+        TTK_ForceOutputOrientation(1);
+    } else {
+        system("if exist log @rd /S /Q log");
+        system("mkdir log");
+
+        puts("--- Narrow Oriented  ---");
+        puts("--- Test Begin ---");
+
+        TTK_ForceOutputOrientation(-1);
+    }
 
     Test_ToUTF16();
     Test_ToUTF8();
@@ -456,9 +464,9 @@ void RunAllTests() {
     Test_TTK_NotifyTest();
     Test_TTK_RunTests();
 
-#ifdef WIDE_ORIENTED
-    wprintf(L"%ls\n", L"--- Test End ---");
-#else
-    puts("--- Test End ---");
-#endif
+    if (IsWideOriented()) {
+        wprintf(L"%hs\n", "--- Test End ---");
+    } else {
+        puts("--- Test End ---");
+    }
 }

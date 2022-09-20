@@ -68,14 +68,14 @@ inline int SuccessAssertReturn(bool& is_finished) {
     return 0;
 }
 
-inline void FailAssertMessageUTF16(bool& is_finished) {
-    is_finished = false;
 
-    TTK_AssertM(10 == 5, L"Some message\u0444.");
-    TTK_AssertM(false, "");
 
-    is_finished = true;
-}
+
+
+
+
+
+
 
 
 

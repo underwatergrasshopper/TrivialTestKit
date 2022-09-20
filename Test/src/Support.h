@@ -32,6 +32,16 @@
 
 //------------------------------------------------------------------------------
 
+inline bool IsWideOriented() {
+#ifdef WIDE_ORIENTED
+    return true;
+#else
+    return false;
+#endif
+}
+
+//------------------------------------------------------------------------------
+
 class Output {
 public:
     Output() : m_out(nullptr) {}
@@ -228,7 +238,7 @@ inline std::wstring GetDefSolutionBuildDirCutOff() {
     return L"\\Debug";
 #endif
 
-#endif // TTK_WIDE_ORIENTED
+#endif // WIDE_ORIENTED
 
 #else
 

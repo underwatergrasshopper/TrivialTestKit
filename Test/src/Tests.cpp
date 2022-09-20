@@ -6,7 +6,14 @@
 
 #include <stdio.h>
 #include <stdlib.h> 
+
+#ifdef NDEBUG
+#undef NDEBUG
 #include <assert.h>
+#define NDEBUG
+#else
+#include <assert.h>
+#endif
 
 #define _USE_MATH_DEFINES 
 #include <math.h>
@@ -434,8 +441,6 @@ void Test_TTK_RunTests() {
         assert(expected_communicate == communitate);
     }
 }
-
-
 
 void RunAllTests() {
     if (IsWideOriented()) {

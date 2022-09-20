@@ -4,19 +4,25 @@ Allows to create unit tests and execute them with check if they compleated with 
 
 ## HOWTO Run Tests 
 To run tests. Select in ***TrivialTestKIt/Test*** project a one of following ***Solution Configuration***:
-- ***Debug***, for test without definied `TTK_WIDE_ORIENTATION` \*;
-- ***DebugWide***, for test with definied `TTK_WIDE_ORIENTATION`.
+- ***Release***, for test without definied `WIDE_ORIENTATION` \*;
+- ***ReleaseWide***, for test with definied `WIDE_ORIENTATION`;
+- ***Debug***, for test without definied `WIDE_ORIENTATION`;
+- ***DebugWide***, for test with definied `WIDE_ORIENTATION`.
 
 And then ***Start Without Debugging***.
 
 ## Builds and Tests results
 
-| Platform | Compiler | Wide Oriented Stream \* | Build | Passing Tests
+| Platform | Compiler | Architecture | Wide Oriented Stream \* | Build | Passing Tests
 |-|-|-|-|
-Windows 10 | Visual Studio 2020 | No | <span style="color:green">Success</span> | <span style="color:green">Yes</span>
-Windows 10 | Visual Studio 2020 | Yes | <span style="color:green">Success</span> | <span style="color:green">Yes</span>
-Windows 10 | LLVM GCC 13.0.0 | No | <span style="color:green">Success</span> | <span style="color:green">Yes</span>
-Windows 10 | LLVM GCC 13.0.0 | Yes | <span style="color:green">Success</span> | <span style="color:red">No</span>
+Windows 10 | Visual Studio 2020 | x86 | No | <span style="color:green">Success</span> | <span style="color:green">Yes</span>
+Windows 10 | Visual Studio 2020 | x86 | Yes | <span style="color:green">Success</span> | <span style="color:green">Yes</span>
+Windows 10 | Visual Studio 2020 | x86-64 | No | <span style="color:green">Success</span> | <span style="color:green">Yes</span>
+Windows 10 | Visual Studio 2020 | x86-64 | Yes | <span style="color:green">Success</span> | <span style="color:green">Yes</span>
+Windows 10 | LLVM GCC 13.0.0 | x86 | No | <span style="color:grey">Not builded</span> | <span style="color:grey">Not Tested</span>
+Windows 10 | LLVM GCC 13.0.0 | x86 | Yes | <span style="color:grey">Not builded</span> | <span style="color:grey">Not Tested</span>
+Windows 10 | LLVM GCC 13.0.0 | x86-64 | No | <span style="color:green">Success</span> | <span style="color:green">Yes</span>
+Windows 10 | LLVM GCC 13.0.0 | x86-64 | Yes | <span style="color:green">Success</span> | <span style="color:green">Yes</span>
 
 <sup>\* When using functions from wprintf family only (those for wide characters, which manipulate any stream).</sup>
 

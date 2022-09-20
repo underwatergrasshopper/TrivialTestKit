@@ -220,12 +220,20 @@ inline std::wstring TTK_UTF8_ToUTF16(const std::string& text) {
     enum { COUNT = 512 };
     static wchar_t s_buffer[COUNT] = {};
 
-    wchar_t* buffer = nullptr;
+    if (!text.empty()) {
 
-    if (text.length()) {
         const int count = MultiByteToWideChar(CP_UTF8, 0, text.c_str(), -1, NULL, 0);
 
-        buffer = (count > COUNT) ? (new wchar_t[count]) : s_buffer;
+        if (count == 0) {
+#ifdef TTK_WIDE_ORIENTED
+            fwprintf(stderr, L"%ls\n", L"TTK_UTF8_ToUTF16 Error: Can not convert text from utf-8 to utf-16.");
+#else
+            fprintf(stderr, "%s\n", "TTK_UTF8_ToUTF16 Error: Can not convert text from utf-8 to utf-16.");
+#endif
+            exit(EXIT_FAILURE);
+        }
+
+        wchar_t* buffer = (count > COUNT) ? (new wchar_t[count]) : s_buffer;
 
         if (MultiByteToWideChar(CP_UTF8, 0, text.c_str(), -1, buffer, count)) {
             text_utf16 = std::wstring(buffer);
@@ -242,12 +250,19 @@ inline std::string TTK_UTF16_ToUTF8(const std::wstring& text) {
     enum { COUNT = 512 };
     static char s_buffer[COUNT] = {};
 
-    char* buffer = nullptr;
-
     if (text.length()) {
         const int count = WideCharToMultiByte(CP_UTF8, 0, text.c_str(), -1, NULL, 0, NULL, NULL);
 
-        buffer = (count > COUNT) ? (new char[count]) : s_buffer;
+        if (count == 0) {
+#ifdef TTK_WIDE_ORIENTED
+            fwprintf(stderr, L"%ls\n", L"TTK_UTF16_ToUTF8 Error: Can not convert text from utf-16 to utf-8.");
+#else
+            fprintf(stderr, "%s\n", "TTK_UTF16_ToUTF8 Error: Can not convert text from utf-16 to utf-8.");
+#endif
+            exit(EXIT_FAILURE);
+        }
+
+        char* buffer = (count > COUNT) ? (new char[count]) : s_buffer;
 
         if (WideCharToMultiByte(CP_UTF8, 0, text.c_str(), -1, buffer, count, NULL, NULL)) {
             text_utf8 = std::string(buffer);

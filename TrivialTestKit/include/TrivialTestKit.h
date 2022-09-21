@@ -50,9 +50,9 @@
 // message              An additional message which will be communicated after condition fail. If it's a statement then will be invoked after the condition fail.
 //                      Either c-string or std::string. Supported encoding: ASCII or UTF-8.
 // return_statement     This statement will be returned by calling function when condition fails.
-#define TTK_Assert(condition)                               if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__));           return; } (void)0
+#define TTK_Assert(condition)                               if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), nullptr);  return; } (void)0
 #define TTK_AssertM(condition, message)                     if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), message);  return; } (void)0
-#define TTK_AssertR(condition, return_statement)            if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__));           return (return_statement); } (void)0
+#define TTK_AssertR(condition, return_statement)            if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), nullptr);  return (return_statement); } (void)0
 #define TTK_AssertMR(condition, message, return_statement)  if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), message);  return (return_statement); } (void)0
 
 // Notifies test when it starts run. Place as first line in test function.
@@ -98,7 +98,7 @@ void TTK_ForceOutputOrientation(int orientation);
 #define TTK_L(text) TTK_INNER_L(text)
 
 // Makes regular character-array-literal an utf-8 character-array-literal.
-#define TTK_INNER_U8(text) u8##text
+#define TTK_INNER_U8(text) reinterpret_cast<const char*>(u8##text)
 #define TTK_U8(text) TTK_INNER_U8(text)
 
 //------------------------------------------------------------------------------
@@ -160,8 +160,8 @@ inline int TTK_SolveOutputOrientation() {
 }
 
 //------------------------------------------------------------------------------
-
-inline void TKK_CommunicateAssertFail(unsigned line, const std::string& condition, const std::wstring& file_name_utf16, const std::string& file_name_utf8, const std::string& message = "") {
+template <unsigned TRY_FORCE_NO_INLINE = 1>
+void TKK_CommunicateAssertFail(unsigned line, const char* condition, const wchar_t* file_name_utf16, const char* file_name_utf8, const char* message) {
     TTK_GuardLocaleUTF8();
 
     TTK_Data& data = TTK_ToData();
@@ -171,22 +171,26 @@ inline void TKK_CommunicateAssertFail(unsigned line, const std::string& conditio
     if (data.output) {
         if (TTK_SolveOutputOrientation() > 0) {
             // TODO: Test those hs, ws, ls, ... .
-            fwprintf(data.output, L"    [fail] [line:%d] [file:%s] [condition:%hs]", line, file_name_utf16.c_str(), condition.c_str());
-            if (message.length() > 0) {
-                fwprintf(data.output, L" [message:%hs]\n", message.c_str());
+            fwprintf(data.output, L"    [fail] [line:%d] [file:%s] [condition:%hs]", line, file_name_utf16, condition);
+            if (message) {
+                fwprintf(data.output, L" [message:%hs]\n", message);
             } else {
                 fwprintf(data.output, L"\n");
             }
         } else {
-            fprintf(data.output, "    [fail] [line:%d] [file:%s] [condition:%s]", line, file_name_utf8.c_str(), condition.c_str());
-            if (message.length() > 0) {
-                fprintf(data.output, " [message:%s]\n", message.c_str());
+            fprintf(data.output, "    [fail] [line:%d] [file:%s] [condition:%s]", line, file_name_utf8, condition);
+            if (message) {
+                fprintf(data.output, " [message:%s]\n", message);
             } else {
                 fprintf(data.output, "\n");
             }
         }
         fflush(data.output);
     }
+}
+
+inline void TKK_CommunicateAssertFail(unsigned line, const char* condition, const wchar_t* file_name_utf16, const char* file_name_utf8, const std::string& message) {
+    TKK_CommunicateAssertFail(line, condition, file_name_utf16, file_name_utf8, message.c_str());
 }
 
 //------------------------------------------------------------------------------

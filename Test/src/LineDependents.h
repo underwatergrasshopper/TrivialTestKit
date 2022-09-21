@@ -2,7 +2,7 @@
 #define LINEDEPENDENTS_H_
 
 #include "TrivialTestKit.h"
-
+#include <string>
 // NOTE: !!! Success TestTTK_Assert function in Test.h depends on position of TTK_Assert{M|R} in this header file. 
 // If position of any of those functions change, don't forget update corresponding tests in TestTTK_Assert with new positions. 
 
@@ -68,14 +68,14 @@ inline int SuccessAssertReturn(bool& is_finished) {
     return 0;
 }
 
+inline void FailAssertMessageString(bool& is_finished) {
+    is_finished = false;
 
+    TTK_AssertM(10 == 5, std::string("Some message."));
+    TTK_AssertM(false, "");
 
-
-
-
-
-
-
+    is_finished = true;
+}
 
 
 

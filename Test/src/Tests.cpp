@@ -252,6 +252,27 @@ void Test_TTK_Assert() {
         assert(communitate == expected_communitate);
     }
 
+    // assert fail with message std::string
+    {
+        const std::string output_file_name      = "log/Out_AssertFailWithMessage.txt";
+
+        bool is_finished = true;
+        {
+            Output output = Output(output_file_name);
+            assert(output.Access());
+
+            TTK_SetOutput(output.Access());
+
+            FailAssertMessageString(is_finished);
+        }
+        assert(is_finished == false);
+
+        const std::string communitate           = LoadFromFile_UTF8(output_file_name);
+        const std::string expected_communitate  = "    [fail] [line:74] [file:" + GetSourceFileName_UTF8() + "] [condition:10 == 5] [message:Some message.]\n";
+
+        assert(communitate == expected_communitate);
+    }
+
     // assert fail with return
     {
         const std::string output_file_name      = "log/Out_AssertFailWithReturn.txt";

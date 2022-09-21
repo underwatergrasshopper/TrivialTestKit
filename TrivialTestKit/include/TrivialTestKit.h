@@ -160,8 +160,16 @@ inline int TTK_SolveOutputOrientation() {
 }
 
 //------------------------------------------------------------------------------
-template <unsigned TRY_FORCE_NO_INLINE = 1>
-void TKK_CommunicateAssertFail(unsigned line, const char* condition, const wchar_t* file_name_utf16, const char* file_name_utf8, const char* message) {
+#if defined(_MSC_VER)      
+#define TTK_TRY_FORCE_NON_INLINE __declspec(noinline)
+#elif defined(__GNUC__) 
+#define TTK_TRY_FORCE_NON_INLINE __attribute__((noinline))
+#else
+#define TTK_TRY_FORCE_NON_INLINE
+#endif
+
+TTK_TRY_FORCE_NON_INLINE 
+inline void TKK_CommunicateAssertFail(unsigned line, const char* condition, const wchar_t* file_name_utf16, const char* file_name_utf8, const char* message) {
     TTK_GuardLocaleUTF8();
 
     TTK_Data& data = TTK_ToData();

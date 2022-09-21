@@ -13,16 +13,16 @@ And then ***Start Without Debugging***.
 
 ## Builds and Tests results
 
-| Platform | Compiler | Architecture | Wide Oriented Stream \* | Build | Passing Tests
-|-|-|-|-|
-Windows 10 | Visual Studio 2020 | x86 | No | <span style="color:green">Success</span> | <span style="color:green">Yes</span>
-Windows 10 | Visual Studio 2020 | x86 | Yes | <span style="color:green">Success</span> | <span style="color:green">Yes</span>
-Windows 10 | Visual Studio 2020 | x86-64 | No | <span style="color:green">Success</span> | <span style="color:green">Yes</span>
-Windows 10 | Visual Studio 2020 | x86-64 | Yes | <span style="color:green">Success</span> | <span style="color:green">Yes</span>
-Windows 10 | LLVM GCC 13.0.0 | x86 | No | <span style="color:grey">Not builded</span> | <span style="color:grey">Not Tested</span>
-Windows 10 | LLVM GCC 13.0.0 | x86 | Yes | <span style="color:grey">Not builded</span> | <span style="color:grey">Not Tested</span>
-Windows 10 | LLVM GCC 13.0.0 | x86-64 | No | <span style="color:green">Success</span> | <span style="color:green">Yes</span>
-Windows 10 | LLVM GCC 13.0.0 | x86-64 | Yes | <span style="color:green">Success</span> | <span style="color:green">Yes</span>
+| Platform | Compiler | Architecture | Wide Oriented Stream \* | Build | Passing Tests |
+|-|-|-|-|-|-|
+| Windows 10 | Visual Studio 2020 | x86 | No | <span style="color:green">Success</span> | <span style="color:green">Yes</span> |
+| Windows 10 | Visual Studio 2020 | x86 | Yes | <span style="color:green">Success</span> | <span style="color:green">Yes</span> |
+| Windows 10 | Visual Studio 2020 | x86-64 | No | <span style="color:green">Success</span> | <span style="color:green">Yes</span> |
+| Windows 10 | Visual Studio 2020 | x86-64 | Yes | <span style="color:green">Success</span> | <span style="color:green">Yes</span> |
+| Windows 10 | LLVM GCC 13.0.0 | x86 | No | <span style="color:grey">Not builded</span> | <span style="color:grey">Not Tested</span> |
+| Windows 10 | LLVM GCC 13.0.0 | x86 | Yes | <span style="color:grey">Not builded</span> | <span style="color:grey">Not Tested</span> |
+| Windows 10 | LLVM GCC 13.0.0 | x86-64 | No | <span style="color:green">Success</span> | <span style="color:green">Yes</span> |
+| Windows 10 | LLVM GCC 13.0.0 | x86-64 | Yes | <span style="color:green">Success</span> | <span style="color:green">Yes</span> |
 
 <sup>\* When using functions from wprintf family only (those for wide characters, which manipulate any stream).</sup>
 

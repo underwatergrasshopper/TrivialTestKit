@@ -43,23 +43,34 @@
 #include <string>
 #include <utility>
 
-// Note: The 'if' statement inside TTK_AssertM macro must be in macro. Message can be fetched only after condition fail, because don't exist before fail.
-
-// Checks condition. If condition is false then communicate an assertion fail message (by default to stdout) and exits from calling function.
-// condition            Any expression which is castable to bool.
-// message              An additional message which will be communicated after condition fail. If it's a statement then will be invoked after the condition fail.
-//                      Either c-string or std::string. Supported encoding: ASCII or UTF-8.
-// return_statement     This statement will be returned by calling function when condition fails.
+// Checks a condition. If the condition fails, then displays information about fail 
+// and where in code fail happened, after that returns from the caller function (which is a test function).
+// condition            An expression which will be checked if it's equal to 'true'. 
+//                      Must resolve to bool type value.
+// message              (Optional) An addition message which will be displayed when condition fail. 
+//                      Type can by either an c-string or std::string. Encoding can be either ASCII or UTF8.
+// return_expression    (Optional) An expression which will be returned 
+//                      by caller function (which is test function) when condition fails.
 #define TTK_Assert(condition)                               if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), nullptr);  return; } (void)0
 #define TTK_AssertM(condition, message)                     if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), message);  return; } (void)0
-#define TTK_AssertR(condition, return_statement)            if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), nullptr);  return (return_statement); } (void)0
-#define TTK_AssertMR(condition, message, return_statement)  if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), message);  return (return_statement); } (void)0
+#define TTK_AssertR(condition, return_expression)           if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), nullptr);  return (return_expression); } (void)0
+#define TTK_AssertMR(condition, message, return_expression) if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), message);  return (return_expression); } (void)0
 
-// Notifies test when it starts run. Place as first line in test function.
+// Notifies when it starts run. Place as first line in test function.
 #define TTK_NotifyTest()                                    TTK_InnerNotifyTest(__func__)
 
 // Test function pointer type.
 using TTK_TestFnP_T = void (*)();
+
+// is       true    - (default) TTK_RunTests function will abort execution of following tests when assertion fails occur in current test;
+//          false   - TTK_RunTests function will continue executing following tests when assertion fail occur in current test.
+void TTK_SetIsAbortAtFail(bool is);
+
+// TTK_RunTests function will abort execution of following tests when assertion fails occur in current test.
+void TTK_EnableAbortAtFail();
+
+// TTK_RunTests function will continue executing following tests when assertion fail occur in current test.
+void TTK_DisableAbortAtFail();
 
 // Runs provided tests and displays result.
 // return   true - if all tests finished without failing any assertion; 
@@ -68,19 +79,20 @@ template <uint64_t NUMBER>
 bool TTK_RunTests(const TTK_TestFnP_T (&tests)[NUMBER]);
 
 #ifdef TTK_SHORT_NAMES
-#define Assert      TTK_Assert
-#define AssertM     TTK_AssertM
-#define AssertR     TTK_AssertR
-#define AssertMR    TTK_AssertMR
+#define Assert              TTK_Assert
+#define AssertM             TTK_AssertM
+#define AssertR             TTK_AssertR
+#define AssertMR            TTK_AssertMR
 
-#define NotifyTest  TTK_NotifyTest
-#define RunTests    TTK_RunTests
+#define SetIsAbortAtFail    TTK_SetIsAbortAtFail
+#define EnableAbortAtFail   TTK_EnableAbortAtFail
+#define DisableAbortAtFail  TTK_DisableAbortAtFail
+
+#define NotifyTest          TTK_NotifyTest
+#define RunTests            TTK_RunTests
 #endif // TTK_SHORT_NAMES
 
-// output           Sets output where all generated communicates by this library will be sent. Can be stdout, stderr or opened file.
-//                  An communicate is: 
-//                      any assert fail from TTK_Assert, TTK_AssertM functions;
-//                      any statistic info from TTK_RunTests functions.
+// Sets output where all generated communicates by this library will be sent. Can be stdout, stderr or opened file.
 void TTK_SetOutput(FILE* output);
 
 // Sets output stream orientation for character type. Same parameter rules as in fwide function.
@@ -105,16 +117,18 @@ void TTK_ForceOutputOrientation(int orientation);
 
 struct TTK_Data {
     FILE*       output;
-    uint64_t    number_of_executed_tests;
+    uint64_t    number_of_notified_tests;
     uint64_t    number_of_failed_tests;
 
     int         forced_orientation;
+    bool        is_abort_testing_at_assertion_fail;
 };
 
 inline TTK_Data TTK_MakeDefaultData() {
     TTK_Data data = {};
 
-    data.output = stdout;
+    data.output                             = stdout;
+    data.is_abort_testing_at_assertion_fail = true;
 
     return data;
 }
@@ -143,8 +157,8 @@ private:
     std::string m_prev_locale_backup;
 };
 
-// Enables unicode codepage for functions from wprintf family in a scope where it's placed. 
-// Restores previous codepage when exits the scope.
+// Enables unicode codepage for functions from printf family in a code scope, where it's placed. 
+// Restores previous codepage when exits the code scope.
 #define TTK_GuardLocaleUTF8() TTK_LocaleGuardianUTF8 locale_guardian_utf8
 
 //------------------------------------------------------------------------------
@@ -212,15 +226,29 @@ inline void TTK_InnerNotifyTest(const std::string& caller_name) {
         fprintf(data.output, "[test] %s\n", caller_name.c_str());
     }
     fflush(data.output);
+
+    ++data.number_of_notified_tests;
 }
 
 //------------------------------------------------------------------------------
+
+inline void TTK_SetIsAbortAtFail(bool is) {
+    TTK_ToData().is_abort_testing_at_assertion_fail = is;
+}
+
+inline void TTK_EnableAbortAtFail() {
+    TTK_SetIsAbortAtFail(true);
+}
+
+inline void TTK_DisableAbortAtFail() {
+    TTK_SetIsAbortAtFail(false);
+}
 
 template <uint64_t NUMBER> 
 bool TTK_RunTests(const TTK_TestFnP_T (&tests)[NUMBER]) {
     TTK_Data& data = TTK_ToData();
 
-    data.number_of_executed_tests   = 0;
+    data.number_of_notified_tests   = 0;
     data.number_of_failed_tests     = 0;
 
     if (TTK_SolveOutputOrientation() > 0) {
@@ -229,26 +257,29 @@ bool TTK_RunTests(const TTK_TestFnP_T (&tests)[NUMBER]) {
         fprintf(data.output, "%s", "--- TEST ---\n");
     }
 
+    uint64_t previous_number_of_failed_tests = 0;
+
     for (const auto& test : tests) {
         test();
-    }
 
-    data.number_of_executed_tests = NUMBER;
+        if (data.is_abort_testing_at_assertion_fail && data.number_of_failed_tests != previous_number_of_failed_tests) break;
+
+        previous_number_of_failed_tests = data.number_of_failed_tests;
+    }
 
     const bool is_success = data.number_of_failed_tests == 0;
 
     if (TTK_SolveOutputOrientation() > 0) {
         fwprintf(data.output, L"%hs", (is_success ? "--- TEST SUCCESS ---\n" : "--- TEST FAIL ---\n"));
-        fwprintf(data.output, L"number of executed tests      : %lld\n", data.number_of_executed_tests);
+        fwprintf(data.output, L"number of notified tests      : %lld\n", data.number_of_notified_tests);
         fwprintf(data.output, L"number of failed tests        : %lld\n", data.number_of_failed_tests);
     } else {
         fprintf(data.output, "%s", (is_success ? "--- TEST SUCCESS ---\n" : "--- TEST FAIL ---\n"));
-        fprintf(data.output, "number of executed tests      : %lld\n", data.number_of_executed_tests);
+        fprintf(data.output, "number of notified tests      : %lld\n", data.number_of_notified_tests);
         fprintf(data.output, "number of failed tests        : %lld\n", data.number_of_failed_tests);
     }
     return is_success;
 }
-
 
 //------------------------------------------------------------------------------
 

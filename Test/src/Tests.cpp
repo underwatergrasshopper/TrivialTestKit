@@ -7,6 +7,9 @@
 #include <stdio.h>
 #include <stdlib.h> 
 
+#define _USE_MATH_DEFINES 
+#include <math.h>
+
 #ifdef NDEBUG
 #undef NDEBUG
 #include <assert.h>
@@ -14,9 +17,6 @@
 #else
 #include <assert.h>
 #endif
-
-#define _USE_MATH_DEFINES 
-#include <math.h>
 
 //==============================================================================
 
@@ -406,6 +406,8 @@ void Test_TTK_RunTests() {
 
             TTK_SetOutput(output.Access());
 
+            TTK_SetIsAbortAtFail(true);
+
             const bool is_success = TTK_RunTests({
                 TestA,
                 TestB,
@@ -420,7 +422,7 @@ void Test_TTK_RunTests() {
             "[test] TestB\n"
             "[test] TestC\n"
             "--- TEST SUCCESS ---\n"
-            "number of executed tests      : 3\n"
+            "number of notified tests      : 3\n"
             "number of failed tests        : 0\n";
         const std::string communitate           = LoadFromFile_UTF8(output_file_name);
 
@@ -436,6 +438,44 @@ void Test_TTK_RunTests() {
             assert(output.Access());
 
             TTK_SetOutput(output.Access());
+
+            TTK_SetIsAbortAtFail(true);
+
+            const bool is_success = TTK_RunTests({
+                TestA,
+                TestB,
+                TestD_Fail,
+                TestC
+                });
+            assert(!is_success);
+        }
+
+        const std::string expected_communicate  = 
+            "--- TEST ---\n"
+            "[test] TestA\n"
+            "[test] TestB\n"
+            "[test] TestD_Fail\n"
+            "    [fail] [line:92] [file:" + GetSourceFileName_UTF8() + "] [condition:5 == 7]\n"
+            "--- TEST FAIL ---\n"
+            "number of notified tests      : 3\n"
+            "number of failed tests        : 1\n";
+
+        const std::string communitate           = LoadFromFile_UTF8(output_file_name);
+
+        assert(expected_communicate == communitate);
+    }
+
+    // fail without abort
+    {   
+        const std::string output_file_name      = "log/Out_RunTestsFailNoAbort.txt";
+
+        {
+            Output output = Output(output_file_name);
+            assert(output.Access());
+
+            TTK_SetOutput(output.Access());
+
+            TTK_SetIsAbortAtFail(false);
 
             const bool is_success = TTK_RunTests({
                 TestA,
@@ -454,8 +494,49 @@ void Test_TTK_RunTests() {
             "    [fail] [line:92] [file:" + GetSourceFileName_UTF8() + "] [condition:5 == 7]\n"
             "[test] TestC\n"
             "--- TEST FAIL ---\n"
-            "number of executed tests      : 4\n"
+            "number of notified tests      : 4\n"
             "number of failed tests        : 1\n";
+
+        const std::string communitate           = LoadFromFile_UTF8(output_file_name);
+
+        assert(expected_communicate == communitate);
+    }
+
+    // fail mixed
+    {   
+        const std::string output_file_name      = "log/Out_RunTestsFailMixed.txt";
+
+        {
+            Output output = Output(output_file_name);
+            assert(output.Access());
+
+            TTK_SetOutput(output.Access());
+
+            TTK_SetIsAbortAtFail(true);
+
+            const bool is_success = TTK_RunTests({
+                TTK_DisableAbortAtFail,     // <- disable abort
+                TestA,
+                TestD_Fail,
+                TTK_EnableAbortAtFail,      // <- enable abort
+                TestB,
+                TestD_Fail,
+                TestC
+                });
+            assert(!is_success);
+        }
+
+        const std::string expected_communicate  = 
+            "--- TEST ---\n"
+            "[test] TestA\n"
+            "[test] TestD_Fail\n"
+            "    [fail] [line:92] [file:" + GetSourceFileName_UTF8() + "] [condition:5 == 7]\n"
+            "[test] TestB\n"
+            "[test] TestD_Fail\n"
+            "    [fail] [line:92] [file:" + GetSourceFileName_UTF8() + "] [condition:5 == 7]\n"
+            "--- TEST FAIL ---\n"
+            "number of notified tests      : 4\n"
+            "number of failed tests        : 2\n";
 
         const std::string communitate           = LoadFromFile_UTF8(output_file_name);
 

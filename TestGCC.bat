@@ -1,4 +1,5 @@
 @echo off
+@chcp 65001
 setlocal EnableDelayedExpansion
 
 :: For local GCC Compiler
@@ -24,7 +25,7 @@ if "%2" equ "64" (
 ) 
 
 echo Building...
-set COMMAND=g++ -std=c++11 -O3 !ARCH! !DEFINES! -I ./../TrivialTestKit/include -I ./include -I ./src ./src/*.cpp -o ./Release/TestGCC.exe
+set COMMAND=g++ -std=c++11 -O3 !ARCH! !DEFINES! -I ./../TrivialTestKit/include -I ./include -I ./src -I ./src/Folderф ./src/*.cpp -o ./Release/TestGCC.exe
 echo %COMMAND%
 call %COMMAND%
 

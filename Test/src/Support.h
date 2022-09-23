@@ -269,16 +269,18 @@ inline std::wstring GetDefSolutionDir_UTF16() {
     return cwd.substr(0, pos);
 }
 
-inline std::wstring GetSourceFileName_UTF16() {
+inline std::wstring GetSourceFileName_UTF16(const std::wstring& file_name, const std::wstring& file_name_gcc) {
 #ifdef _MSC_VER
-    return GetDefSolutionDir_UTF16() + L"\\Test\\src\\LineDependents.h";
+    return GetDefSolutionDir_UTF16() + file_name;
 #else
-    return L"./src/LineDependents.h";
+    return file_name_gcc; 
 #endif
 }
 
-inline std::string GetSourceFileName_UTF8() {
-    return ToUTF8(GetSourceFileName_UTF16());
+inline std::string GetSourceFileName_UTF8(
+        const std::string& file_name        = "\\Test\\src\\LineDependents.h", 
+        const std::string& file_name_gcc    = "./src/LineDependents.h") {
+    return ToUTF8(GetSourceFileName_UTF16(ToUTF16(file_name), ToUTF16(file_name_gcc)));
 }
 
 #endif // SUPPORT_H_

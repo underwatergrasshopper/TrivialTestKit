@@ -35,5 +35,8 @@
     <ClInclude Include="src\Support.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Folderф\InUnicodeFolder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

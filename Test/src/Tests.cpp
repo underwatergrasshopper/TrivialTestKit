@@ -2,6 +2,7 @@
 
 #include "TrivialTestKit.h"
 #include "LineDependents.h"
+#include "InUnicodeFolder.h"
 #include "Support.h"
 
 #include <stdio.h>
@@ -227,6 +228,28 @@ void Test_TTK_Assert() {
 
         const std::string communitate           = LoadFromFile_UTF8(output_file_name);
         const std::string expected_communitate  = "    [fail] [line:14] [file:" + GetSourceFileName_UTF8() + "] [condition:10 == 5]\n";
+
+        assert(communitate == expected_communitate);
+    }
+
+    // assert fail in unicode folder
+    {
+        const std::string output_file_name = "log/Out_AssertFail_InUnicodeFolder.txt";
+
+        bool is_finished = true;
+        {
+            Output output = Output(output_file_name);
+            assert(output.Access());
+
+            TTK_SetOutput(output.Access());
+
+            FailAssertInUnicodeFolder(is_finished);
+        }
+        assert(is_finished == false);
+
+        const std::string communitate           = LoadFromFile_UTF8(output_file_name);
+        const std::string file_name             = GetSourceFileName_UTF8(u8"\\Test\\src\\Folder\u0444\\InUnicodeFolder.h", u8"./src/Folder\u0444\\InUnicodeFolder.h");
+        const std::string expected_communitate  = "    [fail] [line:13] [file:" + file_name + "] [condition:10 == 5]\n";
 
         assert(communitate == expected_communitate);
     }

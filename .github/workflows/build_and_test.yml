@@ -39,4 +39,24 @@ jobs:
       run: MSBuild /m /property:Configuration=ReleaseWide /property:Platform=x64
 
 
+  test:
+    runs-on: windows-latest
 
+    steps:
+    - uses: actions/checkout@v3
+      
+    - name: Test Release 32
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: call Release\\Test.exe
+      
+    - name: Build Release 64
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: call x64\\Release\\Test.exe
+
+    - name: Build ReleaseWide 32
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: call ReleaseWide\\Test.exe
+      
+    - name: Build ReleaseWide 64
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: call x64\\ReleaseWide\\Test.exe

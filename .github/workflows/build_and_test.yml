@@ -40,4 +40,4 @@ jobs:
       
     - name: Test
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: ${{ matrix.configuration }/Test.exe
+      run: ${{ matrix.configuration }}/Test.exe

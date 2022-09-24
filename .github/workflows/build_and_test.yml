@@ -58,6 +58,6 @@ jobs:
           platform: x64
 
       - name: Build and Test
-          working-directory: ${{env.GITHUB_WORKSPACE}}
-          run: TestGCC_64.bat
+        working-directory: ${{env.GITHUB_WORKSPACE}}
+        run: TestGCC_64.bat
           

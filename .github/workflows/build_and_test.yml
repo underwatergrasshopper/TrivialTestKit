@@ -45,19 +45,20 @@ jobs:
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: ${{ matrix.pathprefix }}${{ matrix.configuration }}/Test.exe
       
-  mingw:
-    runs-on: windows-latest
-    
-    steps:
-      - uses: actions/checkout@v3
-    
-      - name: Set up MinGW
-        uses: egor-tensin/setup-mingw@v2
-        with:
-          version: latest
-          platform: x64
-
-      - name: Build and Test
-        working-directory: ${{env.GITHUB_WORKSPACE}}
-        run: TestGCC_64.bat
-          
+# Note: No build and test support for gcc. 
+#  mingw:
+#    runs-on: windows-latest
+#    
+#    steps:
+#      - uses: actions/checkout@v3
+#    
+#      - name: Set up MinGW
+#        uses: egor-tensin/setup-mingw@v2
+#        with:
+#          version: latest
+#          platform: x64
+#
+#      - name: Build and Test
+#        working-directory: ${{env.GITHUB_WORKSPACE}}
+#        run: TestGCC_64.bat
+#          

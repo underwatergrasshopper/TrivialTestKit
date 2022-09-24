@@ -26,3 +26,205 @@ And then ***Start Without Debugging***.
 
 <sup>\* When using functions from wprintf family only (those for wide characters, which manipulate any stream).</sup>
 
+## HOWTO Run Tests
+### Example: Until First Assertion Fail
+Runs tests until first assertion fails.
+
+Code:
+```C++
+#include "TrivialTestKit.h"
+
+#define _USE_MATH_DEFINES 
+#include <math.h>
+
+template <typename T>
+inline bool IsReal(T&&) {
+    return true;
+}
+
+void TestA() {
+    TTK_NotifyTest();
+
+    TTK_Assert(IsReal(M_PI));
+    TTK_Assert(IsReal(0));
+    TTK_Assert(IsReal("This text."));
+}
+
+void TestB() {
+    TTK_NotifyTest();
+
+    TTK_Assert(1 + 1 == 2);
+    TTK_Assert(2 + 2 == 5, "Surprising result!");
+    TTK_Assert(3 + 3 == 6);
+}
+
+void TestC() {
+    TTK_NotifyTest();
+
+    TTK_Assert(false);
+}
+
+void TestD() {
+    TTK_NotifyTest();
+
+    TTK_Assert(true);
+}
+
+int main() {
+    return TTK_RunTests({
+        TestA,
+        TestB,
+        TestC,
+        TestD,
+    });
+}
+```
+Printed result:
+```
+--- TEST ---
+[test] TestA
+[test] TestB
+    [fail] [line:23] [file:C:\Path\To\Test\main.cpp] [condition:2 + 2 == 5]
+--- TEST FAIL ---
+number of runned notified tests : 2
+number of failed tests          : 1
+```
+### Example: All
+Runs all tests, regardless occurred assertions fails, by calling `TTK_SetIsAbortAtFail(false)`.
+
+Code:
+```C++
+#include "TrivialTestKit.h"
+
+#define _USE_MATH_DEFINES 
+#include <math.h>
+
+template <typename T>
+inline bool IsReal(T&&) {
+    return true;
+}
+
+void TestA() {
+    TTK_NotifyTest();
+
+    TTK_Assert(IsReal(M_PI));
+    TTK_Assert(IsReal(0));
+    TTK_Assert(IsReal("This text."));
+}
+
+void TestB() {
+    TTK_NotifyTest();
+
+    TTK_Assert(1 + 1 == 2);
+    TTK_Assert(2 + 2 == 5, "Surprising result!");
+    TTK_Assert(3 + 3 == 6);
+}
+
+void TestC() {
+    TTK_NotifyTest();
+
+    TTK_Assert(false);
+}
+
+void TestD() {
+    TTK_NotifyTest();
+
+    TTK_Assert(true);
+}
+
+int main() {
+    TTK_SetIsAbortAtFail(false);
+
+    return TTK_RunTests({
+        TestA,
+        TestB,
+        TestC,
+        TestD,
+    });
+}
+```
+Printed result:
+```
+--- TEST ---
+[test] TestA
+[test] TestB
+    [fail] [line:23] [file:C:\Path\To\Test\main.cpp] [condition:2 + 2 == 5]
+[test] TestC
+    [fail] [line:31] [file:C:\Path\To\Test\main.cpp] [condition:false]
+[test] TestD
+--- TEST FAIL ---
+number of runned notified tests : 4
+number of failed tests          : 2
+```
+
+### Example: Mixed
+Runs test `TestA`, `TestB` and doesn't abort test execution at assertion fail, by using `TTK_DisableAbortAtFail`.
+
+Runs test `TestC`, `TestD` and aborts test execution at first assertion fail, by using `TTK_EnableAbortAtFail`.
+
+Code:
+```C++
+#include "TrivialTestKit.h"
+
+#define _USE_MATH_DEFINES 
+#include <math.h>
+
+template <typename T>
+inline bool IsReal(T&&) {
+    return true;
+}
+
+void TestA() {
+    TTK_NotifyTest();
+
+    TTK_Assert(IsReal(M_PI));
+    TTK_Assert(IsReal(0));
+    TTK_Assert(IsReal("This text."));
+}
+
+void TestB() {
+    TTK_NotifyTest();
+
+    TTK_Assert(1 + 1 == 2);
+    TTK_Assert(2 + 2 == 5, "Surprising result!");
+    TTK_Assert(3 + 3 == 6);
+}
+
+void TestC() {
+    TTK_NotifyTest();
+
+    TTK_Assert(false);
+}
+
+void TestD() {
+    TTK_NotifyTest();
+
+    TTK_Assert(true);
+}
+
+int main() {
+    return TTK_RunTests({
+        // Runs tests regardless assertions fails.
+        TTK_DisableAbortAtFail,
+        TestA,
+        TestB,
+
+        // Stops execution of tests at first assertion fail.
+        TTK_EnableAbortAtFail,
+        TestC,
+        TestD,
+    });
+}
+```
+Printed result:
+```
+--- TEST ---
+[test] TestA
+[test] TestB
+    [fail] [line:23] [file:C:\work\code\c_cpp\TrivialTestKit\Example\src\main.cpp] [condition:2 + 2 == 5]
+[test] TestC
+    [fail] [line:31] [file:C:\work\code\c_cpp\TrivialTestKit\Example\src\main.cpp] [condition:false]
+--- TEST FAIL ---
+number of runned notified tests : 3
+number of failed tests          : 2
+```

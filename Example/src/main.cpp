@@ -87,7 +87,7 @@ int main() {
 }
 #endif 
 
-#if 0
+#if 1
 int main() {
     return TTK_RunTests({
         // Runs tests regardless assertions fails.

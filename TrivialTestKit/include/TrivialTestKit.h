@@ -271,12 +271,12 @@ bool TTK_RunTests(const TTK_TestFnP_T (&tests)[NUMBER]) {
 
     if (TTK_SolveOutputOrientation() > 0) {
         fwprintf(data.output, L"%hs", (is_success ? "--- TEST SUCCESS ---\n" : "--- TEST FAIL ---\n"));
-        fwprintf(data.output, L"number of notified tests      : %lld\n", data.number_of_notified_tests);
-        fwprintf(data.output, L"number of failed tests        : %lld\n", data.number_of_failed_tests);
+        fwprintf(data.output, L"number of runned notified tests : %lld\n", data.number_of_notified_tests);
+        fwprintf(data.output, L"number of failed tests          : %lld\n", data.number_of_failed_tests);
     } else {
         fprintf(data.output, "%s", (is_success ? "--- TEST SUCCESS ---\n" : "--- TEST FAIL ---\n"));
-        fprintf(data.output, "number of notified tests      : %lld\n", data.number_of_notified_tests);
-        fprintf(data.output, "number of failed tests        : %lld\n", data.number_of_failed_tests);
+        fprintf(data.output, "number of runned notified tests : %lld\n", data.number_of_notified_tests);
+        fprintf(data.output, "number of failed tests          : %lld\n", data.number_of_failed_tests);
     }
     return is_success;
 }

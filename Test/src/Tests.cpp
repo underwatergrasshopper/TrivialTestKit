@@ -445,8 +445,8 @@ void Test_TTK_RunTests() {
             "[test] TestB\n"
             "[test] TestC\n"
             "--- TEST SUCCESS ---\n"
-            "number of notified tests      : 3\n"
-            "number of failed tests        : 0\n";
+            "number of runned notified tests : 3\n"
+            "number of failed tests          : 0\n";
         const std::string communitate           = LoadFromFile_UTF8(output_file_name);
 
         assert(expected_communicate == communitate);
@@ -480,8 +480,8 @@ void Test_TTK_RunTests() {
             "[test] TestD_Fail\n"
             "    [fail] [line:92] [file:" + GetSourceFileName_UTF8() + "] [condition:5 == 7]\n"
             "--- TEST FAIL ---\n"
-            "number of notified tests      : 3\n"
-            "number of failed tests        : 1\n";
+            "number of runned notified tests : 3\n"
+            "number of failed tests          : 1\n";
 
         const std::string communitate           = LoadFromFile_UTF8(output_file_name);
 
@@ -517,8 +517,8 @@ void Test_TTK_RunTests() {
             "    [fail] [line:92] [file:" + GetSourceFileName_UTF8() + "] [condition:5 == 7]\n"
             "[test] TestC\n"
             "--- TEST FAIL ---\n"
-            "number of notified tests      : 4\n"
-            "number of failed tests        : 1\n";
+            "number of runned notified tests : 4\n"
+            "number of failed tests          : 1\n";
 
         const std::string communitate           = LoadFromFile_UTF8(output_file_name);
 
@@ -558,8 +558,8 @@ void Test_TTK_RunTests() {
             "[test] TestD_Fail\n"
             "    [fail] [line:92] [file:" + GetSourceFileName_UTF8() + "] [condition:5 == 7]\n"
             "--- TEST FAIL ---\n"
-            "number of notified tests      : 4\n"
-            "number of failed tests        : 2\n";
+            "number of runned notified tests : 4\n"
+            "number of failed tests          : 2\n";
 
         const std::string communitate           = LoadFromFile_UTF8(output_file_name);
 

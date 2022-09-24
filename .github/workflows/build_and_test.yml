@@ -24,6 +24,10 @@ jobs:
             toolset: v142
           - os: windows-2022
             toolset: v143
+          - platform: x86
+            pathprefix:
+          - platform: x64
+            pathprefix: x64/
   
     runs-on: ${{ matrix.os }}
 
@@ -39,4 +43,4 @@ jobs:
       
     - name: Test
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: ${{ matrix.configuration }}/Test.exe
+      run: ${{ matrix.pathprefix }}${{ matrix.configuration }}/Test.exe

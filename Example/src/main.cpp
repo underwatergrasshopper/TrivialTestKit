@@ -43,7 +43,7 @@ void TestB() {
     TTK_NotifyTest();
 
     TTK_Assert(1 + 1 == 2);
-    TTK_Assert(2 + 2 == 5, "Surprising result!");
+    TTK_AssertM(2 + 2 == 5, "Surprising result!");
     TTK_Assert(3 + 3 == 6);
 }
 
@@ -61,7 +61,7 @@ void TestD() {
 
 // Change 0 to 1 if you wanna run chosen example. Only one example can be running.
 
-#if 0
+#if 1
 // Stops execution of tests at first assertion fail.
 int main() {
     return TTK_RunTests({

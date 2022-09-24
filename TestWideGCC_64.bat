@@ -1,3 +1,3 @@
 @echo off
 
-call TestGCC Wide 64
+call TestGCC ReleaseWide 64

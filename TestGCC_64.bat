@@ -1,3 +1,3 @@
 @echo off
 
-call TestGCC - 64
+call TestGCC Release 64

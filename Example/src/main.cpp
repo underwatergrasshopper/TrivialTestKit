@@ -61,21 +61,19 @@ void TestD() {
 
 // Change 0 to 1 if you wanna run chosen example. Only one example can be running.
 
-#if 1
-// Stops execution of tests at first assertion fail.
 int main() {
+#if 0
+    // Stops execution of tests at first assertion fail.
     return TTK_RunTests({
         TestA,
         TestB,
         TestC,
         TestD,
     });
-}
 #endif 
 
 #if 0
-// Runs all tests regardless assertions fails.
-int main() {
+    // Runs all tests regardless assertions fails.
     TTK_SetIsAbortAtFail(false);
 
     return TTK_RunTests({
@@ -84,11 +82,9 @@ int main() {
         TestC,
         TestD,
     });
-}
 #endif 
 
 #if 0
-int main() {
     return TTK_RunTests({
         // Runs tests regardless assertions fails.
         TTK_DisableAbortAtFail,
@@ -100,5 +96,6 @@ int main() {
         TestC,
         TestD,
     });
-}
 #endif 
+    return 0;
+}

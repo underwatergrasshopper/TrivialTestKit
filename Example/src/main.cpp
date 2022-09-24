@@ -56,7 +56,7 @@ void TestC() {
 void TestD() {
     TTK_NotifyTest();
 
-    TTK_Assert(true);
+    TTK_Assert(true); 
 }
 
 // Change 0 to 1 if you wanna run chosen example. Only one example can be running.

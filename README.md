@@ -13,16 +13,21 @@ And then ***Start Without Debugging***.
 
 ## Builds and Tests results
 
+Automated:
+
+| Platform | Compiler | Architecture | Wide Oriented Stream \* | Build and Test |
+|-|-|-|-|-|
+| Windows | Visual Studio 2022, Visual Studio  2019 | x86, x64 | With and Without | [![Build and Test](https://github.com/underwatergrasshopper/TrivialTestKit/actions/workflows/build_and_test.yml/badge.svg)](https://github.com/underwatergrasshopper/TrivialTestKit/actions/workflows/build_and_test.yml)
+ |
+
+ By hand on local machine:
+
 | Platform | Compiler | Architecture | Wide Oriented Stream \* | Build | Passing Tests |
 |-|-|-|-|-|-|
-| Windows 10 | Visual Studio 2020 | x86 | No | <span style="color:green">Success</span> | <span style="color:green">Yes</span> |
-| Windows 10 | Visual Studio 2020 | x86 | Yes | <span style="color:green">Success</span> | <span style="color:green">Yes</span> |
-| Windows 10 | Visual Studio 2020 | x86-64 | No | <span style="color:green">Success</span> | <span style="color:green">Yes</span> |
-| Windows 10 | Visual Studio 2020 | x86-64 | Yes | <span style="color:green">Success</span> | <span style="color:green">Yes</span> |
 | Windows 10 | LLVM GCC 13.0.0 | x86 | No | <span style="color:grey">Not builded</span> | <span style="color:grey">Not Tested</span> |
 | Windows 10 | LLVM GCC 13.0.0 | x86 | Yes | <span style="color:grey">Not builded</span> | <span style="color:grey">Not Tested</span> |
-| Windows 10 | LLVM GCC 13.0.0 | x86-64 | No | <span style="color:green">Success</span> | <span style="color:green">Yes</span> |
-| Windows 10 | LLVM GCC 13.0.0 | x86-64 | Yes | <span style="color:green">Success</span> | <span style="color:green">Yes</span> |
+| Windows 10 | LLVM GCC 13.0.0 | x64 | No | <span style="color:green">Success</span> | <span style="color:green">Yes</span> |
+| Windows 10 | LLVM GCC 13.0.0 | x64 | Yes | <span style="color:green">Success</span> | <span style="color:green">Yes</span> |
 
 <sup>\* When using functions from wprintf family only (those for wide characters, which manipulate any stream).</sup>
 

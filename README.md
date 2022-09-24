@@ -27,9 +27,11 @@ Automated:
 | Windows 10 | LLVM GCC 13.0.0 | x86 | No | <span style="color:grey">Not builded</span> | <span style="color:grey">Not Tested</span> |
 | Windows 10 | LLVM GCC 13.0.0 | x86 | Yes | <span style="color:grey">Not builded</span> | <span style="color:grey">Not Tested</span> |
 | Windows 10 | LLVM GCC 13.0.0 | x64 | No | <span style="color:green">Success</span> | <span style="color:green">Yes</span> |
-| Windows 10 | LLVM GCC 13.0.0 | x64 | Yes | <span style="color:green">Success</span> | <span style="color:green">Yes</span> |
+| Windows 10 | LLVM GCC 13.0.0 | x64 | Yes | <span style="color:green">Success</span> | <span style="color:red">No\*\*</span> |
 
 <sup>\* When using functions from wprintf family only (those for wide characters, which manipulate any stream).</sup>
+
+<sup>\*\* Testing ends with stack owerflow error code when `fwprintf` function is used.</sup>
 
 ## HOWTO Run Tests
 ### Example: Until First Assertion Fail

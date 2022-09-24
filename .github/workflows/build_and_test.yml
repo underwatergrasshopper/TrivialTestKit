@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  build_and_test_release_32:
     runs-on: windows-latest
 
     steps:
@@ -22,41 +22,61 @@ jobs:
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v1.0.2
       
-    - name: Build Release 32
+    - name: Build 
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: MSBuild /m /property:Configuration=Release /property:Platform=x86
       
-    - name: Build Release 64
+    - name: Test
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: MSBuild /m /property:Configuration=Release /property:Platform=x64
-
-    - name: Build ReleaseWide 32
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: MSBuild /m /property:Configuration=ReleaseWide /property:Platform=x86
+      run: Release/Test.exe
       
-    - name: Build ReleaseWide 64
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: MSBuild /m /property:Configuration=ReleaseWide /property:Platform=x64
-
-
-  test:
+  build_and_test_release_64:
     runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v3
-      
-    - name: Test Release 32
-      working-directory: ${{env.GITHUB_WORKSPACE}}\\Release
-      run: Test.exe
-      
-    - name: Build Release 64
-      working-directory: ${{env.GITHUB_WORKSPACE}}\\x64\\Release
-      run: Test.exe
 
-    - name: Build ReleaseWide 32
-      working-directory: ${{env.GITHUB_WORKSPACE}}\\ReleaseWide
-      run: Test.exe
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
       
-    - name: Build ReleaseWide 64
-      working-directory: ${{env.GITHUB_WORKSPACE}}\\x64\\ReleaseWide
-      run: Test.exe
+    - name: Build 
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: MSBuild /m /property:Configuration=Release /property:Platform=x64
+      
+    - name: Test
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: x64/Release/Test.exe
+
+  build_and_test_release_wide_32:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
+      
+    - name: Build 
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: MSBuild /m /property:Configuration=ReleaseWide /property:Platform=x86
+      
+    - name: Test
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: ReleaseWide/Test.exe
+      
+  build_and_test_release_wide_64:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
+      
+    - name: Build 
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: MSBuild /m /property:Configuration=ReleaseWide /property:Platform=x64
+      
+    - name: Test
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: x64/ReleaseWide/Test.exe

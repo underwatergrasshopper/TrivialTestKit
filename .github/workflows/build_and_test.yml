@@ -24,7 +24,7 @@ jobs:
 
     - name: Build 
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: MSBuild /m /property:Configuration=Release /property:Platform=x86 /p:PlatformToolset=v143/v142/v141
+      run: MSBuild /m /property:Configuration=Release /property:Platform=x86 /p:PlatformToolset=v142
       
     - name: Test
       working-directory: ${{env.GITHUB_WORKSPACE}}
@@ -41,7 +41,7 @@ jobs:
       
     - name: Build 
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: MSBuild /m /property:Configuration=Release /property:Platform=x64 /p:PlatformToolset=v143/v142/v141
+      run: MSBuild /m /property:Configuration=Release /property:Platform=x64 /p:PlatformToolset=v142
       
     - name: Test
       working-directory: ${{env.GITHUB_WORKSPACE}}
@@ -58,7 +58,7 @@ jobs:
       
     - name: Build 
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: MSBuild /m /property:Configuration=ReleaseWide /property:Platform=x86 /p:PlatformToolset=v143/v142/v141
+      run: MSBuild /m /property:Configuration=ReleaseWide /property:Platform=x86 /p:PlatformToolset=v142
       
     - name: Test
       working-directory: ${{env.GITHUB_WORKSPACE}}
@@ -75,7 +75,7 @@ jobs:
       
     - name: Build 
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: MSBuild /m /property:Configuration=ReleaseWide /property:Platform=x64 /p:PlatformToolset=v143/v142/v141
+      run: MSBuild /m /property:Configuration=ReleaseWide /property:Platform=x64 /p:PlatformToolset=v142
       
     - name: Test
       working-directory: ${{env.GITHUB_WORKSPACE}}

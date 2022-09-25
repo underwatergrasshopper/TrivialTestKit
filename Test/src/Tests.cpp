@@ -1,9 +1,14 @@
 #include "Tests.h"
 
 #include "TrivialTestKit.h"
-#include "LineDependents.h"
-#include "InUnicodeFolder.h"
 #include "Support.h"
+
+#include "LineDependents.h"
+
+// Not all compilers are able to accept unicode characters from command argument list.
+#ifndef NO_TEST_IN_UNICODE_FOLDER
+#include "InUnicodeFolder.h"
+#endif
 
 #include <stdio.h>
 #include <stdlib.h> 
@@ -232,28 +237,6 @@ void Test_TTK_Assert() {
         assert(communitate == expected_communitate);
     }
 
-    // assert fail in unicode folder
-    {
-        const std::string output_file_name = "log/Out_AssertFail_InUnicodeFolder.txt";
-
-        bool is_finished = true;
-        {
-            Output output = Output(output_file_name);
-            assert(output.Access());
-
-            TTK_SetOutput(output.Access());
-
-            FailAssertInUnicodeFolder(is_finished);
-        }
-        assert(is_finished == false);
-
-        const std::string communitate           = LoadFromFile_UTF8(output_file_name);
-        const std::string file_name             = GetSourceFileName_UTF8(u8"\\Test\\src\\Folder\u0444\\InUnicodeFolder.h", u8"./src/Folder\u0444\\InUnicodeFolder.h");
-        const std::string expected_communitate  = "    [fail] [file:" + file_name + "] [line:13] [condition:10 == 5]\n";
-
-        assert(communitate == expected_communitate);
-    }
-
     // assert fail with message
     {
         const std::string output_file_name      = "log/Out_AssertFailWithMessage.txt";
@@ -355,6 +338,32 @@ void Test_TTK_Assert() {
 
         const std::string communitate           = LoadFromFile_UTF8(output_file_name);
         const std::string expected_communitate  = u8"    [fail] [file:" + GetSourceFileName_UTF8() + u8"] [line:99] [condition:10 == 5] [message:Some message\u0444.]\n";
+
+        assert(communitate == expected_communitate);
+    }
+}
+
+void Test_TTK_Assert_WithCodeInUnicodeFolder() {
+    Notice();
+
+    // assert fail in unicode folder
+    {
+        const std::string output_file_name = "log/Out_AssertFail_InUnicodeFolder.txt";
+
+        bool is_finished = true;
+        {
+            Output output = Output(output_file_name);
+            assert(output.Access());
+
+            TTK_SetOutput(output.Access());
+
+            FailAssertInUnicodeFolder(is_finished);
+        }
+        assert(is_finished == false);
+
+        const std::string communitate           = LoadFromFile_UTF8(output_file_name);
+        const std::string file_name             = GetSourceFileName_UTF8(u8"\\Test\\src\\Folder\u0444\\InUnicodeFolder.h", u8"./src/Folder\u0444\\InUnicodeFolder.h");
+        const std::string expected_communitate  = "    [fail] [file:" + file_name + "] [line:13] [condition:10 == 5]\n";
 
         assert(communitate == expected_communitate);
     }
@@ -591,6 +600,9 @@ void RunAllTests() {
     Test_IsFileExist_ASCII();
     Test_LoadAndSaveToFile();
     Test_TTK_Assert();
+#ifndef NO_TEST_IN_UNICODE_FOLDER
+    Test_TTK_Assert_WithCodeInUnicodeFolder();
+#endif
     Test_TTK_NotifyTest();
     Test_TTK_RunTests();
 

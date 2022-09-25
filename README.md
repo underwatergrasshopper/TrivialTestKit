@@ -30,7 +30,7 @@ MSVC (automated):
 
 <sup>\* When using functions from wprintf family only (those for wide characters, which manipulate any stream).</sup>
 
-<sup>\*\* Testing ends with stack owerflow error code when `fwprintf` function is used. No output is generated. Same happens when a separate project is made with only `fwprintf` function called. Looks like wrongly configured toolchain or bug in llvm-gcc.</sup>
+<sup>\*\* Testing ends with stack owerflow error code when `fwprintf` function is used. No output is generated. Same happens when a separate project is made with only `fwprintf` function called. Looks like it's wrongly configured toolchain or bug in llvm-gcc.</sup>
 
 ## HOWTO: Use library and make unit tests
 ### Example: Until First Assertion Fail

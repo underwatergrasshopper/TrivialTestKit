@@ -90,7 +90,7 @@ Printed result:
 --- TEST ---
 [test] TestA
 [test] TestB
-    [fail] [line:23] [file:C:\Path\To\Test\main.cpp] [condition:2 + 2 == 5]
+    [fail] [line:23] [file:C:\Path\To\Test\main.cpp] [condition:2 + 2 == 5] [message:Surprising result!]
 --- TEST FAIL ---
 number of runned notified tests : 2
 number of failed tests          : 1
@@ -227,7 +227,7 @@ Printed result:
 --- TEST ---
 [test] TestA
 [test] TestB
-    [fail] [line:23] [file:C:\work\code\c_cpp\TrivialTestKit\Example\src\main.cpp] [condition:2 + 2 == 5] [message:Surprising result!]
+    [fail] [line:23] [file:C:\Path\To\Test\main.cpp] [condition:2 + 2 == 5] [message:Surprising result!]
 [test] TestC
     [fail] [line:31] [file:C:\work\code\c_cpp\TrivialTestKit\Example\src\main.cpp] [condition:false]
 --- TEST FAIL ---

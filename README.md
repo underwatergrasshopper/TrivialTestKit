@@ -229,7 +229,7 @@ Printed result:
 [test] TestB
     [fail] [line:23] [file:C:\Path\To\Test\main.cpp] [condition:2 + 2 == 5] [message:Surprising result!]
 [test] TestC
-    [fail] [line:31] [file:C:\work\code\c_cpp\TrivialTestKit\Example\src\main.cpp] [condition:false]
+    [fail] [line:31] [file:C:\Path\To\Test\main.cpp] [condition:false]
 --- TEST FAIL ---
 number of runned notified tests : 3
 number of failed tests          : 2

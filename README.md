@@ -2,7 +2,7 @@
 A simple C++ library for testing code. 
 Allows to create unit tests and execute them with check if they compleated with or without fail.
 
-## HOWTO Run Tests 
+## HOWTO: Run tests manualy
 To run tests. Select in ***TrivialTestKIt/Test*** project a one of following ***Solution Configuration***:
 - ***Release***, for test without definied `WIDE_ORIENTATION` \*;
 - ***ReleaseWide***, for test with definied `WIDE_ORIENTATION`;
@@ -11,15 +11,15 @@ To run tests. Select in ***TrivialTestKIt/Test*** project a one of following ***
 
 And then ***Start Without Debugging***.
 
-## Builds and Tests results
+## Builds and tests results
 
-Automated:
+MSVC (automated):
 
 | Platform | Compiler | Architecture | Wide Oriented Stream \* | Build and Test |
 |-|-|-|-|-|
 | Windows | Visual Studio 2022, Visual Studio  2019 | x86, x64 | With and Without | [![Build and Test](https://github.com/underwatergrasshopper/TrivialTestKit/actions/workflows/build_and_test.yml/badge.svg)](https://github.com/underwatergrasshopper/TrivialTestKit/actions/workflows/build_and_test.yml) |
 
- By hand on local machine:
+ MinGW (by hand on local machine):
 
 | Platform | Compiler | Architecture | Wide Oriented Stream \* | Build | Passing Tests |
 |-|-|-|-|-|-|
@@ -32,7 +32,7 @@ Automated:
 
 <sup>\*\* Testing ends with stack owerflow error code when `fwprintf` function is used. No output is generated. Same happens when a separate project is made with only `fwprintf` function called. Looks like bug in llvm-gcc.</sup>
 
-## HOWTO Run Tests
+## HOWTO: Use library and make unit tests
 ### Example: Until First Assertion Fail
 Runs tests until first assertion fails.
 
@@ -60,7 +60,7 @@ void TestB() {
     TTK_NotifyTest();
 
     TTK_Assert(1 + 1 == 2);
-    TTK_Assert(2 + 2 == 5, "Surprising result!");
+    TTK_AssertM(2 + 2 == 5, "Surprising result!");
     TTK_Assert(3 + 3 == 6);
 }
 
@@ -122,7 +122,7 @@ void TestB() {
     TTK_NotifyTest();
 
     TTK_Assert(1 + 1 == 2);
-    TTK_Assert(2 + 2 == 5, "Surprising result!");
+    TTK_AssertM(2 + 2 == 5, "Surprising result!");
     TTK_Assert(3 + 3 == 6);
 }
 
@@ -154,7 +154,7 @@ Printed result:
 --- TEST ---
 [test] TestA
 [test] TestB
-    [fail] [line:23] [file:C:\Path\To\Test\main.cpp] [condition:2 + 2 == 5]
+    [fail] [line:23] [file:C:\Path\To\Test\main.cpp] [condition:2 + 2 == 5] [message:Surprising result!]
 [test] TestC
     [fail] [line:31] [file:C:\Path\To\Test\main.cpp] [condition:false]
 [test] TestD
@@ -192,7 +192,7 @@ void TestB() {
     TTK_NotifyTest();
 
     TTK_Assert(1 + 1 == 2);
-    TTK_Assert(2 + 2 == 5, "Surprising result!");
+    TTK_AssertM(2 + 2 == 5, "Surprising result!");
     TTK_Assert(3 + 3 == 6);
 }
 
@@ -227,7 +227,7 @@ Printed result:
 --- TEST ---
 [test] TestA
 [test] TestB
-    [fail] [line:23] [file:C:\work\code\c_cpp\TrivialTestKit\Example\src\main.cpp] [condition:2 + 2 == 5]
+    [fail] [line:23] [file:C:\work\code\c_cpp\TrivialTestKit\Example\src\main.cpp] [condition:2 + 2 == 5] [message:Surprising result!]
 [test] TestC
     [fail] [line:31] [file:C:\work\code\c_cpp\TrivialTestKit\Example\src\main.cpp] [condition:false]
 --- TEST FAIL ---

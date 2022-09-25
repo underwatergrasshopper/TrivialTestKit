@@ -227,7 +227,7 @@ void Test_TTK_Assert() {
         assert(is_finished == false);
 
         const std::string communitate           = LoadFromFile_UTF8(output_file_name);
-        const std::string expected_communitate  = "    [fail] [line:14] [file:" + GetSourceFileName_UTF8() + "] [condition:10 == 5]\n";
+        const std::string expected_communitate  = "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:14] [condition:10 == 5]\n";
 
         assert(communitate == expected_communitate);
     }
@@ -249,7 +249,7 @@ void Test_TTK_Assert() {
 
         const std::string communitate           = LoadFromFile_UTF8(output_file_name);
         const std::string file_name             = GetSourceFileName_UTF8(u8"\\Test\\src\\Folder\u0444\\InUnicodeFolder.h", u8"./src/Folder\u0444\\InUnicodeFolder.h");
-        const std::string expected_communitate  = "    [fail] [line:13] [file:" + file_name + "] [condition:10 == 5]\n";
+        const std::string expected_communitate  = "    [fail] [file:" + file_name + "] [line:13] [condition:10 == 5]\n";
 
         assert(communitate == expected_communitate);
     }
@@ -270,7 +270,7 @@ void Test_TTK_Assert() {
         assert(is_finished == false);
 
         const std::string communitate           = LoadFromFile_UTF8(output_file_name);
-        const std::string expected_communitate  = "    [fail] [line:23] [file:" + GetSourceFileName_UTF8() + "] [condition:10 == 5] [message:Some message.]\n";
+        const std::string expected_communitate  = "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:23] [condition:10 == 5] [message:Some message.]\n";
 
         assert(communitate == expected_communitate);
     }
@@ -291,7 +291,7 @@ void Test_TTK_Assert() {
         assert(is_finished == false);
 
         const std::string communitate           = LoadFromFile_UTF8(output_file_name);
-        const std::string expected_communitate  = "    [fail] [line:74] [file:" + GetSourceFileName_UTF8() + "] [condition:10 == 5] [message:Some message.]\n";
+        const std::string expected_communitate  = "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:74] [condition:10 == 5] [message:Some message.]\n";
 
         assert(communitate == expected_communitate);
     }
@@ -312,7 +312,7 @@ void Test_TTK_Assert() {
         assert(is_finished == false);
 
         const std::string communitate           = LoadFromFile_UTF8(output_file_name);
-        const std::string expected_communitate  = "    [fail] [line:32] [file:" + GetSourceFileName_UTF8() + "] [condition:10 == 5]\n";
+        const std::string expected_communitate  = "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:32] [condition:10 == 5]\n";
 
         assert(communitate == expected_communitate);
     }
@@ -333,7 +333,7 @@ void Test_TTK_Assert() {
         assert(is_finished == false);
 
         const std::string communitate           = LoadFromFile_UTF8(output_file_name);
-        const std::string expected_communitate  = "    [fail] [line:43] [file:" + GetSourceFileName_UTF8() + "] [condition:10 == 5] [message:Some message.]\n";
+        const std::string expected_communitate  = "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:43] [condition:10 == 5] [message:Some message.]\n";
 
         assert(communitate == expected_communitate);
     }
@@ -354,7 +354,7 @@ void Test_TTK_Assert() {
         assert(is_finished == false);
 
         const std::string communitate           = LoadFromFile_UTF8(output_file_name);
-        const std::string expected_communitate  = u8"    [fail] [line:99] [file:" + GetSourceFileName_UTF8() + u8"] [condition:10 == 5] [message:Some message\u0444.]\n";
+        const std::string expected_communitate  = u8"    [fail] [file:" + GetSourceFileName_UTF8() + u8"] [line:99] [condition:10 == 5] [message:Some message\u0444.]\n";
 
         assert(communitate == expected_communitate);
     }
@@ -478,7 +478,7 @@ void Test_TTK_RunTests() {
             "[test] TestA\n"
             "[test] TestB\n"
             "[test] TestD_Fail\n"
-            "    [fail] [line:92] [file:" + GetSourceFileName_UTF8() + "] [condition:5 == 7]\n"
+            "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:92] [condition:5 == 7]\n"
             "--- TEST FAIL ---\n"
             "number of runned notified tests : 3\n"
             "number of failed tests          : 1\n";
@@ -514,7 +514,7 @@ void Test_TTK_RunTests() {
             "[test] TestA\n"
             "[test] TestB\n"
             "[test] TestD_Fail\n"
-            "    [fail] [line:92] [file:" + GetSourceFileName_UTF8() + "] [condition:5 == 7]\n"
+            "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:92] [condition:5 == 7]\n"
             "[test] TestC\n"
             "--- TEST FAIL ---\n"
             "number of runned notified tests : 4\n"
@@ -553,10 +553,10 @@ void Test_TTK_RunTests() {
             "--- TEST ---\n"
             "[test] TestA\n"
             "[test] TestD_Fail\n"
-            "    [fail] [line:92] [file:" + GetSourceFileName_UTF8() + "] [condition:5 == 7]\n"
+            "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:92] [condition:5 == 7]\n"
             "[test] TestB\n"
             "[test] TestD_Fail\n"
-            "    [fail] [line:92] [file:" + GetSourceFileName_UTF8() + "] [condition:5 == 7]\n"
+            "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:92] [condition:5 == 7]\n"
             "--- TEST FAIL ---\n"
             "number of runned notified tests : 4\n"
             "number of failed tests          : 2\n";

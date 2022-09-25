@@ -90,7 +90,7 @@ Printed result:
 --- TEST ---
 [test] TestA
 [test] TestB
-    [fail] [line:23] [file:C:\Path\To\Test\main.cpp] [condition:2 + 2 == 5] [message:Surprising result!]
+    [fail] [file:C:\Path\To\Test\main.cpp] [line:23] [condition:2 + 2 == 5] [message:Surprising result!]
 --- TEST FAIL ---
 number of runned notified tests : 2
 number of failed tests          : 1
@@ -154,9 +154,9 @@ Printed result:
 --- TEST ---
 [test] TestA
 [test] TestB
-    [fail] [line:23] [file:C:\Path\To\Test\main.cpp] [condition:2 + 2 == 5] [message:Surprising result!]
+    [fail] [file:C:\Path\To\Test\main.cpp] [line:23] [condition:2 + 2 == 5] [message:Surprising result!]
 [test] TestC
-    [fail] [line:31] [file:C:\Path\To\Test\main.cpp] [condition:false]
+    [fail] [file:C:\Path\To\Test\main.cpp] [line:31] [condition:false]
 [test] TestD
 --- TEST FAIL ---
 number of runned notified tests : 4
@@ -227,10 +227,70 @@ Printed result:
 --- TEST ---
 [test] TestA
 [test] TestB
-    [fail] [line:23] [file:C:\Path\To\Test\main.cpp] [condition:2 + 2 == 5] [message:Surprising result!]
+    [fail] [file:C:\Path\To\Test\main.cpp] [line:23] [condition:2 + 2 == 5] [message:Surprising result!]
 [test] TestC
-    [fail] [line:31] [file:C:\Path\To\Test\main.cpp] [condition:false]
+    [fail] [file:C:\Path\To\Test\main.cpp] [line:31] [condition:false]
 --- TEST FAIL ---
 number of runned notified tests : 3
 number of failed tests          : 2
+```
+
+### Example: No fail
+Run without fail.
+
+Code:
+```C++
+#include "TrivialTestKit.h"
+
+#define _USE_MATH_DEFINES 
+#include <math.h>
+
+template <typename T>
+inline bool IsReal(T&&) {
+    return true;
+}
+
+void TestA() {
+    TTK_NotifyTest();
+
+    TTK_Assert(IsReal(M_PI));
+    TTK_Assert(IsReal(0));
+    TTK_Assert(IsReal("This text."));
+}
+
+void TestB() {
+    TTK_NotifyTest();
+
+    TTK_Assert(1 + 1 == 2);
+    TTK_AssertM(2 + 2 == 5, "Surprising result!");
+    TTK_Assert(3 + 3 == 6);
+}
+
+void TestC() {
+    TTK_NotifyTest();
+
+    TTK_Assert(false);
+}
+
+void TestD() {
+    TTK_NotifyTest();
+
+    TTK_Assert(true);
+}
+
+int main() {
+    return TTK_RunTests({
+        TestA,
+        TestD,
+    });
+}
+```
+Printed result:
+```
+--- TEST ---
+[test] TestA
+[test] TestD
+--- TEST SUCCESS ---
+number of runned notified tests : 2
+number of failed tests          : 0
 ```

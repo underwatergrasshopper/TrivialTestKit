@@ -24,7 +24,7 @@
 /**
  * @file TrivialTestKit.h
  * @author underwatergrasshopper
- * @version 1.0.0
+ * @version 1.0.1
  * @details This file is a part of project: TrivialTestKit. Can be distributed separately.
  */
 
@@ -193,15 +193,14 @@ inline void TKK_CommunicateAssertFail(unsigned line, const char* condition, cons
 
     if (data.output) {
         if (TTK_SolveOutputOrientation() > 0) {
-            // TODO: Test those hs, ws, ls, ... .
-            fwprintf(data.output, L"    [fail] [line:%d] [file:%s] [condition:%hs]", line, file_name_utf16, condition);
+            fwprintf(data.output, L"    [fail] [file:%s] [line:%d] [condition:%hs]", file_name_utf16, line, condition);
             if (message) {
                 fwprintf(data.output, L" [message:%hs]\n", message);
             } else {
                 fwprintf(data.output, L"\n");
             }
         } else {
-            fprintf(data.output, "    [fail] [line:%d] [file:%s] [condition:%s]", line, file_name_utf8, condition);
+            fprintf(data.output, "    [fail] [file:%s] [line:%d] [condition:%s]", file_name_utf8, line, condition);
             if (message) {
                 fprintf(data.output, " [message:%s]\n", message);
             } else {

@@ -63,6 +63,13 @@ void TestD() {
 
 int main() {
 #if 0
+    return TTK_RunTests({
+        TestA,
+        TestD,
+    });
+#endif 
+
+#if 0
     // Stops execution of tests at first assertion fail.
     return TTK_RunTests({
         TestA,

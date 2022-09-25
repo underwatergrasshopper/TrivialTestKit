@@ -17,8 +17,7 @@ Automated:
 
 | Platform | Compiler | Architecture | Wide Oriented Stream \* | Build and Test |
 |-|-|-|-|-|
-| Windows | Visual Studio 2022, Visual Studio  2019 | x86, x64 | With and Without | [![Build and Test](https://github.com/underwatergrasshopper/TrivialTestKit/actions/workflows/build_and_test.yml/badge.svg)](https://github.com/underwatergrasshopper/TrivialTestKit/actions/workflows/build_and_test.yml)
- |
+| Windows | Visual Studio 2022, Visual Studio  2019 | x86, x64 | With and Without | [![Build and Test](https://github.com/underwatergrasshopper/TrivialTestKit/actions/workflows/build_and_test.yml/badge.svg)](https://github.com/underwatergrasshopper/TrivialTestKit/actions/workflows/build_and_test.yml) |
 
  By hand on local machine:
 
@@ -31,7 +30,7 @@ Automated:
 
 <sup>\* When using functions from wprintf family only (those for wide characters, which manipulate any stream).</sup>
 
-<sup>\*\* Testing ends with stack owerflow error code when `fwprintf` function is used.</sup>
+<sup>\*\* Testing ends with stack owerflow error code when `fwprintf` function is used. No output is generated. Same happens when a separate project is made with only `fwprintf` function called. Looks like bug in llvm-gcc.</sup>
 
 ## HOWTO Run Tests
 ### Example: Until First Assertion Fail

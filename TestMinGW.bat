@@ -17,9 +17,6 @@ if "%CMP%" equ "" (
 
 set FOLDER=%CONFIGURATION%GCC
 
-:: For local GCC Compiler
-:: set PATH=C:\\MinGW_15_0_0_llvm-mingw\\bin;%PATH%
-
 echo === Build and Test on GCC ===
 call !CMP! -v
 
@@ -31,20 +28,34 @@ if not exist %FOLDER% mkdir %FOLDER%
 echo Clearing... 
 if exist %FOLDER%\\Test.exe del %FOLDER%\\Test.exe 
 
-set DEFINES=
-if "%CONFIGURATION%" equ "ReleaseWide" (
-    set DEFINES=-D WIDE_ORIENTED
-)
+echo Building...
 
-set ARCH=
+set FLAGS=-std=c++11 -O3
 if "%PLATFORM%" equ "32" (
-    set ARCH=-m32
+    set FLAGS=!FLAGS! -m32
 ) else if "%PLATFORM%" equ "64" (
-    set ARCH=-m64
+    set FLAGS=!FLAGS! -m64
 ) 
 
-echo Building...
-set COMMAND=!CMP! -std=c++11 -O3 !ARCH! !DEFINES! -I ./../TrivialTestKit/include -I ./include -I ./src -I ./src/Folderф ./src/*.cpp -o ./%FOLDER%/Test.exe
+set DEFINES=
+if "%CONFIGURATION%" equ "ReleaseWide" (
+    set DEFINES=!DEFINES! -D WIDE_ORIENTED
+)
+
+set INCLUDES=
+set INCLUDES=!INCLUDES! -I ./../TrivialTestKit/include
+set INCLUDES=!INCLUDES! -I ./include
+set INCLUDES=!INCLUDES! -I ./src
+set INCLUDES=!INCLUDES! -I ./src/Folderф
+set INCLUDES=!INCLUDES!
+
+set SOURCES=
+set SOURCES=!SOURCES! ./src/*.cpp
+
+set OUTPUT=
+set OUTPUT=!OUTPUT! ./%FOLDER%/Test.exe
+
+set COMMAND=!CMP! !FLAGS! !DEFINES! !INCLUDES! !SOURCES! -o !OUTPUT!
 echo %COMMAND%
 call %COMMAND%
 

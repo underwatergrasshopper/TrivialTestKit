@@ -16,6 +16,10 @@
 #define _USE_MATH_DEFINES 
 #include <math.h>
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 #ifdef NDEBUG
 #undef NDEBUG
 #include <assert.h>
@@ -178,7 +182,7 @@ void Test_TTK_Assert() {
     Notice();
     // assert success
     {
-        const std::string output_file_name = "log/Out_AssertSuccess.txt";
+        const std::string output_file_name          = "log/Out_AssertSuccess.txt";
 
         bool is_finished = true;
         {
@@ -191,14 +195,14 @@ void Test_TTK_Assert() {
         }
         assert(is_finished);
 
-        const std::string communitate = LoadFromFile_UTF8(output_file_name);
+        const std::string fail_information = LoadFromFile_UTF8(output_file_name);
 
-        assert(communitate == "");
+        assert(fail_information == "");
     }
 
     // assert success with return
     {
-        const std::string output_file_name = "log/Out_AssertSuccessWithReturn.txt";
+        const std::string output_file_name          = "log/Out_AssertSuccessWithReturn.txt";
 
         bool is_finished = true;
         {
@@ -211,14 +215,14 @@ void Test_TTK_Assert() {
         }
         assert(is_finished);
 
-        const std::string communitate = LoadFromFile_UTF8(output_file_name);
+        const std::string fail_information = LoadFromFile_UTF8(output_file_name);
 
-        assert(communitate == "");
+        assert(fail_information == "");
     }
 
     // assert fail
     {
-        const std::string output_file_name = "log/Out_AssertFail.txt";
+        const std::string output_file_name          = "log/Out_AssertFail.txt";
 
         bool is_finished = true;
         {
@@ -231,15 +235,15 @@ void Test_TTK_Assert() {
         }
         assert(is_finished == false);
 
-        const std::string communitate           = LoadFromFile_UTF8(output_file_name);
-        const std::string expected_communitate  = "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:14] [condition:10 == 5]\n";
+        const std::string fail_information          = LoadFromFile_UTF8(output_file_name);
+        const std::string expected_fail_information = "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:14] [condition:10 == 5]\n";
 
-        assert(communitate == expected_communitate);
+        assert(fail_information == expected_fail_information);
     }
 
     // assert fail with message
     {
-        const std::string output_file_name      = "log/Out_AssertFailWithMessage.txt";
+        const std::string output_file_name          = "log/Out_AssertFailWithMessage.txt";
 
         bool is_finished = true;
         {
@@ -252,15 +256,15 @@ void Test_TTK_Assert() {
         }
         assert(is_finished == false);
 
-        const std::string communitate           = LoadFromFile_UTF8(output_file_name);
-        const std::string expected_communitate  = "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:23] [condition:10 == 5] [message:Some message.]\n";
+        const std::string fail_information          = LoadFromFile_UTF8(output_file_name);
+        const std::string expected_fail_information = "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:23] [condition:10 == 5] [message:Some message.]\n";
 
-        assert(communitate == expected_communitate);
+        assert(fail_information == expected_fail_information);
     }
 
     // assert fail with message std::string
     {
-        const std::string output_file_name      = "log/Out_AssertFailWithMessage.txt";
+        const std::string output_file_name          = "log/Out_AssertFailWithMessage.txt";
 
         bool is_finished = true;
         {
@@ -273,15 +277,15 @@ void Test_TTK_Assert() {
         }
         assert(is_finished == false);
 
-        const std::string communitate           = LoadFromFile_UTF8(output_file_name);
-        const std::string expected_communitate  = "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:74] [condition:10 == 5] [message:Some message.]\n";
+        const std::string fail_information          = LoadFromFile_UTF8(output_file_name);
+        const std::string expected_fail_information = "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:74] [condition:10 == 5] [message:Some message.]\n";
 
-        assert(communitate == expected_communitate);
+        assert(fail_information == expected_fail_information);
     }
 
     // assert fail with return
     {
-        const std::string output_file_name      = "log/Out_AssertFailWithReturn.txt";
+        const std::string output_file_name          = "log/Out_AssertFailWithReturn.txt";
 
         bool is_finished = true;
         {
@@ -294,15 +298,15 @@ void Test_TTK_Assert() {
         }
         assert(is_finished == false);
 
-        const std::string communitate           = LoadFromFile_UTF8(output_file_name);
-        const std::string expected_communitate  = "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:32] [condition:10 == 5]\n";
+        const std::string fail_information          = LoadFromFile_UTF8(output_file_name);
+        const std::string expected_fail_information = "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:32] [condition:10 == 5]\n";
 
-        assert(communitate == expected_communitate);
+        assert(fail_information == expected_fail_information);
     }
 
     // assert fail with message and return
     {
-        const std::string output_file_name      = "log/Out_AssertFailWithMessageAndReturn.txt";
+        const std::string output_file_name          = "log/Out_AssertFailWithMessageAndReturn.txt";
 
         bool is_finished = true;
         {
@@ -315,15 +319,15 @@ void Test_TTK_Assert() {
         }
         assert(is_finished == false);
 
-        const std::string communitate           = LoadFromFile_UTF8(output_file_name);
-        const std::string expected_communitate  = "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:43] [condition:10 == 5] [message:Some message.]\n";
+        const std::string fail_information          = LoadFromFile_UTF8(output_file_name);
+        const std::string expected_fail_information = "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:43] [condition:10 == 5] [message:Some message.]\n";
 
-        assert(communitate == expected_communitate);
+        assert(fail_information == expected_fail_information);
     }
 
     // assert fail with message utf8
     {
-        const std::string output_file_name      = "log/Out_AssertFailWithMessage_utf8.txt";
+        const std::string output_file_name          = "log/Out_AssertFailWithMessage_utf8.txt";
 
         bool is_finished = true;
         {
@@ -336,10 +340,10 @@ void Test_TTK_Assert() {
         }
         assert(is_finished == false);
 
-        const std::string communitate           = LoadFromFile_UTF8(output_file_name);
-        const std::string expected_communitate  = u8"    [fail] [file:" + GetSourceFileName_UTF8() + u8"] [line:99] [condition:10 == 5] [message:Some message\u0444.]\n";
+        const std::string fail_information          = LoadFromFile_UTF8(output_file_name);
+        const std::string expected_fail_information = u8"    [fail] [file:" + GetSourceFileName_UTF8() + u8"] [line:99] [condition:10 == 5] [message:Some message\u0444.]\n";
 
-        assert(communitate == expected_communitate);
+        assert(fail_information == expected_fail_information);
     }
 }
 
@@ -348,7 +352,7 @@ void Test_TTK_Assert_WithCodeInUnicodeFolder() {
 
     // assert fail in unicode folder
     {
-        const std::string output_file_name = "log/Out_AssertFail_InUnicodeFolder.txt";
+        const std::string output_file_name          = "log/Out_AssertFail_InUnicodeFolder.txt";
 
         bool is_finished = true;
         {
@@ -361,11 +365,11 @@ void Test_TTK_Assert_WithCodeInUnicodeFolder() {
         }
         assert(is_finished == false);
 
-        const std::string communitate           = LoadFromFile_UTF8(output_file_name);
-        const std::string file_name             = GetSourceFileName_UTF8(u8"\\Test\\src\\Folder\u0444\\InUnicodeFolder.h", u8"./src/Folder\u0444\\InUnicodeFolder.h");
-        const std::string expected_communitate  = "    [fail] [file:" + file_name + "] [line:13] [condition:10 == 5]\n";
+        const std::string fail_information          = LoadFromFile_UTF8(output_file_name);
+        const std::string file_name                 = GetSourceFileName_UTF8(u8"\\Test\\src\\Folder\u0444\\InUnicodeFolder.h", u8"./src/Folder\u0444/InUnicodeFolder.h");
+        const std::string expected_fail_information = "    [fail] [file:" + file_name + "] [line:13] [condition:10 == 5]\n";
 
-        assert(communitate == expected_communitate);
+        assert(fail_information == expected_fail_information);
     }
 }
 
@@ -377,7 +381,7 @@ void Test_TTK_NotifyTest() {
     Notice();
 
     {
-        const std::string output_file_name      = "log/Out_NotifyTest.txt";
+        const std::string output_file_name          = "log/Out_NotifyTest.txt";
 
         bool is_finished = true;
         {
@@ -389,10 +393,10 @@ void Test_TTK_NotifyTest() {
             TestDummy();
         }
 
-        const std::string expected_communicate  = "[test] TestDummy\n";
-        const std::string communitate           = LoadFromFile_UTF8(output_file_name);
+        const std::string expected_fail_information = "[test] TestDummy\n";
+        const std::string fail_information          = LoadFromFile_UTF8(output_file_name);
 
-        assert(expected_communicate == communitate);
+        assert(expected_fail_information == fail_information);
     }
 }
 
@@ -430,7 +434,7 @@ void Test_TTK_RunTests() {
 
     // success
     {    
-        const std::string output_file_name      = "log/Out_RunTestsSuccess.txt";
+        const std::string output_file_name          = "log/Out_RunTestsSuccess.txt";
 
         {
             Output output = Output(output_file_name);
@@ -448,7 +452,7 @@ void Test_TTK_RunTests() {
             assert(is_success);
         }
 
-        const std::string expected_communicate  = 
+        const std::string expected_fail_information = 
             "--- TEST ---\n"
             "[test] TestA\n"
             "[test] TestB\n"
@@ -456,14 +460,14 @@ void Test_TTK_RunTests() {
             "--- TEST SUCCESS ---\n"
             "number of runned notified tests : 3\n"
             "number of failed tests          : 0\n";
-        const std::string communitate           = LoadFromFile_UTF8(output_file_name);
+        const std::string fail_information          = LoadFromFile_UTF8(output_file_name);
 
-        assert(expected_communicate == communitate);
+        assert(expected_fail_information == fail_information);
     }
 
     // fail
     {   
-        const std::string output_file_name      = "log/Out_RunTestsFail.txt";
+        const std::string output_file_name          = "log/Out_RunTestsFail.txt";
 
         {
             Output output = Output(output_file_name);
@@ -482,7 +486,7 @@ void Test_TTK_RunTests() {
             assert(!is_success);
         }
 
-        const std::string expected_communicate  = 
+        const std::string expected_fail_information  = 
             "--- TEST ---\n"
             "[test] TestA\n"
             "[test] TestB\n"
@@ -492,9 +496,9 @@ void Test_TTK_RunTests() {
             "number of runned notified tests : 3\n"
             "number of failed tests          : 1\n";
 
-        const std::string communitate           = LoadFromFile_UTF8(output_file_name);
+        const std::string fail_information      = LoadFromFile_UTF8(output_file_name);
 
-        assert(expected_communicate == communitate);
+        assert(expected_fail_information == fail_information);
     }
 
     // fail without abort
@@ -518,7 +522,7 @@ void Test_TTK_RunTests() {
             assert(!is_success);
         }
 
-        const std::string expected_communicate  = 
+        const std::string expected_fail_information  = 
             "--- TEST ---\n"
             "[test] TestA\n"
             "[test] TestB\n"
@@ -529,9 +533,9 @@ void Test_TTK_RunTests() {
             "number of runned notified tests : 4\n"
             "number of failed tests          : 1\n";
 
-        const std::string communitate           = LoadFromFile_UTF8(output_file_name);
+        const std::string fail_information           = LoadFromFile_UTF8(output_file_name);
 
-        assert(expected_communicate == communitate);
+        assert(expected_fail_information == fail_information);
     }
 
     // fail mixed
@@ -558,7 +562,7 @@ void Test_TTK_RunTests() {
             assert(!is_success);
         }
 
-        const std::string expected_communicate  = 
+        const std::string expected_fail_information  = 
             "--- TEST ---\n"
             "[test] TestA\n"
             "[test] TestD_Fail\n"
@@ -570,9 +574,9 @@ void Test_TTK_RunTests() {
             "number of runned notified tests : 4\n"
             "number of failed tests          : 2\n";
 
-        const std::string communitate           = LoadFromFile_UTF8(output_file_name);
+        const std::string fail_information           = LoadFromFile_UTF8(output_file_name);
 
-        assert(expected_communicate == communitate);
+        assert(expected_fail_information == fail_information);
     }
 }
 
@@ -582,6 +586,8 @@ void RunAllTests() {
         _wsystem(L"mkdir log");
 
         wprintf(L"%hs\n", "--- Wide Oriented ---");
+        wprintf(L"sizeof(void*)=%d\n", (int)sizeof(void*));
+
         wprintf(L"%hs\n", "--- Test Begin ---");
 
         TTK_ForceOutputOrientation(1);
@@ -590,6 +596,8 @@ void RunAllTests() {
         system("mkdir log");
 
         puts("--- Narrow Oriented  ---");
+        printf("sizeof(void*)=%d\n", (int)sizeof(void*));
+
         puts("--- Test Begin ---");
 
         TTK_ForceOutputOrientation(-1);

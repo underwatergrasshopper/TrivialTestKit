@@ -13,24 +13,23 @@ And then ***Start Without Debugging***.
 
 ## Builds and tests results
 
-MSVC (automated):
+Compiler: **MSVC** (automated)
 
-| Platform | Compiler | Architecture | Wide Oriented Stream \* | Build and Test |
+| Platform | Environment | Architecture | Stream Orientation \* | Build and Test |
 |-|-|-|-|-|
-| Windows | Visual Studio 2022, Visual Studio  2019 | x86, x86_64 | With and Without | [![Build and Test](https://github.com/underwatergrasshopper/TrivialTestKit/actions/workflows/build_and_test.yml/badge.svg)](https://github.com/underwatergrasshopper/TrivialTestKit/actions/workflows/build_and_test.yml) |
+| Windows Server | Visual Studio 2022, Visual Studio  2019 | x86, x86_64 | Narrow and Wide | [![Build and Test](https://github.com/underwatergrasshopper/TrivialTestKit/actions/workflows/build_and_test.yml/badge.svg)](https://github.com/underwatergrasshopper/TrivialTestKit/actions/workflows/build_and_test.yml) |
 
- MinGW (by hand on local machine):
+ Compiler: **MinGW** (by hand on local machine)
 
-| Platform | Compiler | Architecture | Wide Oriented Stream \* | Build | Passing Tests |
+| Platform | Environment | Architecture | Stream Orientation \* | Build | Passing Tests |
 |-|-|-|-|-|-|
-| Windows 10 | LLVM GCC 13.0.0 | x86 | No | <span style="color:green">Success</span> | <span style="color:red">No\*\*</span> |
-| Windows 10 | LLVM GCC 13.0.0 | x86 | Yes | <span style="color:green">Success</span> | <span style="color:red">No\*\*</span> |
-| Windows 10 | LLVM GCC 13.0.0 | x86_64 | No | <span style="color:green">Success</span> | <span style="color:green">Yes</span> |
-| Windows 10 | LLVM GCC 13.0.0 | x86_64 | Yes | <span style="color:green">Success</span> | <span style="color:red">No\*\*</span> |
+| Windows 10 | MinGW-W64 LLVM 15.0.0 | x86 | Wide | <span style="color:green">Success</span> | <span style="color:green">Yes</span> |
+| Windows 10 | MinGW-W64 LLVM 15.0.0 | x86 | Narrow | <span style="color:green">Success</span> | <span style="color:green">Yes</span> |
+| Windows 10 | MinGW-W64 LLVM 15.0.0 | x86_64 | Wide | <span style="color:green">Success</span> | <span style="color:green">Yes</span> |
+| Windows 10 | MinGW-W64 LLVM 15.0.0 | x86_64 | Narrow | <span style="color:green">Success</span> | <span style="color:green">Yes</span> |
 
-<sup>\* When using functions from wprintf family only (those for wide characters, which manipulate any stream).</sup>
-
-<sup>\*\* Testing ends with stack owerflow error code when `fwprintf` function is used. No output is generated. Same happens when a separate project is made with only `fwprintf` function called. Looks like it's wrongly configured toolchain or bug in llvm-gcc.</sup>
+<sup>\* Narrow for a stream when first function which operate on the stream is from `printf` family.
+Wide for a stream when first function which operate on the stream is from `wprintf` family. See also documentation of `fwide`.</sup>
 
 ## HOWTO: Use library and make unit tests
 ### Example: Until First Assertion Fail

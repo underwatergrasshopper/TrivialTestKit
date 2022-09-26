@@ -26,7 +26,7 @@ setlocal EnableDelayedExpansion
 
 where /q 7z.exe || echo Pack Error: Can not find 7z.exe. && exit /b
 
-set VERSION=1.0.1
+set VERSION=1.0.2
 set NAME=TrivialTestKit
 set FILES=README.md CHANGELOG.md LICENSE
 

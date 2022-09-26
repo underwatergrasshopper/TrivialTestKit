@@ -24,7 +24,7 @@
 /**
  * @file TrivialTestKit.h
  * @author underwatergrasshopper
- * @version 1.0.1
+ * @version 1.0.2
  * @details This file is a part of project: TrivialTestKit. Can be distributed separately.
  */
 

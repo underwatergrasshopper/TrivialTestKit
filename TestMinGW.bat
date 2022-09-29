@@ -15,7 +15,7 @@ if "%CMP%" equ "" (
     set CMP=g++
 )
 
-set FOLDER=%CONFIGURATION%GCC
+set FOLDER=Build\%CONFIGURATION%MinGW_LLVM
 
 echo === Build and Test on GCC ===
 call !CMP! -v

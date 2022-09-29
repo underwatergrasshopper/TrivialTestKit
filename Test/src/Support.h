@@ -225,17 +225,17 @@ inline std::wstring GetDefSolutionBuildDirCutOff() {
 #ifdef WIDE_ORIENTED
 
 #ifdef _WIN64 
-    return L"\\x64\\DebugWide";
+    return L"\\Build\\x64\\DebugWide";
 #else
-    return L"\\DebugWide";
+    return L"\\Build\\DebugWide";
 #endif
 
 #else // not WIDE_ORIENTED
 
 #ifdef _WIN64  
-    return L"\\x64\\Debug";
+    return L"\\Build\\x64\\Debug";
 #else
-    return L"\\Debug";
+    return L"\\Build\\Debug";
 #endif
 
 #endif // WIDE_ORIENTED
@@ -245,17 +245,17 @@ inline std::wstring GetDefSolutionBuildDirCutOff() {
 #ifdef WIDE_ORIENTED
 
 #ifdef _WIN64 
-    return L"\\x64\\ReleaseWide";
+    return L"\\Build\\x64\\ReleaseWide";
 #else
-    return L"\\ReleaseWide";
+    return L"\\Build\\ReleaseWide";
 #endif
 
 #else // not WIDE_ORIENTED
 
 #ifdef _WIN64  
-    return L"\\x64\\Release";
+    return L"\\Build\\x64\\Release";
 #else
-    return L"\\Release";
+    return L"\\Build\\Release";
 #endif
 
 #endif // WIDE_ORIENTED

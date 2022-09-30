@@ -50,7 +50,7 @@ jobs:
     
     strategy:
       matrix:
-        test_script: [TestMinGW_32.bat] #, TestMinGW_64.bat, TestMinGW_32_Wide.bat, TestMinGW_64_Wide.bat]
+        test_script: [TestMinGW_32.bat, TestMinGW_64.bat, TestMinGW_32_Wide.bat, TestMinGW_64_Wide.bat]
         include:
           - test_script: TestMinGW_32.bat
             mingw_archive: llvm-mingw-20220906-ucrt-i686.zip    
@@ -86,7 +86,7 @@ jobs:
       - name: Test
         working-directory: ${{env.GITHUB_WORKSPACE}}
         run: |
-          cd Test
+          cd ./Test
           ./${{ matrix.build_path }}Test.exe
           cd ..
       

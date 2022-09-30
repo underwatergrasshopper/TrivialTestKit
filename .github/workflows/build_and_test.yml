@@ -43,16 +43,21 @@ jobs:
       
     - name: Test
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: ${{ matrix.pathprefix }}${{ matrix.configuration }}/Test.exe
+      run: ./Build/${{ matrix.pathprefix }}${{ matrix.configuration }}/Test.exe
       
   mingw_llvm:
     runs-on: windows-latest
     
+    strategy:
+      matrix:
+        test_script: [TestMinGW_32.bat, TestMinGW_64.bat, TestMinGW_32_Wide.bat, TestMinGW_32_Wide.bat]
+    
     steps:
       - uses: actions/checkout@v3
-      
       - uses: msys2/setup-msys2@v2
-      - shell: msys2 {0}
+      
+      - name: Download MinGW
+        shell: msys2 {0}
         run: |
           wget https://github.com/mstorsjo/llvm-mingw/releases/download/20220906/llvm-mingw-20220906-ucrt-i686.zip -P C:/ 
           wget https://github.com/mstorsjo/llvm-mingw/releases/download/20220906/llvm-mingw-20220906-ucrt-x86_64.zip -P C:/
@@ -65,22 +70,5 @@ jobs:
  
       - name: Build and Test
         working-directory: ${{env.GITHUB_WORKSPACE}}
-        run: ./TestMinGW_64.bat
+        run: ./{{ matrix.test_script }}
       
-# Note: No build and test support for gcc. 
-#  mingw:
-#    runs-on: windows-latest
-#    
-#    steps:
-#      - uses: actions/checkout@v3
-#    
-#      - name: Set up MinGW
-#        uses: egor-tensin/setup-mingw@v2
-#        with:
-#          version: latest
-#          platform: x64
-#
-#      - name: Build and Test
-#        working-directory: ${{env.GITHUB_WORKSPACE}}
-#        run: TestGCC_64.bat
-#          

@@ -81,7 +81,7 @@ jobs:
  
       - name: Build
         working-directory: ${{env.GITHUB_WORKSPACE}}
-        run: ./${{ matrix.test_script }}
+        run: ./${{ matrix.test_script }} build
         
       - name: Test
         working-directory: ${{env.GITHUB_WORKSPACE}}

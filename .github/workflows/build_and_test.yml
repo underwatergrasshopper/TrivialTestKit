@@ -65,7 +65,7 @@ jobs:
  
       - name: Build and Test
         working-directory: ${{env.GITHUB_WORKSPACE}}
-        run: TestMinGW_64.bat
+        run: ./TestMinGW_64.bat
       
 # Note: No build and test support for gcc. 
 #  mingw:

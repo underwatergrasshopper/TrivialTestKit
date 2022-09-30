@@ -70,5 +70,5 @@ jobs:
  
       - name: Build and Test
         working-directory: ${{env.GITHUB_WORKSPACE}}
-        run: ./{{ matrix.test_script }}
+        run: ./${{ matrix.test_script }}
       

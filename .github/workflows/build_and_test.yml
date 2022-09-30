@@ -53,13 +53,17 @@ jobs:
         test_script: [TestMinGW_32.bat, TestMinGW_64.bat, TestMinGW_32_Wide.bat, TestMinGW_64_Wide.bat]
         include:
           - test_script: TestMinGW_32.bat
-            mingw_archive: llvm-mingw-20220906-ucrt-i686.zip          
+            mingw_archive: llvm-mingw-20220906-ucrt-i686.zip    
+            build_path: Build/MinGW_LLVM/Release/
           - test_script: TestMinGW_32_Wide.bat
             mingw_archive: llvm-mingw-20220906-ucrt-i686.zip
+            build_path: Build/MinGW_LLVM/ReleaseWide/
           - test_script: TestMinGW_64.bat
-            mingw_archive: llvm-mingw-20220906-ucrt-x86_64.zip          
+            mingw_archive: llvm-mingw-20220906-ucrt-x86_64.zip   
+            build_path: Build/MinGW_LLVM/x64/Release/       
           - test_script: TestMinGW_64_Wide.bat
             mingw_archive: llvm-mingw-20220906-ucrt-x86_64.zip
+            build_path: Build/MinGW_LLVM/x64/ReleaseWide/ 
     steps:
       - name: Install Checkout
         uses: actions/checkout@v3
@@ -75,7 +79,11 @@ jobs:
         working-directory: C:\
         run: 7z x ${{ matrix.mingw_archive }}
  
-      - name: Build and Test
+      - name: Build
         working-directory: ${{env.GITHUB_WORKSPACE}}
         run: ./${{ matrix.test_script }}
+        
+      - name: Test
+        working-directory: ${{env.GITHUB_WORKSPACE}}
+        run: ./${{ matrix.build_path }}Test.exe
       

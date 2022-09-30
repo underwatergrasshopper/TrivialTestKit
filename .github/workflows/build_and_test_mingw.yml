@@ -1,4 +1,4 @@
-name: Build and Test
+name: Build and Test (MinGW)
 
 on:
   push:
@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 jobs:
-  mingw_llvm:
+  build_and_test:
     runs-on: windows-latest
     
     strategy:
@@ -28,7 +28,7 @@ jobs:
             build_path: Test/Build/MinGW_LLVM/ReleaseWide/
           - test_script: TestMinGW_64.bat
             mingw_folder: llvm-mingw-20220906-ucrt-x86_64
-            build_path: BTest/uild/MinGW_LLVM/x64/Release/       
+            build_path: Test/Build/MinGW_LLVM/x64/Release/       
           - test_script: TestMinGW_64_Wide.bat
             mingw_folder: llvm-mingw-20220906-ucrt-x86_64
             build_path: Test/Build/MinGW_LLVM/x64/ReleaseWide/ 

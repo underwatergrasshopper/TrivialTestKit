@@ -21,12 +21,9 @@ Compiler: **MSVC** (automated)
 
  Compiler: **MinGW** (by hand on local machine)
 
-| Platform | Environment | Architecture | Stream Orientation \* | Build | Passing Tests |
-|-|-|-|-|-|-|
-| Windows 10 | MinGW-W64 LLVM 15.0.0 | x86 | Wide | <span style="color:green">Success</span> | <span style="color:green">Yes</span> |
-| Windows 10 | MinGW-W64 LLVM 15.0.0 | x86 | Narrow | <span style="color:green">Success</span> | <span style="color:green">Yes</span> |
-| Windows 10 | MinGW-W64 LLVM 15.0.0 | x86_64 | Wide | <span style="color:green">Success</span> | <span style="color:green">Yes</span> |
-| Windows 10 | MinGW-W64 LLVM 15.0.0 | x86_64 | Narrow | <span style="color:green">Success</span> | <span style="color:green">Yes</span> |
+| Platform | Environment | Architecture | Stream Orientation \* | Build and Test |
+|-|-|-|-|-|
+| Windows 10 | MinGW-W64 (LLVM Clang 15.0.0) | x86, x86_64 | Narrow and Wide |  [![Build and Test (MinGW)](https://github.com/underwatergrasshopper/TrivialTestKit/actions/workflows/build_and_test_mingw.yml/badge.svg)](https://github.com/underwatergrasshopper/TrivialTestKit/actions/workflows/build_and_test_mingw.yml) |
 
 <sup>\* Narrow for a stream when first function which operate on the stream is from `printf` family.
 Wide for a stream when first function which operate on the stream is from `wprintf` family. See also documentation of `fwide`.</sup>

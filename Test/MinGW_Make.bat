@@ -25,30 +25,66 @@ for %%I in (.) do set PROJECT_FOLDER=%%~nxI
 
 set EXE_FILE_NAME=.\\!PROJECT_FOLDER!.exe
 
-if "!ACTION!" equ "run" (
-    set IS_OK=False
-    if "!BUILD_TYPE!" equ "Debug" set IS_OK=True
-    if "!BUILD_TYPE!" equ "Release" set IS_OK=True
-    if "!BUILD_TYPE!" equ "DebugWide" set IS_OK=True
-    if "!BUILD_TYPE!" equ "ReleaseWide" set IS_OK=True
-    
-    set ARCH_PRE=
-    if "!ARCHITECTURE!" equ "64" set ARCH_PRE=x64\\
-    
-    if "!IS_OK!" equ "True" (
-        set BUILD_PATH=Build\\MinGW_LLVM\\!ARCH_PRE!!BUILD_TYPE!
-        set RETURN_PATH=..\\..\\..
-        if "!ARCHITECTURE!" equ "64" set RETURN_PATH=!RETURN_PATH!\\..
-        
-        if not exist !BUILD_PATH! md !BUILD_PATH!
-        cd !BUILD_PATH!
-        cmake -G "MinGW Makefiles" -D CMAKE_BUILD_TYPE=!BUILD_TYPE! -D  ARCHITECTURE=!ARCHITECTURE! !RETURN_PATH! && cmake --build . && !EXE_FILE_NAME!
-        cd !RETURN_PATH!
+set IS_OK=False
+if "!BUILD_TYPE!" equ "Debug" set IS_OK=True
+if "!BUILD_TYPE!" equ "Release" set IS_OK=True
+if "!BUILD_TYPE!" equ "DebugWide" set IS_OK=True
+if "!BUILD_TYPE!" equ "ReleaseWide" set IS_OK=True
+
+set ARCH_PRE=
+if "!ARCHITECTURE!" equ "64" set ARCH_PRE=x64\\
+
+set BUILD_PATH=Build\\MinGW_LLVM\\!ARCH_PRE!!BUILD_TYPE!
+set RETURN_PATH=..\\..\\..
+if "!ARCHITECTURE!" equ "64" set RETURN_PATH=!RETURN_PATH!\\..
+
+
+
+if "!IS_OK!" equ "True" (
+    if "!ACTION!" equ "build" (
+        call :BUILD
+    ) else if "!ACTION!" equ "rebuild" (
+        call :CLEAN
+        call :BUILD
+    ) else if "!ACTION!" equ "clean" (
+        call :CLEAN
+    ) else if "!ACTION!" equ "clean_all" (
+        call :CLEAN_ALL
+    ) else if "!ACTION!" equ "run" (
+        call :BUILD
+        call :RUN
     ) else (
-        echo Run Error: Unknown build type: "!BUILD_TYPE!".
+        echo Run Error: Unknown action type: "!ACTION!".
     )
-) else if "!ACTION!" equ "clean" (
-    if exist .\\Build\\MinGW_LLVM @rd /S /Q .\\Build\\MinGW_LLVM
+    
 ) else (
-    echo Run Error: Unknown action type: "!ACTION!".
+    echo Run Error: Unknown build type: "!BUILD_TYPE!".
 )
+
+goto :EOF
+
+
+:CLEAN
+set BUILD_PATH=.\\Build\\MinGW_LLVM\\!ARCH_PRE!!BUILD_TYPE!
+if exist !BUILD_PATH! @rd /S /Q !BUILD_PATH!
+exit /b
+
+:CLEAN_ALL
+if exist .\\Build\\MinGW_LLVM @rd /S /Q .\\Build\\MinGW_LLVM
+exit /b
+
+:BUILD
+if not exist !BUILD_PATH! md !BUILD_PATH!
+cd !BUILD_PATH!
+cmake -G "MinGW Makefiles" -D CMAKE_BUILD_TYPE=!BUILD_TYPE! -D  ARCHITECTURE=!ARCHITECTURE! !RETURN_PATH! && cmake --build .
+cd !RETURN_PATH!
+exit /b
+
+:RUN
+if not exist !BUILD_PATH! md !BUILD_PATH!
+cd !BUILD_PATH!
+!EXE_FILE_NAME!
+cd !RETURN_PATH!
+exit /b
+
+:EOF

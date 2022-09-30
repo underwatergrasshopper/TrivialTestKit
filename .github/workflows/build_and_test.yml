@@ -86,8 +86,6 @@ jobs:
       - name: Test
         working-directory: ${{env.GITHUB_WORKSPACE}}
         run: |
-          cd Test
-          Add-Content $env:GITHUB_PATH "C:\${{ matrix.mingw_folder }}\bin"
-          ./${{ matrix.build_path }}Test.exe
-          cd ..
+          $env:Path = "C:\${{ matrix.mingw_folder }}\bin;" + $env:Path 
+          ./Test/${{ matrix.build_path }}Test.exe
       

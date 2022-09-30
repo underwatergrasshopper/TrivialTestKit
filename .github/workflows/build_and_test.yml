@@ -13,38 +13,38 @@ permissions:
   contents: read
 
 jobs:
-#  msvc:
-#    strategy:
-#      matrix:
-#        os: [windows-2019, windows-2022]
-#        platform: [x86, x64]
-#        configuration: [Release, ReleaseWide]
-#        include:
-#          - os: windows-2019
-#            toolset: v142
-#          - os: windows-2022
-#            toolset: v143
-#          - platform: x86
-#            pathprefix:
-#          - platform: x64
-#            pathprefix: x64/
-#  
-#    runs-on: ${{ matrix.os }}
-#
-#    steps:
-#    - uses: actions/checkout@v3
-#
-#    - name: Add MSBuild to PATH
-#      uses: microsoft/setup-msbuild@v1.0.2
-#
-#    - name: Build 
-#      working-directory: ${{env.GITHUB_WORKSPACE}}
-#      run: MSBuild /m /property:Configuration=${{ matrix.configuration }} /property:Platform=${{ matrix.platform }} /p:PlatformToolset=${{ matrix.toolset }}
-#      
-#    - name: Test
-#      working-directory: ${{env.GITHUB_WORKSPACE}}
-#      run: ./Build/${{ matrix.pathprefix }}${{ matrix.configuration }}/Test.exe
-#      
+  msvc:
+    strategy:
+      matrix:
+        os: [windows-2019, windows-2022]
+        platform: [x86, x64]
+        configuration: [Release, ReleaseWide]
+        include:
+          - os: windows-2019
+            toolset: v142
+          - os: windows-2022
+            toolset: v143
+          - platform: x86
+            pathprefix:
+          - platform: x64
+            pathprefix: x64/
+  
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    - name: Build 
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: MSBuild /m /property:Configuration=${{ matrix.configuration }} /property:Platform=${{ matrix.platform }} /p:PlatformToolset=${{ matrix.toolset }}
+      
+    - name: Test
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: ./Build/${{ matrix.pathprefix }}${{ matrix.configuration }}/Test.exe
+      
   mingw_llvm:
     runs-on: windows-latest
     
@@ -54,16 +54,16 @@ jobs:
         include:
           - test_script: TestMinGW_32.bat
             mingw_folder: llvm-mingw-20220906-ucrt-i686
-            build_path: Build/MinGW_LLVM/Release/
+            build_path: Test/Build/MinGW_LLVM/Release/
           - test_script: TestMinGW_32_Wide.bat
             mingw_folder: llvm-mingw-20220906-ucrt-i686
-            build_path: Build/MinGW_LLVM/ReleaseWide/
+            build_path: Test/Build/MinGW_LLVM/ReleaseWide/
           - test_script: TestMinGW_64.bat
             mingw_folder: llvm-mingw-20220906-ucrt-x86_64
-            build_path: Build/MinGW_LLVM/x64/Release/       
+            build_path: BTest/uild/MinGW_LLVM/x64/Release/       
           - test_script: TestMinGW_64_Wide.bat
             mingw_folder: llvm-mingw-20220906-ucrt-x86_64
-            build_path: Build/MinGW_LLVM/x64/ReleaseWide/ 
+            build_path: Test/Build/MinGW_LLVM/x64/ReleaseWide/ 
     steps:
       - name: Install Checkout
         uses: actions/checkout@v3
@@ -87,5 +87,5 @@ jobs:
         working-directory: ${{env.GITHUB_WORKSPACE}}
         run: |
           $env:Path = "C:\${{ matrix.mingw_folder }}\bin;" + $env:Path 
-          ./Test/${{ matrix.build_path }}Test.exe
+          ./${{ matrix.build_path }}Test.exe
       

@@ -210,6 +210,18 @@ inline bool SaveToFile_UTF8(const std::string& file_name, const std::string& con
 
 //------------------------------------------------------------------------------
 
+inline std::string ReplaceAll(const std::string& text, const std::string& old_part, const std::string& new_part) {
+    std::string new_text = text;
+
+    if (!old_part.empty()) {
+        for (size_t pos = 0; (pos = new_text.find(old_part, pos)) != std::string::npos; pos += new_part.length()) {
+            new_text.replace(pos, old_part.length(), new_part);
+        }
+    }
+
+    return new_text;
+}
+
 inline std::wstring GetCWD_UTF16() {
     WCHAR buffer[MAX_PATH] = {0};
     DWORD count = GetModuleFileNameW(NULL, buffer, MAX_PATH);
@@ -219,23 +231,32 @@ inline std::wstring GetCWD_UTF16() {
     return dir.substr(0, pos);
 }
 
+
+inline std::wstring GetBuildFolder() { 
+#ifdef _MSC_VER 
+    return L"\\Build";
+#else
+    return L"\\Build\\MinGW_LLVM";
+#endif
+}
+
 inline std::wstring GetDefSolutionBuildDirCutOff() {
 #ifdef _DEBUG
 
 #ifdef WIDE_ORIENTED
 
 #ifdef _WIN64 
-    return L"\\Build\\x64\\DebugWide";
+    return L"\\x64\\DebugWide";
 #else
-    return L"\\Build\\DebugWide";
+    return L"\\DebugWide";
 #endif
 
 #else // not WIDE_ORIENTED
 
 #ifdef _WIN64  
-    return L"\\Build\\x64\\Debug";
+    return L"\\x64\\Debug";
 #else
-    return L"\\Build\\Debug";
+    return L"\\Debug";
 #endif
 
 #endif // WIDE_ORIENTED
@@ -245,17 +266,17 @@ inline std::wstring GetDefSolutionBuildDirCutOff() {
 #ifdef WIDE_ORIENTED
 
 #ifdef _WIN64 
-    return L"\\Build\\x64\\ReleaseWide";
+    return L"\\x64\\ReleaseWide";
 #else
-    return L"\\Build\\ReleaseWide";
+    return L"\\ReleaseWide";
 #endif
 
 #else // not WIDE_ORIENTED
 
 #ifdef _WIN64  
-    return L"\\Build\\x64\\Release";
+    return L"\\x64\\Release";
 #else
-    return L"\\Build\\Release";
+    return L"\\Release";
 #endif
 
 #endif // WIDE_ORIENTED
@@ -265,22 +286,18 @@ inline std::wstring GetDefSolutionBuildDirCutOff() {
 
 inline std::wstring GetDefSolutionDir_UTF16() {
     const std::wstring cwd = GetCWD_UTF16();
-    auto pos = cwd.find(GetDefSolutionBuildDirCutOff());
+    auto pos = cwd.find(GetBuildFolder() + GetDefSolutionBuildDirCutOff());
     return cwd.substr(0, pos);
 }
 
-inline std::wstring GetSourceFileName_UTF16(const std::wstring& file_name, const std::wstring& file_name_gcc) {
-#ifdef _MSC_VER
-    return GetDefSolutionDir_UTF16() + file_name;
-#else
-    return file_name_gcc; 
-#endif
-}
-
 inline std::string GetSourceFileName_UTF8(
-        const std::string& file_name        = "\\Test\\src\\LineDependents.h", 
-        const std::string& file_name_gcc    = "./src/LineDependents.h") {
-    return ToUTF8(GetSourceFileName_UTF16(ToUTF16(file_name), ToUTF16(file_name_gcc)));
+    const std::string& file_name        = "\\Test\\src\\LineDependents.h", 
+    const std::string& file_name_gcc    = "/src/LineDependents.h") {
+#ifdef _MSC_VER
+    return ToUTF8(GetDefSolutionDir_UTF16()) + file_name;
+#else
+    return ReplaceAll(ToUTF8(GetDefSolutionDir_UTF16()), "\\", "/") + file_name_gcc;
+#endif
 }
 
 #endif // SUPPORT_H_

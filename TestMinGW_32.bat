@@ -1,5 +1,5 @@
 @echo off
 
-set PATH=C:\llvm-mingw-20220906-ucrt-i686\bin;%PATH%
-
-call TestMinGW.bat Release 32
+cd Test
+call MinGW_Make.bat run Release 32 C:\llvm-mingw-20220906-ucrt-i686\bin
+cd ..

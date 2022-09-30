@@ -69,11 +69,11 @@ jobs:
       
       - name: Download MinGW
         shell: msys2 {0}
-        run: wget https://github.com/mstorsjo/llvm-mingw/releases/download/20220906/@{{ matrix.mingw_archive }} -P C:/ 
+        run: wget https://github.com/mstorsjo/llvm-mingw/releases/download/20220906/${{ matrix.mingw_archive }} -P C:/ 
           
       - name: Extract MinGW
         working-directory: C:\
-        run: 7z x @{{ matrix.mingw_archive }}
+        run: 7z x ${{ matrix.mingw_archive }}
  
       - name: Build and Test
         working-directory: ${{env.GITHUB_WORKSPACE}}

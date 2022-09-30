@@ -2,7 +2,7 @@ name: Build and Test
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main" "dev" ]
   pull_request:
     branches: [ "main" ]
 
@@ -44,6 +44,16 @@ jobs:
     - name: Test
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: ${{ matrix.pathprefix }}${{ matrix.configuration }}/Test.exe
+      
+  mingw_llvm:
+    runs-on: windows-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Build and Test
+        working-directory: ${{env.GITHUB_WORKSPACE}}
+        run: TestGCC_64.bat
       
 # Note: No build and test support for gcc. 
 #  mingw:

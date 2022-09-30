@@ -54,7 +54,7 @@ jobs:
         include:
           - test_script: TestMinGW_32.bat
             mingw_folder: llvm-mingw-20220906-ucrt-i686
-            build_path: Build/MinGW_LLVM/Release
+            build_path: Build/MinGW_LLVM/Release/
           - test_script: TestMinGW_32_Wide.bat
             mingw_folder: llvm-mingw-20220906-ucrt-i686
             build_path: Build/MinGW_LLVM/ReleaseWide/

@@ -53,10 +53,10 @@ jobs:
       
       - uses: msys2/setup-msys2@v2
       - shell: msys2 {0}
-          run: |
-            wget https://github.com/mstorsjo/llvm-mingw/releases/download/20220906/llvm-mingw-20220906-ucrt-i686.zip -P C:/ 
-            wget https://github.com/mstorsjo/llvm-mingw/releases/download/20220906/llvm-mingw-20220906-ucrt-x86_64.zip -P C:/
-            
+        run: |
+          wget https://github.com/mstorsjo/llvm-mingw/releases/download/20220906/llvm-mingw-20220906-ucrt-i686.zip -P C:/ 
+          wget https://github.com/mstorsjo/llvm-mingw/releases/download/20220906/llvm-mingw-20220906-ucrt-x86_64.zip -P C:/
+          
       - name: Extract MinGW
         working-directory: C:\
         run: 7z x llvm-mingw-20220906-ucrt-i686.zip

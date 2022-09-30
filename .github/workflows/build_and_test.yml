@@ -87,6 +87,5 @@ jobs:
         working-directory: ${{env.GITHUB_WORKSPACE}}
         run: |
           cd Test
-#          ./${{ matrix.build_path }}Test.exe
           cd ..
       

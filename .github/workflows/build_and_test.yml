@@ -59,8 +59,9 @@ jobs:
           
       - name: Extract MinGW
         working-directory: C:\
-        run: 7z x llvm-mingw-20220906-ucrt-i686.zip
-        run: 7z x llvm-mingw-20220906-ucrt-x86_64.zip
+        run: |
+          7z x llvm-mingw-20220906-ucrt-i686.zip
+          7z x llvm-mingw-20220906-ucrt-x86_64.zip
  
       - name: Build and Test
         working-directory: ${{env.GITHUB_WORKSPACE}}

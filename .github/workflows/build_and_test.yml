@@ -13,44 +13,44 @@ permissions:
   contents: read
 
 jobs:
-  msvc:
-    strategy:
-      matrix:
-        os: [windows-2019, windows-2022]
-        platform: [x86, x64]
-        configuration: [Release, ReleaseWide]
-        include:
-          - os: windows-2019
-            toolset: v142
-          - os: windows-2022
-            toolset: v143
-          - platform: x86
-            pathprefix:
-          - platform: x64
-            pathprefix: x64/
-  
-    runs-on: ${{ matrix.os }}
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Add MSBuild to PATH
-      uses: microsoft/setup-msbuild@v1.0.2
-
-    - name: Build 
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: MSBuild /m /property:Configuration=${{ matrix.configuration }} /property:Platform=${{ matrix.platform }} /p:PlatformToolset=${{ matrix.toolset }}
-      
-    - name: Test
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: ./Build/${{ matrix.pathprefix }}${{ matrix.configuration }}/Test.exe
-      
+#  msvc:
+#    strategy:
+#      matrix:
+#        os: [windows-2019, windows-2022]
+#        platform: [x86, x64]
+#        configuration: [Release, ReleaseWide]
+#        include:
+#          - os: windows-2019
+#            toolset: v142
+#          - os: windows-2022
+#            toolset: v143
+#          - platform: x86
+#            pathprefix:
+#          - platform: x64
+#            pathprefix: x64/
+#  
+#    runs-on: ${{ matrix.os }}
+#
+#    steps:
+#    - uses: actions/checkout@v3
+#
+#    - name: Add MSBuild to PATH
+#      uses: microsoft/setup-msbuild@v1.0.2
+#
+#    - name: Build 
+#      working-directory: ${{env.GITHUB_WORKSPACE}}
+#      run: MSBuild /m /property:Configuration=${{ matrix.configuration }} /property:Platform=${{ matrix.platform }} /p:PlatformToolset=${{ matrix.toolset }}
+#      
+#    - name: Test
+#      working-directory: ${{env.GITHUB_WORKSPACE}}
+#      run: ./Build/${{ matrix.pathprefix }}${{ matrix.configuration }}/Test.exe
+#      
   mingw_llvm:
     runs-on: windows-latest
     
     strategy:
       matrix:
-        test_script: [TestMinGW_32.bat, TestMinGW_64.bat, TestMinGW_32_Wide.bat, TestMinGW_64_Wide.bat]
+        test_script: [TestMinGW_32.bat] #, TestMinGW_64.bat, TestMinGW_32_Wide.bat, TestMinGW_64_Wide.bat]
         include:
           - test_script: TestMinGW_32.bat
             mingw_archive: llvm-mingw-20220906-ucrt-i686.zip    

@@ -15,7 +15,7 @@ permissions:
 jobs:
   build_and_test:
     runs-on: windows-2022
-    if: github.event.head_commit.message == 'Test.'
+
     strategy:
       matrix:
         test_script: [TestMinGW_32.bat, TestMinGW_64.bat, TestMinGW_32_Wide.bat, TestMinGW_64_Wide.bat]

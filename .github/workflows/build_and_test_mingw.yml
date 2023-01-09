@@ -2,7 +2,7 @@ name: Build and Test (MinGW)
 
 on:
   push:
-    branches: [ "main", "dev_restructure" ]
+    branches: [ "main", "dev" ]
   pull_request:
     branches: [ "main" ]
 

@@ -18,7 +18,7 @@ jobs:
 
     strategy:
       matrix:
-        test_script: [TestMinGW_32.bat, TestMinGW_64.bat, TestMinGW_32_Wide.bat, TestMinGW_64_Wide.bat]
+        test_script: [MinGW_MakeTest32.bat, MinGW_MakeTest32_Wide.bat, MinGW_MakeTest64.bat, MinGW_MakeTest64_Wide.bat]
         include:
           - test_script: MinGW_MakeTest32.bat
             mingw_folder: llvm-mingw-20220906-ucrt-i686

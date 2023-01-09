@@ -13,12 +13,22 @@ if "%BUILD_TYPE%" equ "" set BUILD_TYPE=Debug
 set ARCHITECTURE=%3
 if "%ARCHITECTURE%" equ "" set ARCHITECTURE=64
 
-:: <none>, URL
-set CMP_DIR=%4
+if not exist .\\MinGW_MakeCache.bat (
+    echo set MINGW32_BIN_PATH=
+    echo set MINGW64_BIN_PATH=
+) > MinGW_MakeCache.bat 
 
-if "%CMP_DIR%" equ "" goto :SKIP
-set PATH=%CMP_DIR%;%PATH%
-:SKIP
+call .\\MinGW_MakeCache.bat
+
+if "%MINGW32_BIN_PATH%" equ "" goto :SKIP_MINGW32_BIN_PATH
+if "%ARCHITECTURE%" neq "32" goto :SKIP_MINGW32_BIN_PATH
+set PATH=%MINGW32_BIN_PATH%;%PATH%
+:SKIP_MINGW32_BIN_PATH
+
+if "%MINGW64_BIN_PATH%" equ "" goto :SKIP_MINGW64_BIN_PATH
+if "%ARCHITECTURE%" neq "64" goto :SKIP_MINGW64_BIN_PATH
+set PATH=%MINGW64_BIN_PATH%;%PATH%
+:SKIP_MINGW64_BIN_PATH
 
 set PROJECT_FOLDER=
 for %%I in (.) do set PROJECT_FOLDER=%%~nxI

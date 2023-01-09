@@ -55,5 +55,5 @@ jobs:
         working-directory: ${{env.GITHUB_WORKSPACE}}
         run: |
           $env:Path = "C:\${{ matrix.mingw_folder }}\bin;" + $env:Path 
-          ./${{ matrix.build_path }}TrivailTestKit_Test.exe
+          ./${{ matrix.build_path }}TrivialTestKit_Test.exe
       

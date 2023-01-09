@@ -352,3 +352,6 @@ MigrationBackup/
 
 # Distribution
 dist/
+
+# Custom MinGW make
+MinGW_MakeCache.bat

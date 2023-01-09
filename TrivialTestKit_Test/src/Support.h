@@ -234,11 +234,21 @@ inline std::wstring GetCWD_UTF16() {
 
 inline std::wstring GetBuildFolder() { 
 #ifdef _MSC_VER 
-    return L"\\Build";
+    return L"\\build\\vs";
 #else
-    return L"\\Build\\MinGW_LLVM";
+    return L"\\build\\mingw_llvm";
 #endif
 }
+
+inline std::wstring GetVS_PlatformName() {
+#ifdef _WIN64 
+    return L"x64";
+#else
+    return L"Win32";
+#endif
+}
+
+
 
 inline std::wstring GetDefSolutionBuildDirCutOff() {
 #ifdef _DEBUG
@@ -248,7 +258,7 @@ inline std::wstring GetDefSolutionBuildDirCutOff() {
 #ifdef _WIN64 
     return L"\\x64\\DebugWide";
 #else
-    return L"\\DebugWide";
+    return L"\\Win32\\DebugWide";
 #endif
 
 #else // not WIDE_ORIENTED
@@ -256,7 +266,7 @@ inline std::wstring GetDefSolutionBuildDirCutOff() {
 #ifdef _WIN64  
     return L"\\x64\\Debug";
 #else
-    return L"\\Debug";
+    return L"\\Win32\\Debug";
 #endif
 
 #endif // WIDE_ORIENTED
@@ -268,7 +278,7 @@ inline std::wstring GetDefSolutionBuildDirCutOff() {
 #ifdef _WIN64 
     return L"\\x64\\ReleaseWide";
 #else
-    return L"\\ReleaseWide";
+    return L"\\Win32\\ReleaseWide";
 #endif
 
 #else // not WIDE_ORIENTED
@@ -276,7 +286,7 @@ inline std::wstring GetDefSolutionBuildDirCutOff() {
 #ifdef _WIN64  
     return L"\\x64\\Release";
 #else
-    return L"\\Release";
+    return L"\\Win32\\Release";
 #endif
 
 #endif // WIDE_ORIENTED
@@ -291,7 +301,7 @@ inline std::wstring GetDefSolutionDir_UTF16() {
 }
 
 inline std::string GetSourceFileName_UTF8(
-    const std::string& file_name        = "\\Test\\src\\LineDependents.h", 
+    const std::string& file_name        = "\\TrivialTestKit_Test\\src\\LineDependents.h", 
     const std::string& file_name_gcc    = "/src/LineDependents.h") {
 #ifdef _MSC_VER
     return ToUTF8(GetDefSolutionDir_UTF16()) + file_name;

@@ -248,50 +248,24 @@ inline std::wstring GetVS_PlatformName() {
 #endif
 }
 
-
+inline std::wstring GetVS_ConfigurationName() {
+#ifdef WIDE_ORIENTED 
+    #ifdef _DEBUG
+        return L"DebugWIDE";
+    #else
+        return L"ReleaseWIDE";
+    #endif
+#else
+    #ifdef _DEBUG
+        return L"Debug";
+    #else
+        return L"Release";
+    #endif
+#endif
+}
 
 inline std::wstring GetDefSolutionBuildDirCutOff() {
-#ifdef _DEBUG
-
-#ifdef WIDE_ORIENTED
-
-#ifdef _WIN64 
-    return L"\\x64\\DebugWide";
-#else
-    return L"\\Win32\\DebugWide";
-#endif
-
-#else // not WIDE_ORIENTED
-
-#ifdef _WIN64  
-    return L"\\x64\\Debug";
-#else
-    return L"\\Win32\\Debug";
-#endif
-
-#endif // WIDE_ORIENTED
-
-#else // not _DEBUG
-
-#ifdef WIDE_ORIENTED
-
-#ifdef _WIN64 
-    return L"\\x64\\ReleaseWide";
-#else
-    return L"\\Win32\\ReleaseWide";
-#endif
-
-#else // not WIDE_ORIENTED
-
-#ifdef _WIN64  
-    return L"\\x64\\Release";
-#else
-    return L"\\Win32\\Release";
-#endif
-
-#endif // WIDE_ORIENTED
-
-#endif // _DEBUG
+    return L"\\" + GetVS_PlatformName() + L"\\" + GetVS_ConfigurationName();
 }
 
 inline std::wstring GetDefSolutionDir_UTF16() {

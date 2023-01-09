@@ -25,11 +25,13 @@ jobs:
           - os: windows-2022
             toolset: v143
           - platform: x86
-            pathprefix:
+            pathprefix: Win32
           - platform: x64
-            pathprefix: x64/
+            pathprefix: x64
   
     runs-on: ${{ matrix.os }}
+    
+    if: github.event.head_commit.message == 'Test.'
 
     steps:
     - uses: actions/checkout@v3
@@ -43,4 +45,4 @@ jobs:
       
     - name: Test
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: ./Build/${{ matrix.pathprefix }}${{ matrix.configuration }}/TrivialTestKit_Test.exe
+      run: ./build/vs/${{ matrix.pathprefix }}/${{ matrix.configuration }}/TrivialTestKit_Test.exe

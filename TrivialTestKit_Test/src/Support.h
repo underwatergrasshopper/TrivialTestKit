@@ -276,7 +276,7 @@ inline std::wstring GetDefSolutionDir_UTF16() {
 
 inline std::string GetSourceFileName_UTF8(
     const std::string& file_name        = "\\TrivialTestKit_Test\\src\\LineDependents.h", 
-    const std::string& file_name_gcc    = "/src/LineDependents.h") {
+    const std::string& file_name_gcc    = "/TrivialTestKit_Test/src/LineDependents.h") {
 #ifdef _MSC_VER
     return ToUTF8(GetDefSolutionDir_UTF16()) + file_name;
 #else

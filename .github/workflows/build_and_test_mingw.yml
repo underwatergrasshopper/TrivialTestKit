@@ -2,7 +2,7 @@ name: Build and Test (MinGW)
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "dev_restructure" ]
   pull_request:
     branches: [ "main" ]
 
@@ -22,16 +22,16 @@ jobs:
         include:
           - test_script: TestMinGW_32.bat
             mingw_folder: llvm-mingw-20220906-ucrt-i686
-            build_path: Test/Build/MinGW_LLVM/Release/
+            build_path: build/mingw_llvm/Win32/Release/
           - test_script: TestMinGW_32_Wide.bat
             mingw_folder: llvm-mingw-20220906-ucrt-i686
-            build_path: Test/Build/MinGW_LLVM/ReleaseWide/
+            build_path: build/mingw_llvm/Win32/ReleaseWIDE/
           - test_script: TestMinGW_64.bat
             mingw_folder: llvm-mingw-20220906-ucrt-x86_64
-            build_path: Test/Build/MinGW_LLVM/x64/Release/       
+            build_path: build/mingw_llvm/x64/Release/       
           - test_script: TestMinGW_64_Wide.bat
             mingw_folder: llvm-mingw-20220906-ucrt-x86_64
-            build_path: Test/Build/MinGW_LLVM/x64/ReleaseWide/ 
+            build_path: build/mingw_llvm/x64/ReleaseWIDE/ 
     steps:
       - name: Install Checkout
         uses: actions/checkout@v3
@@ -55,5 +55,5 @@ jobs:
         working-directory: ${{env.GITHUB_WORKSPACE}}
         run: |
           $env:Path = "C:\${{ matrix.mingw_folder }}\bin;" + $env:Path 
-          ./${{ matrix.build_path }}Test.exe
+          ./${{ matrix.build_path }}TrivailTestKit_Test.exe
       

@@ -2,7 +2,7 @@ name: Build and Test (Visual Studio)
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "dev_restructure" ]
   pull_request:
     branches: [ "main" ]
 
@@ -18,7 +18,7 @@ jobs:
       matrix:
         os: [windows-2019, windows-2022]
         platform: [x86, x64]
-        configuration: [Release, ReleaseWide]
+        configuration: [Release, ReleaseWIDE]
         include:
           - os: windows-2019
             toolset: v142
@@ -43,4 +43,4 @@ jobs:
       
     - name: Test
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: ./Build/${{ matrix.pathprefix }}${{ matrix.configuration }}/Test.exe
+      run: ./Build/${{ matrix.pathprefix }}${{ matrix.configuration }}/TrivialTestKit_Test.exe

@@ -366,7 +366,7 @@ void Test_TTK_Assert_WithCodeInUnicodeFolder() {
         assert(is_finished == false);
 
         const std::string fail_information          = LoadFromFile_UTF8(output_file_name);
-        const std::string file_name                 = GetSourceFileName_UTF8(u8"\\TrivialTestKit_Test\\src\\Folder\u0444\\InUnicodeFolder.h", u8"/src/Folder\u0444/InUnicodeFolder.h");
+        const std::string file_name                 = GetSourceFileName_UTF8(u8"\\TrivialTestKit_Test\\src\\Folder\u0444\\InUnicodeFolder.h", u8"/TrivialTestKit_Test/src/Folder\u0444/InUnicodeFolder.h");
         const std::string expected_fail_information = "    [fail] [file:" + file_name + "] [line:13] [condition:10 == 5]\n";
 
         assert(fail_information == expected_fail_information);

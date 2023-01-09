@@ -49,11 +49,12 @@ jobs:
  
       - name: Build
         working-directory: ${{env.GITHUB_WORKSPACE}}
-        run: ./${{ matrix.test_script }} build
+        run: |
+            $env:Path = "C:\${{ matrix.mingw_folder }}\bin;" + $env:Path 
+            ./${{ matrix.test_script }} build
         
       - name: Test
         working-directory: ${{env.GITHUB_WORKSPACE}}
         run: |
-          $env:Path = "C:\${{ matrix.mingw_folder }}\bin;" + $env:Path 
           ./${{ matrix.build_path }}TrivialTestKit_Test.exe
       

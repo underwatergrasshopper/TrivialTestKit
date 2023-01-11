@@ -49,8 +49,9 @@ jobs:
           ./MinGW_MakeTest.bat build ${{ matrix.build_mode }} ${{ matrix.architecture }}
         
       - name: Test
-        working-directory: ${{env.GITHUB_WORKSPACE}}\build\mingw_llvm\${{ matrix.arch_folder }}\${{ matrix.build_mode }}
+        working-directory: ${{env.GITHUB_WORKSPACE}}
         run: |
           $env:Path = "C:\${{ matrix.mingw_folder }}\bin;" + $env:Path 
+          cd build\mingw_llvm\${{ matrix.arch_folder }}\${{ matrix.build_mode }}
           ./TrivialTestKit_Test.exe
       

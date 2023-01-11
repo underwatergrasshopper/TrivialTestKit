@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "main", "dev" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "dev" ]
 
 env:
   SOLUTION_FILE_PATH: .
@@ -18,20 +18,15 @@ jobs:
 
     strategy:
       matrix:
-        test_script: [MinGW_MakeTest32.bat, MinGW_MakeTest32_Wide.bat, MinGW_MakeTest64.bat, MinGW_MakeTest64_Wide.bat]
+        build_mode: [Release, ReleaseWIDE, Debug, DebugWIDE]
+        architecture: [32, 64]
         include:
-          - test_script: MinGW_MakeTest32.bat
+          - architecture: 32
             mingw_folder: llvm-mingw-20220906-ucrt-i686
-            build_path: build/mingw_llvm/Win32/Release/
-          - test_script: MinGW_MakeTest32_Wide.bat
-            mingw_folder: llvm-mingw-20220906-ucrt-i686
-            build_path: build/mingw_llvm/Win32/ReleaseWIDE/
-          - test_script: MinGW_MakeTest64.bat
+            arch_folder: Win32
+          - architecture: 64
             mingw_folder: llvm-mingw-20220906-ucrt-x86_64
-            build_path: build/mingw_llvm/x64/Release/       
-          - test_script: MinGW_MakeTest64_Wide.bat
-            mingw_folder: llvm-mingw-20220906-ucrt-x86_64
-            build_path: build/mingw_llvm/x64/ReleaseWIDE/ 
+            arch_folder: x64
     steps:
       - name: Install Checkout
         uses: actions/checkout@v3
@@ -51,11 +46,11 @@ jobs:
         working-directory: ${{env.GITHUB_WORKSPACE}}
         run: |
           $env:Path = "C:\${{ matrix.mingw_folder }}\bin;" + $env:Path 
-          ./${{ matrix.test_script }} build
+          ./MinGW_MakeTest.bat build ${{ matrix.build_mode }} ${{ matrix.architecture }}
         
       - name: Test
-        working-directory: ${{env.GITHUB_WORKSPACE}}
+        working-directory: ${{env.GITHUB_WORKSPACE}}/build/mingw_llvm/${{ matrix.arch_folder }}/${{ matrix.build_mode }}
         run: |
           $env:Path = "C:\${{ matrix.mingw_folder }}\bin;" + $env:Path 
-          ./${{ matrix.build_path }}TrivialTestKit_Test.exe
+          ./TrivialTestKit_Test.exe
       

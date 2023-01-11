@@ -5,13 +5,16 @@ setlocal EnableDelayedExpansion
 set ACTION=%1
 if "%ACTION%" equ "" set ACTION=run
 
-:: <none>, Debug, Release, DebugWIDE, ReleaseWIDE
+:: <none>, Debug, Release
 set BUILD_TYPE=%2
 if "%BUILD_TYPE%" equ "" set BUILD_TYPE=Release
 
 :: <none>, 32, 64
 set ARCHITECTURE=%3
 if "%ARCHITECTURE%" equ "" set ARCHITECTURE=64
+
+:: <none>, <word>
+set TEST_FLAG=%4
 
 if not exist .\\MinGW_MakeCache.bat (
     echo set MINGW32_BIN_PATH=
@@ -38,8 +41,6 @@ set EXE_FILE_NAME=.\\!PROJECT_FOLDER!.exe
 set IS_OK=False
 if "!BUILD_TYPE!" equ "Debug" set IS_OK=True
 if "!BUILD_TYPE!" equ "Release" set IS_OK=True
-if "!BUILD_TYPE!" equ "DebugWIDE" set IS_OK=True
-if "!BUILD_TYPE!" equ "ReleaseWIDE" set IS_OK=True
 
 set ARCH_PRE=
 if "!ARCHITECTURE!" equ "64" set ARCH_PRE=x64
@@ -88,7 +89,7 @@ exit /b
 :RUN
 if not exist !BUILD_PATH! md !BUILD_PATH!
 cd !BUILD_PATH!
-!EXE_FILE_NAME!
+!EXE_FILE_NAME! !TEST_FLAG!
 cd !RETURN_PATH!
 exit /b
 

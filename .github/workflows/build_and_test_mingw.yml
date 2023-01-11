@@ -18,15 +18,16 @@ jobs:
 
     strategy:
       matrix:
-        build_mode: [Release, ReleaseWIDE, Debug, DebugWIDE]
-        architecture: [32, 64]
+        build_mode: [Release, Debug]
+        platform: [32, 64]
+        test_flag: [NARROW, WIDE]
         include:
-          - architecture: 32
+          - platform: 32
             mingw_folder: llvm-mingw-20220906-ucrt-i686
-            arch_folder: Win32
-          - architecture: 64
+            platform_folder: Win32
+          - platform: 64
             mingw_folder: llvm-mingw-20220906-ucrt-x86_64
-            arch_folder: x64
+            platform_folder: x64
     steps:
       - name: Install Checkout
         uses: actions/checkout@v3
@@ -46,12 +47,12 @@ jobs:
         working-directory: ${{env.GITHUB_WORKSPACE}}
         run: |
           $env:Path = "C:\${{ matrix.mingw_folder }}\bin;" + $env:Path 
-          ./MinGW_MakeTest.bat build ${{ matrix.build_mode }} ${{ matrix.architecture }}
+          ./MinGW_MakeTest.bat build ${{ matrix.build_mode }} ${{ matrix.platform }}
         
       - name: Test
         working-directory: ${{env.GITHUB_WORKSPACE}}
         run: |
           $env:Path = "C:\${{ matrix.mingw_folder }}\bin;" + $env:Path 
-          cd build\mingw_llvm\${{ matrix.arch_folder }}\${{ matrix.build_mode }}
-          ./TrivialTestKit_Test.exe
+          cd build\mingw_llvm\${{ matrix.platform_folder }}\${{ matrix.build_mode }}
+          ./TrivialTestKit_Test.exe {{ matrix.test_flag }}
       

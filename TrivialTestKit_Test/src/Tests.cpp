@@ -12,6 +12,7 @@
 
 #include <stdio.h>
 #include <stdlib.h> 
+#include <string.h> 
 
 #define _USE_MATH_DEFINES 
 #include <math.h>
@@ -580,8 +581,10 @@ void Test_TTK_RunTests() {
     }
 }
 
-void RunAllTests() {
-    if (IsWideOriented()) {
+void RunAllTests(int argc, char* argv[]) {
+    if (argc > 1 && strcmp(argv[1], "WIDE") == 0) SwitchStdOutToWideOriented();
+
+    if (IsStdOutWideOriented()) {
         _wsystem(L"if exist log @rd /S /Q log");
         _wsystem(L"mkdir log");
 
@@ -614,7 +617,7 @@ void RunAllTests() {
     Test_TTK_NotifyTest();
     Test_TTK_RunTests();
 
-    if (IsWideOriented()) {
+    if (IsStdOutWideOriented()) {
         wprintf(L"%hs\n", "--- Test End ---");
     } else {
         puts("--- Test End ---");

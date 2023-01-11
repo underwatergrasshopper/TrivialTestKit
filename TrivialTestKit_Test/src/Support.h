@@ -32,13 +32,8 @@
 
 //------------------------------------------------------------------------------
 
-inline bool IsWideOriented() {
-#ifdef WIDE_ORIENTED
-    return true;
-#else
-    return false;
-#endif
-}
+void SwitchStdOutToWideOriented();
+bool IsStdOutWideOriented();
 
 //------------------------------------------------------------------------------
 
@@ -249,18 +244,10 @@ inline std::wstring GetVS_PlatformName() {
 }
 
 inline std::wstring GetVS_ConfigurationName() {
-#ifdef WIDE_ORIENTED 
-    #ifdef _DEBUG
-        return L"DebugWIDE";
-    #else
-        return L"ReleaseWIDE";
-    #endif
+#ifdef _DEBUG
+    return L"Debug";
 #else
-    #ifdef _DEBUG
-        return L"Debug";
-    #else
-        return L"Release";
-    #endif
+    return L"Release";
 #endif
 }
 

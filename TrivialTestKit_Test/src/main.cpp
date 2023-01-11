@@ -1,6 +1,6 @@
 #include "Tests.h"
 
-int main() {
-    RunAllTests();
+int main(int argc, char* argv[]) {
+    RunAllTests(argc, argv);
     return 0;
 }

@@ -255,7 +255,6 @@
   <ItemGroup>
     <ClInclude Include="..\include\TrivialTestKit.h" />
     <ClInclude Include="src\Folderф\InUnicodeFolder.h" />
-    <ClInclude Include="src\LineDependents.h" />
     <ClInclude Include="src\Support.h" />
     <ClInclude Include="src\Tests.h" />
   </ItemGroup>

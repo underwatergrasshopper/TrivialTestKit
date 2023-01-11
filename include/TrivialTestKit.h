@@ -90,6 +90,7 @@ void TTK_ForceOutputOrientation(int orientation);
 //------------------------------------------------------------------------------
 
 enum : uint64_t {
+    TTK_DEFAULT     =   0x0000,
     TTK_DISABLE     =   0x0001,     // disable test
     TTK_NO_ABORT    =   0x0002,     // no abort at test fail
 };
@@ -145,12 +146,14 @@ inline void TTK_Free() {
     data.number_of_tests = 0;
 }
 
+#define TTK_ADD_TEST(TestFunction, mode) TTK_AddTest({TestFunction, #TestFunction, mode})
+
 #define TTK_TEST(TestFunction, mode) \
     void TestFunction(); \
-    static bool s_is_added_##TestFunction = TTK_AddTest({TestFunction, #TestFunction, mode}); \
+    static bool s_is_added_##TestFunction = TTK_ADD_TEST(TestFunction, mode); \
     void TestFunction()
 
-#define TTK_ADD_TEST(TestFunction, mode) TTK_AddTest({TestFunction, #TestFunction, mode});
+
 
 class TTK_LocaleGuardianUTF8 {
 public:

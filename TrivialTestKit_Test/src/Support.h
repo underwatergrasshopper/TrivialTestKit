@@ -32,6 +32,10 @@
 
 //------------------------------------------------------------------------------
 
+enum { MAX_REG_LINES = 100 };
+
+//------------------------------------------------------------------------------
+
 void SwitchStdOutToWideOriented();
 bool IsStdOutWideOriented();
 
@@ -262,13 +266,21 @@ inline std::wstring GetDefSolutionDir_UTF16() {
 }
 
 inline std::string GetSourceFileName_UTF8(
-    const std::string& file_name        = "\\TrivialTestKit_Test\\src\\LineDependents.h", 
-    const std::string& file_name_gcc    = "/TrivialTestKit_Test/src/LineDependents.h") {
+    const std::string& file_name        = "\\TrivialTestKit_Test\\src\\Tests.cpp", 
+    const std::string& file_name_gcc    = "/TrivialTestKit_Test/src/Tests.cpp") {
 #ifdef _MSC_VER
     return ToUTF8(GetDefSolutionDir_UTF16()) + file_name;
 #else
     return ReplaceAll(ToUTF8(GetDefSolutionDir_UTF16()), "\\", "/") + file_name_gcc;
 #endif
 }
+
+inline void PrintIfMissmatch(const std::string& output_contnet, const std::string& expected_output_contnet) {
+    if (output_contnet != expected_output_contnet) {
+        puts(output_contnet.c_str());
+        puts(expected_output_contnet.c_str());
+    }
+}
+
 
 #endif // SUPPORT_H_

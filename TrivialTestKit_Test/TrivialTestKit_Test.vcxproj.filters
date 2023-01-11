@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\LineDependents.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Support.h">
       <Filter>Header Files</Filter>
     </ClInclude>

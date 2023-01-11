@@ -2,18 +2,27 @@
 #define INUNICODEFOLDER_H_
 
 #include "TrivialTestKit.h"
-#include <string>
 
-// NOTE: !!! Success TestTTK_Assert function in Test.h depends on position of TTK_Assert{M|R} in this header file. 
-// If position of any of those functions change, don't forget update corresponding tests in TestTTK_Assert with new positions. 
+extern uint64_t g_test_finish_counter;
+extern uint64_t g_line[MAX_REG_LINES];
 
-inline void FailAssertInUnicodeFolder(bool& is_finished) {
-    is_finished = false;
-
-    TTK_ASSERT(10 == 5);
+inline void AssertFailInUnicodeFolder() {
+    TTK_ASSERT(true);
+    g_line[0] = __LINE__ + 1;
+    TTK_ASSERT(10 != 10);
     TTK_ASSERT(false);
 
-    is_finished = true;
+    g_test_finish_counter += 1;
+}
+
+inline void ExpectFailInUnicodeFolder() {
+    TTK_EXPECT(true);
+    g_line[0] = __LINE__ + 1;
+    TTK_EXPECT(10 != 10);
+    g_line[1] = __LINE__ + 1;
+    TTK_EXPECT(false);
+
+    g_test_finish_counter += 1;
 }
 
 #endif // INUNICODEFOLDER_H_

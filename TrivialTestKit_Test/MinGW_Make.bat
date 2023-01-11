@@ -53,16 +53,20 @@ set RETURN_PATH=..\\..\\..\\..\\TrivialTestKit_Test
 if "!IS_OK!" equ "True" (
     if "!ACTION!" equ "build" (
         call :BUILD
+        if !ERRORLEVEL! neq 0 exit /B !ERRORLEVEL!
     ) else if "!ACTION!" equ "rebuild" (
         call :CLEAN
         call :BUILD
+        if !ERRORLEVEL! neq 0 exit /B !ERRORLEVEL!
     ) else if "!ACTION!" equ "clean" (
         call :CLEAN
     ) else if "!ACTION!" equ "clean_all" (
         call :CLEAN_ALL
     ) else if "!ACTION!" equ "run" (
         call :BUILD
+        if !ERRORLEVEL! neq 0 exit /B !ERRORLEVEL!
         call :RUN
+        if !ERRORLEVEL! neq 0 exit /B !ERRORLEVEL!
     ) else (
         echo Run Error: Unknown action type: "!ACTION!".
     )
@@ -74,23 +78,25 @@ if "!IS_OK!" equ "True" (
 goto :EOF
 
 :CLEAN
-if exist .\\!BUILD_PATH! @rd /S /Q .\\!BUILD_PATH!
-exit /b
+    if exist .\\!BUILD_PATH! @rd /S /Q .\\!BUILD_PATH!
+    exit /B
 
 :CLEAN_ALL
-if exist .\\!BUILD_SUB_DIR! @rd /S /Q .\\!BUILD_SUB_DIR!
-exit /b
+    if exist .\\!BUILD_SUB_DIR! @rd /S /Q .\\!BUILD_SUB_DIR!
+    exit /B
 
 :BUILD
-if not exist !BUILD_PATH! md !BUILD_PATH!
-cmake -G "MinGW Makefiles" -D CMAKE_BUILD_TYPE=!BUILD_TYPE! -D  ARCHITECTURE=!ARCHITECTURE! -S . -B !BUILD_PATH! && cmake --build !BUILD_PATH!
-exit /b
+    if not exist !BUILD_PATH! md !BUILD_PATH!
+    cmake -G "MinGW Makefiles" -D CMAKE_BUILD_TYPE=!BUILD_TYPE! -D  ARCHITECTURE=!ARCHITECTURE! -S . -B !BUILD_PATH! && cmake --build !BUILD_PATH!
+    if !ERRORLEVEL! neq 0 exit /B !ERRORLEVEL!
+    exit /B
 
 :RUN
-if not exist !BUILD_PATH! md !BUILD_PATH!
-cd !BUILD_PATH!
-!EXE_FILE_NAME! !TEST_FLAG!
-cd !RETURN_PATH!
-exit /b
+    if not exist !BUILD_PATH! md !BUILD_PATH!
+    cd !BUILD_PATH!
+    !EXE_FILE_NAME! !TEST_FLAG!
+    cd !RETURN_PATH!
+    if !ERRORLEVEL! neq 0 exit /B !ERRORLEVEL!
+    exit /B
 
 :EOF

@@ -38,6 +38,8 @@
     <ClInclude Include="include\TrivialTestKit.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include=".github\workflows\build_and_test.yml" />
+    <None Include=".github\workflows\build_and_test_mingw.yml" />
     <None Include="MinGW_MakeTest.bat" />
     <None Include="Pack.bat" />
   </ItemGroup>

@@ -22,5 +22,7 @@
   <ItemGroup>
     <None Include="MinGW_MakeTest.bat" />
     <None Include="Pack.bat" />
+    <None Include=".github\workflows\build_and_test.yml" />
+    <None Include=".github\workflows\build_and_test_mingw.yml" />
   </ItemGroup>
 </Project>

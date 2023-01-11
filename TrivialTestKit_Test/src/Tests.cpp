@@ -201,26 +201,6 @@ void Test_TTK_Assert() {
         assert(fail_information == "");
     }
 
-    // assert success with return
-    {
-        const std::string output_file_name          = "log/Out_AssertSuccessWithReturn.txt";
-
-        bool is_finished = true;
-        {
-            Output output = Output(output_file_name);
-            assert(output.Access());
-
-            TTK_SetOutput(output.Access());
-
-            assert(SuccessAssertReturn(is_finished) == 0);
-        }
-        assert(is_finished);
-
-        const std::string fail_information = LoadFromFile_UTF8(output_file_name);
-
-        assert(fail_information == "");
-    }
-
     // assert fail
     {
         const std::string output_file_name          = "log/Out_AssertFail.txt";
@@ -280,48 +260,6 @@ void Test_TTK_Assert() {
 
         const std::string fail_information          = LoadFromFile_UTF8(output_file_name);
         const std::string expected_fail_information = "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:74] [condition:10 == 5] [message:Some message.]\n";
-
-        assert(fail_information == expected_fail_information);
-    }
-
-    // assert fail with return
-    {
-        const std::string output_file_name          = "log/Out_AssertFailWithReturn.txt";
-
-        bool is_finished = true;
-        {
-            Output output = Output(output_file_name);
-            assert(output.Access());
-
-            TTK_SetOutput(output.Access());
-
-            assert(FailAssertReturn(is_finished) == ASSERT_FAIL_RETURN);
-        }
-        assert(is_finished == false);
-
-        const std::string fail_information          = LoadFromFile_UTF8(output_file_name);
-        const std::string expected_fail_information = "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:32] [condition:10 == 5]\n";
-
-        assert(fail_information == expected_fail_information);
-    }
-
-    // assert fail with message and return
-    {
-        const std::string output_file_name          = "log/Out_AssertFailWithMessageAndReturn.txt";
-
-        bool is_finished = true;
-        {
-            Output output = Output(output_file_name);
-            assert(output.Access());
-
-            TTK_SetOutput(output.Access());
-
-            assert(FailAssertMessageReturn(is_finished) == ASSERT_FAIL_RETURN);
-        }
-        assert(is_finished == false);
-
-        const std::string fail_information          = LoadFromFile_UTF8(output_file_name);
-        const std::string expected_fail_information = "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:43] [condition:10 == 5] [message:Some message.]\n";
 
         assert(fail_information == expected_fail_information);
     }

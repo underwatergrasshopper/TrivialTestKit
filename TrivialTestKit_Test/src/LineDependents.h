@@ -26,27 +26,27 @@ inline void FailAssertMessage(bool& is_finished) {
     is_finished = true;
 }
 
-inline int FailAssertReturn(bool& is_finished) {
-    is_finished = false;
 
-    TTK_AssertR(10 == 5, ASSERT_FAIL_RETURN);
-    TTK_AssertR(false, 0);
 
-    is_finished = true;
 
-    return 0;
-}
 
-inline int FailAssertMessageReturn(bool& is_finished) {
-    is_finished = false;
 
-    TTK_AssertMR(10 == 5, "Some message.", ASSERT_FAIL_RETURN);
-    TTK_AssertMR(false, "", 0);
 
-    is_finished = true;
 
-    return 0;
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 inline void SuccessAssert(bool& is_finished) {
     is_finished = false;
@@ -57,16 +57,16 @@ inline void SuccessAssert(bool& is_finished) {
     is_finished = true;
 }
 
-inline int SuccessAssertReturn(bool& is_finished) {
-    is_finished = false;
 
-    TTK_AssertR(10 == 10, ASSERT_FAIL_RETURN);
-    TTK_AssertMR(10 == 10, "Some message.", ASSERT_FAIL_RETURN);
 
-    is_finished = true;
 
-    return 0;
-}
+
+
+
+
+
+
+
 
 inline void FailAssertMessageString(bool& is_finished) {
     is_finished = false;

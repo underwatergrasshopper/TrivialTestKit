@@ -50,12 +50,8 @@
 //                      Must resolve to bool type value.
 // message              (Optional) An addition message which will be displayed when condition fail. 
 //                      Type can by either an c-string or std::string. Encoding can be either ASCII or UTF8.
-// return_expression    (Optional) An expression which will be returned 
-//                      by caller function (which is test function) when condition fails.
 #define TTK_Assert(condition)                               if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), nullptr);  return; } (void)0
 #define TTK_AssertM(condition, message)                     if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), message);  return; } (void)0
-#define TTK_AssertR(condition, return_expression)           if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), nullptr);  return (return_expression); } (void)0
-#define TTK_AssertMR(condition, message, return_expression) if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), message);  return (return_expression); } (void)0
 
 // Notifies when it starts run. Place as first line in test function.
 #define TTK_NotifyTest()                                    TTK_InnerNotifyTest(__func__)
@@ -82,8 +78,6 @@ bool TTK_RunTests(const TTK_TestFnP_T (&tests)[NUMBER]);
 #ifdef TTK_SHORT_NAMES
 #define Assert              TTK_Assert
 #define AssertM             TTK_AssertM
-#define AssertR             TTK_AssertR
-#define AssertMR            TTK_AssertMR
 
 #define SetIsAbortAtFail    TTK_SetIsAbortAtFail
 #define EnableAbortAtFail   TTK_EnableAbortAtFail

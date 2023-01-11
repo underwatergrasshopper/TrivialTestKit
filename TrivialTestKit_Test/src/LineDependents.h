@@ -86,7 +86,7 @@ inline void FailAssertMessageString(bool& is_finished) {
 
 
 inline void TestD_Fail() {
-    TTK_NotifyTest();
+    //TTK_NotifyTest();
 
     TTK_Assert(true);
     TTK_Assert(5 == 7); // will fail

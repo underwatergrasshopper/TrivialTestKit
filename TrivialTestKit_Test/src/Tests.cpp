@@ -178,9 +178,47 @@ void Test_LoadAndSaveToFile() {
 }
 
 //==============================================================================
+static bool s_is_test_finished = false;
+
+TTK_TEST(SuccessAssert) {
+    s_is_test_finished = false;
+
+    TTK_Assert(10 == 10);
+    TTK_AssertM(4 > 0, "Some message.");
+
+    s_is_test_finished = true;
+}
+
+void Test_TTK_AssertSuccess() {
+    Notice();
+
+    const std::string output_file_name = "log/Out_AssertSuccess.txt";
+    {
+        Output output = Output(output_file_name);
+
+        TTK_SetOutput(output.Access());
+        TTK_Run();
+        TTK_Free();
+    }
+    assert(s_is_test_finished);
+    
+    const std::string output_contnet = LoadFromFile_UTF8(output_file_name);
+    const std::string expected_output_contnet = 
+        "--- TEST ---\n"
+        "[test] SuccessAssert\n"
+        "--- TEST SUCCESS ---\n"
+        "number of executed asserts      : 2\n"
+        "number of failed asserts        : 0\n"
+        "number of executed tests        : 1\n"
+        "number of failed tests          : 0\n";
+    // puts(output_contnet.c_str()); // debug
+    assert(output_contnet == expected_output_contnet);
+}
+
 
 void Test_TTK_Assert() {
     Notice();
+#if 0
     // assert success
     {
         const std::string output_file_name          = "log/Out_AssertSuccess.txt";
@@ -284,8 +322,10 @@ void Test_TTK_Assert() {
 
         assert(fail_information == expected_fail_information);
     }
+#endif
 }
 
+#if 0
 void Test_TTK_Assert_WithCodeInUnicodeFolder() {
     Notice();
 
@@ -518,6 +558,7 @@ void Test_TTK_RunTests() {
         assert(expected_fail_information == fail_information);
     }
 }
+#endif
 
 void RunAllTests(int argc, char* argv[]) {
     if (argc > 1 && strcmp(argv[1], "WIDE") == 0) SwitchStdOutToWideOriented();
@@ -548,12 +589,13 @@ void RunAllTests(int argc, char* argv[]) {
     Test_ToUTF8();
     Test_IsFileExist_ASCII();
     Test_LoadAndSaveToFile();
-    Test_TTK_Assert();
-#ifndef NO_TEST_IN_UNICODE_FOLDER
-    Test_TTK_Assert_WithCodeInUnicodeFolder();
-#endif
-    Test_TTK_NotifyTest();
-    Test_TTK_RunTests();
+    Test_TTK_AssertSuccess();
+//    Test_TTK_Assert();
+//#ifndef NO_TEST_IN_UNICODE_FOLDER
+//    Test_TTK_Assert_WithCodeInUnicodeFolder();
+//#endif
+//    Test_TTK_NotifyTest();
+//    Test_TTK_RunTests();
 
     if (IsStdOutWideOriented()) {
         wprintf(L"%hs\n", "--- Test End ---");

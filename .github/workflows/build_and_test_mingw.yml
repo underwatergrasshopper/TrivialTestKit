@@ -1,4 +1,4 @@
-name: Build and Test (MinGW)
+name: Build and Test (MinGW CLang LLVM)
 
 on:
   push:
@@ -49,7 +49,7 @@ jobs:
           ./MinGW_MakeTest.bat build ${{ matrix.build_mode }} ${{ matrix.architecture }}
         
       - name: Test
-        working-directory: ${{env.GITHUB_WORKSPACE}}/build/mingw_llvm/${{ matrix.arch_folder }}/${{ matrix.build_mode }}
+        working-directory: ${{env.GITHUB_WORKSPACE}}\build\mingw_llvm\${{ matrix.arch_folder }}\${{ matrix.build_mode }}
         run: |
           $env:Path = "C:\${{ matrix.mingw_folder }}\bin;" + $env:Path 
           ./TrivialTestKit_Test.exe

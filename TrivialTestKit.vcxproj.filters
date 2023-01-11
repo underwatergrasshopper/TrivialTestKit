@@ -19,4 +19,8 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="MinGW_MakeTest.bat" />
+    <None Include="Pack.bat" />
+  </ItemGroup>
 </Project>

@@ -1,13 +1,13 @@
 @echo off
 setlocal EnableDelayedExpansion
 
-:: <none>, run, clean
+:: <none>, build, rebuild, clean, run
 set ACTION=%1
 if "%ACTION%" equ "" set ACTION=run
 
 :: <none>, Debug, Release, DebugWIDE, ReleaseWIDE
 set BUILD_TYPE=%2
-if "%BUILD_TYPE%" equ "" set BUILD_TYPE=Debug
+if "%BUILD_TYPE%" equ "" set BUILD_TYPE=Release
 
 :: <none>, 32, 64
 set ARCHITECTURE=%3

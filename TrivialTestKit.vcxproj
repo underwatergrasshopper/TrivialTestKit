@@ -37,6 +37,10 @@
   <ItemGroup>
     <ClInclude Include="include\TrivialTestKit.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="MinGW_MakeTest.bat" />
+    <None Include="Pack.bat" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

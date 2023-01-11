@@ -69,10 +69,12 @@ if "!IS_OK!" equ "True" (
         if !ERRORLEVEL! neq 0 exit /B !ERRORLEVEL!
     ) else (
         echo Run Error: Unknown action type: "!ACTION!".
+        exit /B 1
     )
     
 ) else (
     echo Run Error: Unknown build type: "!BUILD_TYPE!".
+    exit /B 1
 )
 
 goto :EOF

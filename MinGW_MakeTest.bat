@@ -12,6 +12,7 @@
 ::      <architecture>
 ::          32
 ::          64
+::      <test_flag>
 
 cd TrivialTestKit_Test
 call MinGW_Make.bat %*

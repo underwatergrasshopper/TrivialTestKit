@@ -10,8 +10,8 @@
 inline void FailAssertInUnicodeFolder(bool& is_finished) {
     is_finished = false;
 
-    TTK_Assert(10 == 5);
-    TTK_Assert(false);
+    TTK_ASSERT(10 == 5);
+    TTK_ASSERT(false);
 
     is_finished = true;
 }

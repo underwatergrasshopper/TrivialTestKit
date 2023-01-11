@@ -180,11 +180,11 @@ void Test_LoadAndSaveToFile() {
 //==============================================================================
 static bool s_is_test_finished = false;
 
-TTK_TEST(SuccessAssert) {
+TTK_TEST(SuccessAssert, 0) {
     s_is_test_finished = false;
 
-    TTK_Assert(10 == 10);
-    TTK_AssertM(4 > 0, "Some message.");
+    TTK_ASSERT(10 == 10);
+    TTK_ASSERT_M(4 > 0, "Some message.");
 
     s_is_test_finished = true;
 }

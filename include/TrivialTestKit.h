@@ -50,29 +50,21 @@
 //                      Must resolve to bool type value.
 // message              (Optional) An addition message which will be displayed when condition fail. 
 //                      Type can by either an c-string or std::string. Encoding can be either ASCII or UTF8.
-#define TTK_Assert(condition)               if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), nullptr);  return; } TTK_ToData().number_of_executed_asserts += 1; (void)0
-#define TTK_AssertM(condition, message)     if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), message);  return; } TTK_ToData().number_of_executed_asserts += 1; (void)0
+#define TTK_ASSERT(condition)               if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), nullptr);  return; } TTK_ToData().number_of_executed_asserts += 1; (void)0
+#define TTK_ASSERT_M(condition, message)    if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), message);  return; } TTK_ToData().number_of_executed_asserts += 1; (void)0
 
-// Notifies when it starts run. Place as first line in test function.
-#define TTK_NotifyTest()                                    TTK_InnerNotifyTest(__func__)
+// Expect count as assert but do not abort test.
+#define TTK_EXPECT(condition)               if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), nullptr); } TTK_ToData().number_of_executed_asserts += 1; (void)0
+#define TTK_EXPECT_M(condition, message)    if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), message); } TTK_ToData().number_of_executed_asserts += 1; (void)0
+
 
 // Test function pointer type.
 using TTK_TestFnP_T = void (*)();
 
-
-// Runs provided tests and displays result.
+// Runs all tests.
 // return   true - if all tests finished without failing any assertion; 
 //          false - otherwise.
-template <uint64_t NUMBER> 
-bool TTK_RunTests(const TTK_TestFnP_T (&tests)[NUMBER]);
-
-#ifdef TTK_SHORT_NAMES
-#define Assert              TTK_Assert
-#define AssertM             TTK_AssertM
-
-#define NotifyTest          TTK_NotifyTest
-#define RunTests            TTK_RunTests
-#endif // TTK_SHORT_NAMES
+bool TTK_Run();
 
 // Sets output where all generated communicates by this library will be sent. Can be stdout, stderr or opened file.
 void TTK_SetOutput(FILE* output);
@@ -97,9 +89,15 @@ void TTK_ForceOutputOrientation(int orientation);
 
 //------------------------------------------------------------------------------
 
+enum : uint64_t {
+    TTK_DISABLE     =   0x0001,     // disable test
+    TTK_NO_ABORT    =   0x0002,     // no abort at test fail
+};
+
 struct TTK_TestData{
-    void (*function)();
-    const char* name;
+    TTK_TestFnP_T   function;
+    const char*     name;
+    uint64_t        mode;      // bitfield
 };
 
 struct TTK_Data {
@@ -132,10 +130,12 @@ inline TTK_Data& TTK_ToData() {
 
 //------------------------------------------------------------------------------
 
-inline bool TTK_AddTest(void (*function)(), const char* name) {
+inline bool TTK_AddTest(const TTK_TestData& test_data) {
     auto& data = TTK_ToData();
-    data.tests[data.number_of_tests] = {function, name};
+
+    data.tests[data.number_of_tests] = test_data;
     data.number_of_tests += 1; 
+
     return true;
 }
 
@@ -145,10 +145,12 @@ inline void TTK_Free() {
     data.number_of_tests = 0;
 }
 
-#define TTK_TEST(TestFunction) \
+#define TTK_TEST(TestFunction, mode) \
     void TestFunction(); \
-    static bool s_is_added_##TestFunction = TTK_AddTest(TestFunction, #TestFunction); \
+    static bool s_is_added_##TestFunction = TTK_AddTest({TestFunction, #TestFunction, mode}); \
     void TestFunction()
+
+#define TTK_ADD_TEST(TestFunction, mode) TTK_AddTest({TestFunction, #TestFunction, mode});
 
 class TTK_LocaleGuardianUTF8 {
 public:
@@ -246,21 +248,24 @@ bool TTK_Run() {
     for (uint64_t index = 0; index < data.number_of_tests; ++index) {
         const auto& test_data = data.tests[index];
 
-        if (TTK_SolveOutputOrientation() > 0) {
-            fwprintf(data.output, L"[test] %hs\n", test_data.name);
-        } else {
-            fprintf(data.output, "[test] %s\n", test_data.name);
-        }
-        fflush(data.output);
+        if (!(test_data.mode & TTK_DISABLE)) {
+            if (TTK_SolveOutputOrientation() > 0) {
+                fwprintf(data.output, L"[test] %hs\n", test_data.name);
+            } else {
+                fprintf(data.output, "[test] %s\n", test_data.name);
+            }
+            fflush(data.output);
 
-        test_data.function();
+            test_data.function();
 
-        data.number_of_executed_tests += 1;
-        if (data.number_of_failed_asserts != previous_number_of_failed_asserts) {
-            data.number_of_failed_tests += 1;
-            break;
+            data.number_of_executed_tests += 1;
+            if (data.number_of_failed_asserts != previous_number_of_failed_asserts) {
+                data.number_of_failed_tests += 1;
+
+                if (!(test_data.mode & TTK_NO_ABORT)) break;
+            }
+            previous_number_of_failed_asserts = data.number_of_failed_asserts;
         }
-        previous_number_of_failed_asserts = data.number_of_failed_asserts;
     }
 
     const bool is_success = data.number_of_failed_tests == 0;

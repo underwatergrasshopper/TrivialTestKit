@@ -190,7 +190,7 @@ void Test_TTK_NoTest() {
 
         TTK_SetOutput(output.Access());
         TTK_Run();
-        TTK_Free();
+        TTK_Clear();
     }
 
     const std::string output_contnet = LoadFromFile_UTF8(output_file_name);
@@ -220,7 +220,7 @@ void Test_TTK_EmptyTest() {
         TTK_SetOutput(output.Access());
         TTK_ADD_TEST(EmptyTest, 0);
         TTK_Run();
-        TTK_Free();
+        TTK_Clear();
     }
     assert(g_test_finish_counter == 1);
 
@@ -257,7 +257,7 @@ void Test_TTK_AssertSuccess() {
         TTK_SetOutput(output.Access());
         TTK_ADD_TEST(AssertSuccess, 0);
         TTK_Run();
-        TTK_Free();
+        TTK_Clear();
     }
     assert(g_test_finish_counter == 1);
     
@@ -294,7 +294,7 @@ void Test_TTK_AssertSuccessString() {
         TTK_SetOutput(output.Access());
         TTK_ADD_TEST(AssertSuccessString, 0);
         TTK_Run();
-        TTK_Free();
+        TTK_Clear();
     }
     assert(g_test_finish_counter == 1);
 
@@ -331,7 +331,7 @@ void Test_TTK_AssertSuccessUTF8() {
         TTK_SetOutput(output.Access());
         TTK_ADD_TEST(AssertSuccessUTF8, 0);
         TTK_Run();
-        TTK_Free();
+        TTK_Clear();
     }
     assert(g_test_finish_counter == 1);
 
@@ -369,7 +369,7 @@ void Test_TTK_AssertFail() {
         TTK_SetOutput(output.Access());
         TTK_ADD_TEST(AssertFail, 0);
         TTK_Run();
-        TTK_Free();
+        TTK_Clear();
     }
     assert(g_test_finish_counter == 0);
 
@@ -398,7 +398,7 @@ void Test_TTK_AssertFailInUnicodeFolder() {
         TTK_SetOutput(output.Access());
         TTK_ADD_TEST(AssertFailInUnicodeFolder, 0);
         TTK_Run();
-        TTK_Free();
+        TTK_Clear();
     }
     assert(g_test_finish_counter == 0);
 
@@ -441,7 +441,7 @@ void Test_TTK_AssertFailMessage() {
         TTK_SetOutput(output.Access());
         TTK_ADD_TEST(AssertFailMessage, 0);
         TTK_Run();
-        TTK_Free();
+        TTK_Clear();
     }
     assert(g_test_finish_counter == 0);
 
@@ -480,7 +480,7 @@ void Test_TTK_AssertFailMessageString() {
         TTK_SetOutput(output.Access());
         TTK_ADD_TEST(AssertFailMessageString, 0);
         TTK_Run();
-        TTK_Free();
+        TTK_Clear();
     }
     assert(g_test_finish_counter == 0);
 
@@ -519,7 +519,7 @@ void Test_TTK_AssertFailMessageUTF8() {
         TTK_SetOutput(output.Access());
         TTK_ADD_TEST(AssertFailMessageUTF8, 0);
         TTK_Run();
-        TTK_Free();
+        TTK_Clear();
     }
     assert(g_test_finish_counter == 0);
 
@@ -558,7 +558,7 @@ void Test_TTK_ExpectSuccess() {
         TTK_SetOutput(output.Access());
         TTK_ADD_TEST(ExpectSuccess, 0);
         TTK_Run();
-        TTK_Free();
+        TTK_Clear();
     }
     assert(g_test_finish_counter == 1);
 
@@ -595,7 +595,7 @@ void Test_TTK_ExpectSuccessString() {
         TTK_SetOutput(output.Access());
         TTK_ADD_TEST(ExpectSuccessString, 0);
         TTK_Run();
-        TTK_Free();
+        TTK_Clear();
     }
     assert(g_test_finish_counter == 1);
 
@@ -632,7 +632,7 @@ void Test_TTK_ExpectSuccessUTF8() {
         TTK_SetOutput(output.Access());
         TTK_ADD_TEST(ExpectSuccessUTF8, 0);
         TTK_Run();
-        TTK_Free();
+        TTK_Clear();
     }
     assert(g_test_finish_counter == 1);
 
@@ -671,7 +671,7 @@ void Test_TTK_ExpectFail() {
         TTK_SetOutput(output.Access());
         TTK_ADD_TEST(ExpectFail, 0);
         TTK_Run();
-        TTK_Free();
+        TTK_Clear();
     }
     assert(g_test_finish_counter == 1);
 
@@ -701,7 +701,7 @@ void Test_TTK_ExpectFailInUnicodeFolder() {
         TTK_SetOutput(output.Access());
         TTK_ADD_TEST(ExpectFailInUnicodeFolder, 0);
         TTK_Run();
-        TTK_Free();
+        TTK_Clear();
     }
     assert(g_test_finish_counter == 1);
 
@@ -745,7 +745,7 @@ void Test_TTK_ExpectFailMessage() {
         TTK_SetOutput(output.Access());
         TTK_ADD_TEST(ExpectFailMessage, 0);
         TTK_Run();
-        TTK_Free();
+        TTK_Clear();
     }
     assert(g_test_finish_counter == 1);
 
@@ -786,7 +786,7 @@ void Test_TTK_ExpectFailMessageString() {
         TTK_SetOutput(output.Access());
         TTK_ADD_TEST(ExpectFailMessageString, 0);
         TTK_Run();
-        TTK_Free();
+        TTK_Clear();
     }
     assert(g_test_finish_counter == 1);
 
@@ -827,7 +827,7 @@ void Test_TTK_ExpectFailMessageUTF8() {
         TTK_SetOutput(output.Access());
         TTK_ADD_TEST(ExpectFailMessageUTF8, 0);
         TTK_Run();
-        TTK_Free();
+        TTK_Clear();
     }
     assert(g_test_finish_counter == 1);
 
@@ -919,7 +919,7 @@ void Test_TTK_RunSuccess() {
         TTK_ADD_TEST(TestExpectSuccessA, 0);
         TTK_ADD_TEST(TestExpectSuccessB, 0);
         TTK_Run();
-        TTK_Free();
+        TTK_Clear();
     }
     assert(g_test_finish_counter == 4);
 
@@ -954,7 +954,7 @@ void Test_TTK_RunFail() {
         TTK_ADD_TEST(TestExpectSuccessA, 0);
         TTK_ADD_TEST(TestExpectSuccessB, 0);
         TTK_Run();
-        TTK_Free();
+        TTK_Clear();
     }
     assert(g_test_finish_counter == 1);
 
@@ -989,9 +989,12 @@ void Test_TTK_RunFailNoAbort() {
         TTK_ADD_TEST(TestExpectSuccessA, 0);
         TTK_ADD_TEST(TestExpectSuccessB, 0);
         TTK_Run();
-        TTK_Free();
+        TTK_Clear();
     }
+    
     assert(g_test_finish_counter == 2);
+
+    
 
     const std::string output_contnet = LoadFromFile_UTF8(output_file_name);
     const std::string expected_output_contnet = 
@@ -1027,7 +1030,7 @@ void Test_TTK_RunFailNoAbort2() {
         TTK_ADD_TEST(TestExpectSuccessA, 0);
         TTK_ADD_TEST(TestExpectSuccessB, 0);
         TTK_Run();
-        TTK_Free();
+        TTK_Clear();
     }
     assert(g_test_finish_counter == 6);
 
@@ -1067,7 +1070,7 @@ void Test_TTK_RunSuccessDisable() {
         TTK_ADD_TEST(TestExpectSuccessA, 0);
         TTK_ADD_TEST(TestExpectSuccessB, TTK_DISABLE);
         TTK_Run();
-        TTK_Free();
+        TTK_Clear();
     }
     assert(g_test_finish_counter == 2);
 
@@ -1154,7 +1157,7 @@ void Test_TTK_RunFail_InPlace() {
 
         TTK_SetOutput(output.Access());
         TTK_Run();
-        TTK_Free();
+        TTK_Clear();
     }
     assert(g_test_finish_counter == 4);
 
@@ -1234,7 +1237,7 @@ void RunAllTests(int argc, char* argv[]) {
     if (IsFlag("IN_PLACE")) {
         Test_TTK_RunFail_InPlace();
     } else {
-        TTK_Free();
+        TTK_Clear();
 
         Test_TTK_NoTest();
         Test_TTK_EmptyTest();

@@ -111,7 +111,7 @@ int main() {
     TTK_ADD_TEST(TestD, 0);
 
     TTK_Run();
-    TTK_Free();
+    TTK_Clear();
 #endif 
 
     return 0;

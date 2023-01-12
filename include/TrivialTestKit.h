@@ -42,6 +42,7 @@
 #undef WIN32_LEAN_AND_MEAN
 
 #include <string>
+#include <vector>
 #include <utility>
 
 // Checks a condition. If the condition failed (is false), then information about fail is displayed.
@@ -114,14 +115,23 @@ struct TTK_Data {
 
     bool            is_request_abort;
 
-    TTK_TestData    tests[1024];
-    uint64_t        number_of_tests;
+    std::vector<TTK_TestData> tests;
 };
 
 inline TTK_Data TTK_MakeDefaultData() {
     TTK_Data data = {};
 
-    data.output = stdout;
+    data.output                         = stdout;
+
+    data.number_of_executed_asserts     = 0;
+    data.number_of_failed_asserts       = 0;
+
+    data.number_of_executed_tests       = 0;
+    data.number_of_failed_tests         = 0;
+
+    data.forced_orientation             = false;
+
+    data.is_request_abort               = false;
 
     return data;
 }
@@ -135,17 +145,15 @@ inline TTK_Data& TTK_ToData() {
 
 inline bool TTK_AddTest(const TTK_TestData& test_data) {
     auto& data = TTK_ToData();
-
-    data.tests[data.number_of_tests] = test_data;
-    data.number_of_tests += 1; 
-
+    
+    data.tests.push_back(test_data);
     return true;
 }
 
-inline void TTK_Free() {
+inline void TTK_Clear() {
     auto& data = TTK_ToData();
 
-    data.number_of_tests = 0;
+    data.tests.clear();
 }
 
 // mode     Bitfield made from any combination of flags: 0, TTK_DEFAULT, TTK_DISABLE, TTK_NO_ABORT.
@@ -254,9 +262,7 @@ inline bool TTK_Run() {
 
     uint64_t previous_number_of_failed_asserts = 0;
 
-    for (uint64_t index = 0; index < data.number_of_tests; ++index) {
-        const auto& test_data = data.tests[index];
-
+    for (const auto& test_data : data.tests) {
         if (!(test_data.mode & TTK_DISABLE)) {
             if (TTK_SolveOutputOrientation() > 0) {
                 fwprintf(data.output, L"[test] %hs\n", test_data.name);
@@ -264,9 +270,9 @@ inline bool TTK_Run() {
                 fprintf(data.output, "[test] %s\n", test_data.name);
             }
             fflush(data.output);
-
+   
             test_data.function();
-
+   
             data.number_of_executed_tests += 1;
             if (data.number_of_failed_asserts != previous_number_of_failed_asserts) { 
                 previous_number_of_failed_asserts = data.number_of_failed_asserts;

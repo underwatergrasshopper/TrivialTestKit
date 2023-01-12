@@ -26,5 +26,7 @@
     <None Include=".github\workflows\build_and_test_mingw.yml" />
     <None Include="CHANGELOG.md" />
     <None Include="README.md" />
+    <None Include="Test.bat" />
+    <None Include="MinGW_Test.bat" />
   </ItemGroup>
 </Project>

@@ -401,10 +401,13 @@ void Test_TTK_AssertFailInUnicodeFolder() {
     assert(g_test_finish_counter == 0);
 
     const std::string output_contnet = LoadFromFile_UTF8(output_file_name);
+    // Note: Watch out. This is a hack. CMake replaces back slashed to forward slashes if assert happens in .h file instead in .cpp file. 
+    // And CMake can't process unicode characters in path to .cpp files, but don't have this problem with path to include folders.
+    // To disable this test, build with NO_TEST_IN_UNICODE_FOLDER flag.
     const std::string expected_output_contnet = 
         "--- TEST ---\n"
-        "[test] AssertFailInUnicodeFolder\n"
-        "    [fail] [file:" + GetSourceFileName_UTF8(u8"\\TrivialTestKit_Test\\src\\Folder\u0444\\InUnicodeFolder.h", u8"/TrivialTestKit_Test/src/Folder\u0444/InUnicodeFolder.h") + "] [line:" + std::to_string(g_line[0]) + "] [condition:10 != 10]\n"
+        "[test] AssertFailInUnicodeFolder\n"                    
+        "    [fail] [file:" + GetSourceFileName_UTF8(!IsMSVC(), u8"\\TrivialTestKit_Test\\src\\Folder\u0444\\InUnicodeFolder.h") + "] [line:" + std::to_string(g_line[0]) + "] [condition:10 != 10]\n"
         "--- TEST FAIL ---\n"
         "number of executed asserts      : 1\n"
         "number of failed asserts        : 1\n"
@@ -701,11 +704,14 @@ void Test_TTK_ExpectFailInUnicodeFolder() {
     assert(g_test_finish_counter == 1);
 
     const std::string output_contnet = LoadFromFile_UTF8(output_file_name);
+    // Note: Watch out. This is a hack. CMake replaces back slashed to forward slashes if assert happens in .h file instead in .cpp file. 
+    // And CMake can't process unicode characters in path to .cpp files, but don't have this problem with path to include folders.
+    // To disable this test, run test with third flag as NO_TEST_IN_UNICODE_FOLDER. Example: TrivialTestKit_Test.exe - - NO_TEST_IN_UNICODE_FOLDER.
     const std::string expected_output_contnet = 
         "--- TEST ---\n"
         "[test] ExpectFailInUnicodeFolder\n"
-        "    [fail] [file:" + GetSourceFileName_UTF8(u8"\\TrivialTestKit_Test\\src\\Folder\u0444\\InUnicodeFolder.h", u8"/TrivialTestKit_Test/src/Folder\u0444/InUnicodeFolder.h") + "] [line:" + std::to_string(g_line[0]) + "] [condition:10 != 10]\n"
-        "    [fail] [file:" + GetSourceFileName_UTF8(u8"\\TrivialTestKit_Test\\src\\Folder\u0444\\InUnicodeFolder.h", u8"/TrivialTestKit_Test/src/Folder\u0444/InUnicodeFolder.h") + "] [line:" + std::to_string(g_line[1]) + "] [condition:false]\n"
+        "    [fail] [file:" + GetSourceFileName_UTF8(!IsMSVC(), u8"\\TrivialTestKit_Test\\src\\Folder\u0444\\InUnicodeFolder.h") + "] [line:" + std::to_string(g_line[0]) + "] [condition:10 != 10]\n"
+        "    [fail] [file:" + GetSourceFileName_UTF8(!IsMSVC(), u8"\\TrivialTestKit_Test\\src\\Folder\u0444\\InUnicodeFolder.h") + "] [line:" + std::to_string(g_line[1]) + "] [condition:false]\n"
         "--- TEST FAIL ---\n"
         "number of executed asserts      : 3\n"
         "number of failed asserts        : 2\n"
@@ -1138,7 +1144,7 @@ void Test_TTK_RunFail_InPlace() {
     Notice();
 
     g_test_finish_counter = 0;
-    const std::string output_file_name = "log/Out_RunSuccess.txt";
+    const std::string output_file_name = "log/Out_RunFail_InPlace.txt";
     {
         Output output = Output(output_file_name);
 
@@ -1169,7 +1175,14 @@ void Test_TTK_RunFail_InPlace() {
 }
 
 void RunAllTests(int argc, char* argv[]) {
-    if (argc > 1 && strcmp(argv[1], "WIDE") == 0) SwitchStdOutToWideOriented();
+
+    for (int ix = 0; ix < argc; ++ix) puts(argv[ix]);
+
+    auto IsFlag = [&argc, &argv](int index, const char* flag_name) {
+        return argc > index && strcmp(argv[index], flag_name) == 0;
+    };
+
+    if (IsFlag(1, "WIDE")) SwitchStdOutToWideOriented();
 
     if (IsStdOutWideOriented()) {
         _wsystem(L"if exist log @rd /S /Q log");
@@ -1198,36 +1211,39 @@ void RunAllTests(int argc, char* argv[]) {
     Test_IsFileExist_ASCII();
     Test_LoadAndSaveToFile();
 
+    if (IsFlag(2, "IN_PLACE")) {
+        Test_TTK_RunFail_InPlace();
+    } else {
+        TTK_Free();
 
-    Test_TTK_RunFail_InPlace();
+        Test_TTK_NoTest();
+        Test_TTK_EmptyTest();
+        Test_TTK_AssertSuccess();
+        Test_TTK_AssertSuccessString();
+        Test_TTK_AssertSuccessUTF8();
+        Test_TTK_AssertFail();
 
-    Test_TTK_NoTest();
-    Test_TTK_EmptyTest();
-    Test_TTK_AssertSuccess();
-    Test_TTK_AssertSuccessString();
-    Test_TTK_AssertSuccessUTF8();
-    Test_TTK_AssertFail();
-#ifndef NO_TEST_IN_UNICODE_FOLDER
-    Test_TTK_AssertFailInUnicodeFolder();
-#endif
-    Test_TTK_AssertFailMessage();
-    Test_TTK_AssertFailMessageString();
-    Test_TTK_AssertFailMessageUTF8();
-    Test_TTK_ExpectSuccess();
-    Test_TTK_ExpectSuccessString();
-    Test_TTK_ExpectSuccessUTF8();
-    Test_TTK_ExpectFail();
-#ifndef NO_TEST_IN_UNICODE_FOLDER
-    Test_TTK_ExpectFailInUnicodeFolder();
-#endif
-    Test_TTK_ExpectFailMessage();
-    Test_TTK_ExpectFailMessageString();
-    Test_TTK_ExpectFailMessageUTF8();
-    Test_TTK_RunSuccess();
-    Test_TTK_RunFail();
-    Test_TTK_RunFailNoAbort();
-    Test_TTK_RunFailNoAbort2();
-    Test_TTK_RunSuccessDisable();
+        if (!IsFlag(3, "NO_TEST_IN_UNICODE_FOLDER")) Test_TTK_AssertFailInUnicodeFolder();
+
+        Test_TTK_AssertFailMessage();
+        Test_TTK_AssertFailMessageString();
+        Test_TTK_AssertFailMessageUTF8();
+        Test_TTK_ExpectSuccess();
+        Test_TTK_ExpectSuccessString();
+        Test_TTK_ExpectSuccessUTF8();
+        Test_TTK_ExpectFail();
+
+        if (!IsFlag(3, "NO_TEST_IN_UNICODE_FOLDER")) Test_TTK_ExpectFailInUnicodeFolder();
+
+        Test_TTK_ExpectFailMessage();
+        Test_TTK_ExpectFailMessageString();
+        Test_TTK_ExpectFailMessageUTF8();
+        Test_TTK_RunSuccess();
+        Test_TTK_RunFail();
+        Test_TTK_RunFailNoAbort();
+        Test_TTK_RunFailNoAbort2();
+        Test_TTK_RunSuccessDisable();
+    }
 
     if (IsStdOutWideOriented()) {
         wprintf(L"%hs\n", "--- Test End ---");

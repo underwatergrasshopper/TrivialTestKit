@@ -13,8 +13,9 @@ if "%BUILD_TYPE%" equ "" set BUILD_TYPE=Release
 set ARCHITECTURE=%3
 if "%ARCHITECTURE%" equ "" set ARCHITECTURE=64
 
-:: <none>, <word>
-set TEST_FLAG=%4
+:: <none>, <word>( <word>)*
+set TEST_FLAGS=
+call :FETCH_TEST_FLAGS %*
 
 if not exist .\\MinGW_MakeCache.bat (
     echo set MINGW32_BIN_PATH=
@@ -49,6 +50,8 @@ if "!ARCHITECTURE!" equ "32" set ARCH_PRE=Win32
 set BUILD_SUB_DIR=..\\build\\mingw_llvm
 set BUILD_PATH=!BUILD_SUB_DIR!\\!ARCH_PRE!\\!BUILD_TYPE!
 set RETURN_PATH=..\\..\\..\\..\\TrivialTestKit_Test
+
+set ERR_PASS=0
 
 if "!IS_OK!" equ "True" (
     if "!ACTION!" equ "build" (
@@ -89,6 +92,7 @@ goto :EOF
 
 :BUILD
     if not exist !BUILD_PATH! md !BUILD_PATH!
+    set BUILD_PATH=!BUILD_PATH:\\=/!
     cmake -G "MinGW Makefiles" -D CMAKE_BUILD_TYPE=!BUILD_TYPE! -D  ARCHITECTURE=!ARCHITECTURE! -S . -B !BUILD_PATH! && cmake --build !BUILD_PATH!
     if !ERRORLEVEL! neq 0 exit /B !ERRORLEVEL!
     exit /B
@@ -96,9 +100,21 @@ goto :EOF
 :RUN
     if not exist !BUILD_PATH! md !BUILD_PATH!
     cd !BUILD_PATH!
-    !EXE_FILE_NAME! !TEST_FLAG!
+    !EXE_FILE_NAME! !TEST_FLAGS!
+    if !ERRORLEVEL! neq 0 set ERR_PASS=!ERRORLEVEL!
     cd !RETURN_PATH!
-    if !ERRORLEVEL! neq 0 exit /B !ERRORLEVEL!
+    if !ERR_PASS! neq 0 exit /B !ERR_PASS!
+
+    exit /B
+    
+:FETCH_TEST_FLAGS
+    set TEST_FLAGS=
+    :FETCH_TEST_FLAG_LOOP
+        if "%4" equ "" goto :END_FETCH_TEST_FLAGS
+        set TEST_FLAGS=!TEST_FLAGS! %4
+        shift
+        goto :FETCH_TEST_FLAG_LOOP
+    :END_FETCH_TEST_FLAGS
     exit /B
 
 :EOF

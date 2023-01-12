@@ -42,8 +42,10 @@
     <None Include=".github\workflows\build_and_test_mingw.yml" />
     <None Include="CHANGELOG.md" />
     <None Include="MinGW_MakeTest.bat" />
+    <None Include="MinGW_Test.bat" />
     <None Include="Pack.bat" />
     <None Include="README.md" />
+    <None Include="Test.bat" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

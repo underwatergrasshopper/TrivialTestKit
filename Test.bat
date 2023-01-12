@@ -1,3 +1,4 @@
+:: Runs all unit tests (Visual Studio).
 @echo off
 setlocal EnableDelayedExpansion
 
@@ -8,8 +9,10 @@ set SLN_FILE=TrivialTestKit.sln
 set TEST_EXECUTABLE=TrivialTestKit_Test.exe
 set TEST_PROJECT_NAME=TrivialTestKit_Test
 
-set NO_FLAG_INDICATOR=NO_FLAG
-set FLAG_LIST=NO_FLAG WIDE
+set NO_FLAG_INDICATOR=
+
+:: each parameter in set is separated by +, later + is replaced by spaces when set of flags is forwarded as parameters to test executable
+set FLAG_SET_LIST=-+-+- WIDE+-+- -+IN_PLACE+- WIDE+IN_PLACE+- 
 
 set PLATFORM_LIST=x86 x64
 set CONFIGURATION_LIST=Debug Release
@@ -74,11 +77,12 @@ for %%P in (!PLATFORM_LIST!) do (
             exit /B 1
         )
         
-        for %%F in (!FLAG_LIST!) do (
-            set FLAG=%%F
-            if "!FLAG!" equ "!NO_FLAG_INDICATOR!" set FLAG=
+        for %%F in (!FLAG_SET_LIST!) do (
+            set FLAG_SET=%%F
+            set FLAG_SET=!FLAG_SET:+= !
+            if "!FLAG_SET!" equ "!NO_FLAG_INDICATOR!" set FLAG_SET=
             
-            set COMMAND=!TEST_EXECUTABLE! !FLAG!
+            set COMMAND=!TEST_EXECUTABLE! !FLAG_SET!
             
             echo.
             echo Command ^(!CONFIGURATION!, !PLATFORM!^): !COMMAND!

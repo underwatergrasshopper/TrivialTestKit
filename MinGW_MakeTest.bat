@@ -1,5 +1,6 @@
 @echo off
-
+setlocal EnableDelayedExpansion
+set ERR_PASS=0
 :: MinGW_MakeTest <action> <mode> <architecture>
 ::      <action>
 ::          build
@@ -12,8 +13,12 @@
 ::      <architecture>
 ::          32
 ::          64
-::      <test_flag>
+::      <test_flags>
+::          <word>( <word>)*
 
 cd TrivialTestKit_Test
 call MinGW_Make.bat %*
+if !ERRORLEVEL! neq 0 set ERR_PASS=!ERRORLEVEL!
 cd ..
+if !ERR_PASS! neq 0 exit /B !ERR_PASS!
+exit /B

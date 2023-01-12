@@ -32,10 +32,6 @@
 
 //------------------------------------------------------------------------------
 
-enum { MAX_REG_LINES = 100 };
-
-//------------------------------------------------------------------------------
-
 void SwitchStdOutToWideOriented();
 bool IsStdOutWideOriented();
 
@@ -265,14 +261,11 @@ inline std::wstring GetDefSolutionDir_UTF16() {
     return cwd.substr(0, pos);
 }
 
-inline std::string GetSourceFileName_UTF8(
-    const std::string& file_name        = "\\TrivialTestKit_Test\\src\\Tests.cpp", 
-    const std::string& file_name_gcc    = "/TrivialTestKit_Test/src/Tests.cpp") {
-#ifdef _MSC_VER
-    return ToUTF8(GetDefSolutionDir_UTF16()) + file_name;
-#else
-    return ReplaceAll(ToUTF8(GetDefSolutionDir_UTF16()), "\\", "/") + file_name_gcc;
-#endif
+inline std::string GetSourceFileName_UTF8(bool is_convert_backslash_to_slash = false, const std::string& file_name  = "\\TrivialTestKit_Test\\src\\Tests.cpp") {
+    std::string full_path = ToUTF8(GetDefSolutionDir_UTF16()) + file_name;
+
+    if (is_convert_backslash_to_slash) return ReplaceAll(full_path, "\\", "/");
+    return full_path;
 }
 
 inline void PrintIfMissmatch(const std::string& output_contnet, const std::string& expected_output_contnet) {
@@ -280,6 +273,14 @@ inline void PrintIfMissmatch(const std::string& output_contnet, const std::strin
         puts(output_contnet.c_str());
         puts(expected_output_contnet.c_str());
     }
+}
+
+inline bool IsMSVC() {
+#ifdef _MSC_VER
+    return true;
+#else
+    return false;
+#endif
 }
 
 

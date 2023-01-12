@@ -231,7 +231,7 @@ inline void TKK_CommunicateAssertFail(unsigned line, const char* condition, cons
 
 //------------------------------------------------------------------------------
 
-bool TTK_Run() {
+inline bool TTK_Run() {
     TTK_Data& data = TTK_ToData();
 
     data.number_of_executed_asserts = 0;

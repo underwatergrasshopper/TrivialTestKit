@@ -20,7 +20,7 @@ jobs:
       matrix:
         build_mode: [Release, Debug]
         platform: [32, 64]
-        test_flag: [ "", WIDE]
+        test_flag: ["", "WIDE", "IN_PLACE", "WIDE IN_PLACE"]
         include:
           - platform: 32
             mingw_folder: llvm-mingw-20220906-ucrt-i686

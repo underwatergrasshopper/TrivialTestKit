@@ -27,6 +27,8 @@
 #include <assert.h>
 #endif
 
+#include <set>
+
 //==============================================================================
 
 void Test_ToUTF16() {
@@ -1174,15 +1176,31 @@ void Test_TTK_RunFail_InPlace() {
     assert(output_contnet == expected_output_contnet);
 }
 
+class FlagRegister {
+public:
+    FlagRegister() {}
+    virtual ~FlagRegister() {}
+
+    void Fetch(int argc, char* argv[]) {
+        for (int index = 0; index < argc; ++index) m_flags.insert(argv[index]);
+    }
+
+    bool IsIn(const char* flag_name) const {
+        return m_flags.find(flag_name) != m_flags.end();
+    }
+private:
+    std::set<std::string> m_flags;
+};
+
 void RunAllTests(int argc, char* argv[]) {
+    FlagRegister flag_reg;
+    flag_reg.Fetch(argc, argv);
 
-    for (int ix = 0; ix < argc; ++ix) puts(argv[ix]);
-
-    auto IsFlag = [&argc, &argv](int index, const char* flag_name) {
-        return argc > index && strcmp(argv[index], flag_name) == 0;
+    auto IsFlag = [&](const char* flag_name) -> bool {
+        return flag_reg.IsIn(flag_name);
     };
 
-    if (IsFlag(1, "WIDE")) SwitchStdOutToWideOriented();
+    if (IsFlag("WIDE")) SwitchStdOutToWideOriented();
 
     if (IsStdOutWideOriented()) {
         _wsystem(L"if exist log @rd /S /Q log");
@@ -1211,7 +1229,7 @@ void RunAllTests(int argc, char* argv[]) {
     Test_IsFileExist_ASCII();
     Test_LoadAndSaveToFile();
 
-    if (IsFlag(2, "IN_PLACE")) {
+    if (IsFlag("IN_PLACE")) {
         Test_TTK_RunFail_InPlace();
     } else {
         TTK_Free();
@@ -1223,7 +1241,7 @@ void RunAllTests(int argc, char* argv[]) {
         Test_TTK_AssertSuccessUTF8();
         Test_TTK_AssertFail();
 
-        if (!IsFlag(3, "NO_TEST_IN_UNICODE_FOLDER")) Test_TTK_AssertFailInUnicodeFolder();
+        if (!IsFlag("NO_TEST_IN_UNICODE_FOLDER")) Test_TTK_AssertFailInUnicodeFolder();
 
         Test_TTK_AssertFailMessage();
         Test_TTK_AssertFailMessageString();
@@ -1233,7 +1251,7 @@ void RunAllTests(int argc, char* argv[]) {
         Test_TTK_ExpectSuccessUTF8();
         Test_TTK_ExpectFail();
 
-        if (!IsFlag(3, "NO_TEST_IN_UNICODE_FOLDER")) Test_TTK_ExpectFailInUnicodeFolder();
+        if (!IsFlag("NO_TEST_IN_UNICODE_FOLDER")) Test_TTK_ExpectFailInUnicodeFolder();
 
         Test_TTK_ExpectFailMessage();
         Test_TTK_ExpectFailMessageString();

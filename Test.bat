@@ -9,10 +9,10 @@ set SLN_FILE=TrivialTestKit.sln
 set TEST_EXECUTABLE=TrivialTestKit_Test.exe
 set TEST_PROJECT_NAME=TrivialTestKit_Test
 
-set NO_FLAG_INDICATOR=
+set NO_FLAG_INDICATOR=NO_FLAG
 
 :: each parameter in set is separated by +, later + is replaced by spaces when set of flags is forwarded as parameters to test executable
-set FLAG_SET_LIST=-+-+- WIDE+-+- -+IN_PLACE+- WIDE+IN_PLACE+- 
+set FLAG_SET_LIST=NO_FLAG WIDE IN_PLACE WIDE+IN_PLACE 
 
 set PLATFORM_LIST=x86 x64
 set CONFIGURATION_LIST=Debug Release

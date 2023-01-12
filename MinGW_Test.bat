@@ -5,8 +5,10 @@ setlocal EnableDelayedExpansion
 ::------------------------------------------------------------------------------
 :: User Section
 
+set NO_FLAG_INDICATOR=NO_FLAG
+
 :: each parameter in set is separated by +, later + is replaced by spaces when set of flags is forwarded as parameters to test executable
-set FLAG_SET_LIST=-+-+- WIDE+-+- -+IN_PLACE+- WIDE+IN_PLACE+- 
+set FLAG_SET_LIST=NO_FLAG WIDE IN_PLACE WIDE+IN_PLACE
 
 set ARCHITECTURE_LIST=32 64
 set BUILD_MODE_LIST=Debug Release

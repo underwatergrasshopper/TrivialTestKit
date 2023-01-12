@@ -36,77 +36,73 @@ inline bool IsReal(T&&) {
 }
 
 void TestA() {
-    TTK_NotifyTest();
-
-    TTK_Assert(IsReal(M_PI));
-    TTK_Assert(IsReal(0));
-    TTK_Assert(IsReal("This text."));
+    TTK_ASSERT(IsReal(M_PI));
+    TTK_ASSERT(IsReal(0));
+    TTK_ASSERT(IsReal("This text."));
 }
 
 void TestB() {
-    TTK_NotifyTest();
-
-    TTK_Assert(1 + 1 == 2);
-    TTK_AssertM(2 + 2 == 5, "Surprising result!");
-    TTK_Assert(3 + 3 == 6);
+    TTK_ASSERT(1 + 1 == 2);
+    TTK_ASSERT_M(2 + 2 == 5, "Surprising result!");
+    TTK_ASSERT(3 + 3 == 6);
 }
 
 void TestC() {
-    TTK_NotifyTest();
-
-    TTK_Assert(false);
+    TTK_ASSERT(false);
 }
 
 void TestD() {
-    TTK_NotifyTest();
+    TTK_ASSERT(true);
+}
 
-    TTK_Assert(true);
+void TestE() {
+    TTK_EXPECT(1 + 1 == 2);
+    TTK_EXPECT_M(2 + 2 == 5, "Surprising result!");
+    TTK_EXPECT(3 + 3 == 6);
+    TTK_EXPECT_M(2 + 123 == 5, "Another surprising result!");
 }
 
 // Change 0 to 1 if you wanna run chosen example. Only one example can be running.
 
 int main() {
 #if 0
-    return TTK_RunTests({
-        TestA,
-        TestD,
-    });
+    TTK_ADD_TEST(TestA, 0);
+    TTK_ADD_TEST(TestB, 0);
+    TTK_Run();
+    TTK_Free();
 #endif 
 
 #if 0
     // Stops execution of tests at first assertion fail.
-    return TTK_RunTests({
-        TestA,
-        TestB,
-        TestC,
-        TestD,
-    });
+    TTK_ADD_TEST(TestA, 0);
+    TTK_ADD_TEST(TestB, 0);
+    TTK_ADD_TEST(TestC, 0);
+    TTK_ADD_TEST(TestD, 0);
+    TTK_ADD_TEST(TestE, 0);
+    TTK_Run();
+    TTK_Free();
 #endif 
 
 #if 0
     // Runs all tests regardless assertions fails.
-    TTK_SetIsAbortAtFail(false);
-
-    return TTK_RunTests({
-        TestA,
-        TestB,
-        TestC,
-        TestD,
-    });
+    TTK_ADD_TEST(TestA, TTK_NO_ABORT);
+    TTK_ADD_TEST(TestB, TTK_NO_ABORT);
+    TTK_ADD_TEST(TestC, TTK_NO_ABORT);
+    TTK_ADD_TEST(TestD, TTK_NO_ABORT);
+    TTK_ADD_TEST(TestE, TTK_NO_ABORT);
+    TTK_Run();
+    TTK_Free();
 #endif 
 
 #if 0
-    return TTK_RunTests({
-        // Runs tests regardless assertions fails.
-        TTK_DisableAbortAtFail,
-        TestA,
-        TestB,
-
-        // Stops execution of tests at first assertion fail.
-        TTK_EnableAbortAtFail,
-        TestC,
-        TestD,
-    });
+    // Runs some tests regardless assertions fails.
+    TTK_ADD_TEST(TestA, 0);
+    TTK_ADD_TEST(TestB, TTK_NO_ABORT);
+    TTK_ADD_TEST(TestC, TTK_NO_ABORT);
+    TTK_ADD_TEST(TestD, 0);
+    TTK_ADD_TEST(TestE, TTK_NO_ABORT);
+    TTK_Run();
+    TTK_Free();
 #endif 
     return 0;
 }

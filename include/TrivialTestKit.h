@@ -102,6 +102,78 @@ struct TTK_TestData{
     uint64_t        mode;      // bitfield
 };
 
+class TTK_Register {
+public:
+    TTK_Register() {
+        m_tests             = nullptr;
+        m_num_of_tests      = 0;
+
+        m_max_num_of_tests  =  DEF_MAX_NUM_OF_TESTS;
+    }
+
+    void AddTest(const TTK_TestData& test_data) {
+        if (!m_tests) {
+            m_tests = new TTK_TestData[m_max_num_of_tests];
+        }
+
+        if (m_num_of_tests >= m_max_num_of_tests) {
+            TTK_TestData*   old_tests               = m_tests;
+            uint64_t        old_max_num_of_tests    = m_max_num_of_tests;
+
+            m_max_num_of_tests *= 2;
+            m_tests = new TTK_TestData[m_max_num_of_tests];
+
+            if (m_num_of_tests > 0) {
+                for (uint64_t index = 0; index < m_num_of_tests; ++index) {
+                    m_tests[index] = old_tests[index];
+                }
+            }
+            delete[] old_tests;
+        }
+
+        m_tests[m_num_of_tests] = test_data;
+        m_num_of_tests += 1;
+    }
+
+    TTK_TestData& ToTest(uint64_t index) {
+        return m_tests[index];
+    }
+
+    const TTK_TestData& ToTest(uint64_t index) const {
+        return m_tests[index];
+    }
+
+    uint64_t GetNumberOfTests() const {
+        return m_num_of_tests;
+    }
+
+    void Clear() {
+        delete[] m_tests;
+
+        m_tests             = nullptr;
+        m_num_of_tests      = 0;
+
+        m_max_num_of_tests  =  DEF_MAX_NUM_OF_TESTS;
+    }
+
+    virtual ~TTK_Register() {
+        delete[] m_tests;
+    }
+private:
+    enum { DEF_MAX_NUM_OF_TESTS = 4096 };
+
+    TTK_TestData*   m_tests;
+    uint64_t        m_num_of_tests;
+
+    uint64_t        m_max_num_of_tests;
+
+    void DisplayDBG(FILE* out = stdout) const {
+        for (uint64_t index = 0; index < m_num_of_tests; ++index) {
+            fprintf(out, "%s\n", m_tests[index].name);
+        }
+    }
+};
+
 struct TTK_Data {
     FILE*           output;
 
@@ -115,7 +187,7 @@ struct TTK_Data {
 
     bool            is_request_abort;
 
-    std::vector<TTK_TestData> tests;
+    TTK_Register    tests;
 };
 
 inline TTK_Data TTK_MakeDefaultData() {
@@ -146,14 +218,14 @@ inline TTK_Data& TTK_ToData() {
 inline bool TTK_AddTest(const TTK_TestData& test_data) {
     auto& data = TTK_ToData();
     
-    data.tests.push_back(test_data);
+    data.tests.AddTest(test_data);
     return true;
 }
 
 inline void TTK_Clear() {
     auto& data = TTK_ToData();
 
-    data.tests.clear();
+    data.tests.Clear();
 }
 
 // mode     Bitfield made from any combination of flags: 0, TTK_DEFAULT, TTK_DISABLE, TTK_NO_ABORT.
@@ -262,7 +334,9 @@ inline bool TTK_Run() {
 
     uint64_t previous_number_of_failed_asserts = 0;
 
-    for (const auto& test_data : data.tests) {
+    for (uint64_t index = 0; index < data.tests.GetNumberOfTests(); ++index) {
+        TTK_TestData& test_data = data.tests.ToTest(index);
+
         if (!(test_data.mode & TTK_DISABLE)) {
             if (TTK_SolveOutputOrientation() > 0) {
                 fwprintf(data.output, L"[test] %hs\n", test_data.name);

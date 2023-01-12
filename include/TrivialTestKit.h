@@ -44,16 +44,16 @@
 #include <string>
 #include <utility>
 
-// Checks a condition. If the condition fails, then displays information about fail 
-// and where in code fail happened, after that returns from the caller function (which is a test function).
+// Checks a condition. If the condition failed (is false), then information about fail is displayed.
+// Further execution of current test function is aborted. Further execution of remaining test functions is aborted.
 // condition            An expression which will be checked if it's equal to 'true'. 
 //                      Must resolve to bool type value.
 // message              (Optional) An addition message which will be displayed when condition fail. 
 //                      Type can by either an c-string or std::string. Encoding can be either ASCII or UTF8.
-#define TTK_ASSERT(condition)               if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), nullptr);  return; } TTK_ToData().number_of_executed_asserts += 1; (void)0
-#define TTK_ASSERT_M(condition, message)    if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), message);  return; } TTK_ToData().number_of_executed_asserts += 1; (void)0
+#define TTK_ASSERT(condition)               if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), nullptr);  TTK_ToData().is_request_abort = true; return; } TTK_ToData().number_of_executed_asserts += 1; (void)0
+#define TTK_ASSERT_M(condition, message)    if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), message);  TTK_ToData().is_request_abort = true; return; } TTK_ToData().number_of_executed_asserts += 1; (void)0
 
-// Expect count as assert but do not abort test.
+// Checks the condition. If the condition failed (is false), then information about fail is displayed. Further execution of tests is continued (no test abort).
 #define TTK_EXPECT(condition)               if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), nullptr); } TTK_ToData().number_of_executed_asserts += 1; (void)0
 #define TTK_EXPECT_M(condition, message)    if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), message); } TTK_ToData().number_of_executed_asserts += 1; (void)0
 
@@ -92,7 +92,7 @@ void TTK_ForceOutputOrientation(int orientation);
 enum : uint64_t {
     TTK_DEFAULT     =   0x0000,
     TTK_DISABLE     =   0x0001,     // disable test
-    TTK_NO_ABORT    =   0x0002,     // no abort at test fail
+    TTK_NO_ABORT    =   0x0002,     // no abort or remaining test functions at assertion fail, still aborts current test function
 };
 
 struct TTK_TestData{
@@ -111,6 +111,8 @@ struct TTK_Data {
     uint64_t        number_of_failed_tests;
 
     int             forced_orientation;
+
+    bool            is_request_abort;
 
     TTK_TestData    tests[1024];
     uint64_t        number_of_tests;
@@ -146,8 +148,10 @@ inline void TTK_Free() {
     data.number_of_tests = 0;
 }
 
+// mode     Bitfield made from any combination of flags: 0, TTK_DEFAULT, TTK_DISABLE, TTK_NO_ABORT.
 #define TTK_ADD_TEST(TestFunction, mode) TTK_AddTest({TestFunction, #TestFunction, mode})
 
+// mode     Bitfield made from any combination of flags: 0, TTK_DEFAULT, TTK_DISABLE, TTK_NO_ABORT.
 #define TTK_TEST(TestFunction, mode) \
     void TestFunction(); \
     static bool s_is_added_##TestFunction = TTK_ADD_TEST(TestFunction, mode); \
@@ -240,6 +244,8 @@ inline bool TTK_Run() {
     data.number_of_executed_tests   = 0;
     data.number_of_failed_tests     = 0;
 
+    data.is_request_abort           = false;
+
     if (TTK_SolveOutputOrientation() > 0) {
         fwprintf(data.output, L"%hs", "--- TEST ---\n");
     } else {
@@ -262,12 +268,15 @@ inline bool TTK_Run() {
             test_data.function();
 
             data.number_of_executed_tests += 1;
-            if (data.number_of_failed_asserts != previous_number_of_failed_asserts) {
+            if (data.number_of_failed_asserts != previous_number_of_failed_asserts) { 
+                previous_number_of_failed_asserts = data.number_of_failed_asserts;
                 data.number_of_failed_tests += 1;
-
-                if (!(test_data.mode & TTK_NO_ABORT)) break;
+                
+                if (data.is_request_abort) {
+                    data.is_request_abort = false;
+                    if (!(test_data.mode & TTK_NO_ABORT)) break; // abort all tests
+                }
             }
-            previous_number_of_failed_asserts = data.number_of_failed_asserts;
         }
     }
 

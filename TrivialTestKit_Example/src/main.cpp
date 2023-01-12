@@ -95,7 +95,7 @@ int main() {
 #endif 
 
 #if 0
-    // Runs some tests regardless assertions fails.
+    // Runs tests regardless assertions fails.
     TTK_ADD_TEST(TestA, 0);
     TTK_ADD_TEST(TestB, TTK_NO_ABORT);
     TTK_ADD_TEST(TestC, TTK_NO_ABORT);
@@ -104,5 +104,15 @@ int main() {
     TTK_Run();
     TTK_Free();
 #endif 
+
+#if 1
+    // Runs tests regardless assertions fails.
+    TTK_ADD_TEST(TestE, 0);
+    TTK_ADD_TEST(TestD, 0);
+
+    TTK_Run();
+    TTK_Free();
+#endif 
+
     return 0;
 }

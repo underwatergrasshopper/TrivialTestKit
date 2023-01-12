@@ -943,7 +943,7 @@ void Test_TTK_RunFail() {
     Notice();
 
     g_test_finish_counter = 0;
-    const std::string output_file_name = "log/Out_RunSuccess.txt";
+    const std::string output_file_name = "log/Out_RunFail.txt";
     {
         Output output = Output(output_file_name);
 
@@ -977,7 +977,7 @@ void Test_TTK_RunFailNoAbort() {
     Notice();
 
     g_test_finish_counter = 0;
-    const std::string output_file_name = "log/Out_RunSuccess.txt";
+    const std::string output_file_name = "log/Out_RunFailNoAbort.txt";
     {
         Output output = Output(output_file_name);
 
@@ -1015,7 +1015,7 @@ void Test_TTK_RunFailNoAbort2() {
     Notice();
 
     g_test_finish_counter = 0;
-    const std::string output_file_name = "log/Out_RunSuccess.txt";
+    const std::string output_file_name = "log/Out_RunFailNoAbort2.txt";
     {
         Output output = Output(output_file_name);
 
@@ -1029,7 +1029,7 @@ void Test_TTK_RunFailNoAbort2() {
         TTK_Run();
         TTK_Free();
     }
-    assert(g_test_finish_counter == 4);
+    assert(g_test_finish_counter == 6);
 
     const std::string output_contnet = LoadFromFile_UTF8(output_file_name);
     const std::string expected_output_contnet = 
@@ -1042,10 +1042,12 @@ void Test_TTK_RunFailNoAbort2() {
         "[test] TestExpectFail\n"
         "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:" + std::to_string(g_line[10]) + "] [condition:200 > 200] [message:Message 1.]\n"
         "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:" + std::to_string(g_line[11]) + "] [condition:300 > 300] [message:Message 2.]\n"
+        "[test] TestExpectSuccessA\n"
+        "[test] TestExpectSuccessB\n"
         "--- TEST FAIL ---\n"
-        "number of executed asserts      : 16\n"
+        "number of executed asserts      : 24\n"
         "number of failed asserts        : 4\n"
-        "number of executed tests        : 4\n"
+        "number of executed tests        : 6\n"
         "number of failed tests          : 2\n";
     PrintIfMissmatch(output_contnet, expected_output_contnet);
     assert(output_contnet == expected_output_contnet);

@@ -65,11 +65,11 @@ void TestE() {
 // Change 0 to 1 if you wanna run chosen example. Only one example can be running.
 
 int main() {
-#if 0
+#if 1
     TTK_ADD_TEST(TestA, 0);
     TTK_ADD_TEST(TestB, 0);
     TTK_Run();
-    TTK_Free();
+    TTK_Clear();
 #endif 
 
 #if 0
@@ -80,7 +80,7 @@ int main() {
     TTK_ADD_TEST(TestD, 0);
     TTK_ADD_TEST(TestE, 0);
     TTK_Run();
-    TTK_Free();
+    TTK_Clear();
 #endif 
 
 #if 0
@@ -91,7 +91,7 @@ int main() {
     TTK_ADD_TEST(TestD, TTK_NO_ABORT);
     TTK_ADD_TEST(TestE, TTK_NO_ABORT);
     TTK_Run();
-    TTK_Free();
+    TTK_Clear();
 #endif 
 
 #if 0
@@ -102,10 +102,10 @@ int main() {
     TTK_ADD_TEST(TestD, 0);
     TTK_ADD_TEST(TestE, TTK_NO_ABORT);
     TTK_Run();
-    TTK_Free();
+    TTK_Clear();
 #endif 
 
-#if 1
+#if 0
     // Runs tests regardless assertions fails.
     TTK_ADD_TEST(TestE, 0);
     TTK_ADD_TEST(TestD, 0);

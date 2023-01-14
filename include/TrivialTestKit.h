@@ -51,8 +51,8 @@
 //                      Must resolve to bool type value.
 // message              (Optional) An addition message, to be displayed when condition fails. 
 //                      Type can by either an c-string or std::string. Encoding can be either ASCII or UTF8.
-#define TTK_ASSERT(condition)               { TTK_ToSuite().Count(); if (!(condition)) { TTK_ToSuite().CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), nullptr); TTK_ToSuite().RequestAbort(); return; } } (void)0
-#define TTK_ASSERT_M(condition, message)    { TTK_ToSuite().Count(); if (!(condition)) { TTK_ToSuite().CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), message); TTK_ToSuite().RequestAbort(); return; } } (void)0
+#define TTK_ASSERT(condition)               { TTK_ToSuite().IncNumOfAssertExecutions(); if (!(condition)) { TTK_ToSuite().CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), nullptr); TTK_ToSuite().RequestAbort(); return; } } (void)0
+#define TTK_ASSERT_M(condition, message)    { TTK_ToSuite().IncNumOfAssertExecutions(); if (!(condition)) { TTK_ToSuite().CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), message); TTK_ToSuite().RequestAbort(); return; } } (void)0
 
 // Checks the condition. If the condition failed (is false), then information about fail is displayed. 
 // Further execution of current test and remaining tests is continued (no test abort).
@@ -60,8 +60,8 @@
 //                      Must resolve to bool type value.
 // message              (Optional) An addition message, to be displayed when condition fails. 
 //                      Type can by either an c-string or std::string. Encoding can be either ASCII or UTF8.
-#define TTK_EXPECT(condition)               { TTK_ToSuite().Count(); if (!(condition)) { TTK_ToSuite().CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), nullptr); } } (void)0
-#define TTK_EXPECT_M(condition, message)    { TTK_ToSuite().Count(); if (!(condition)) { TTK_ToSuite().CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), message); } } (void)0
+#define TTK_EXPECT(condition)               { TTK_ToSuite().IncNumOfAssertExecutions(); if (!(condition)) { TTK_ToSuite().CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), nullptr); } } (void)0
+#define TTK_EXPECT_M(condition, message)    { TTK_ToSuite().IncNumOfAssertExecutions(); if (!(condition)) { TTK_ToSuite().CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), message); } } (void)0
 
 enum : uint64_t {
     TTK_DEFAULT     =   0x0000,
@@ -92,6 +92,9 @@ enum : uint64_t {
 // return   true    - if all tests finished without failing any assertion; 
 //          false   - otherwise.
 bool TTK_Run();
+
+// Removes all tests and frees memory allocations.
+void TTK_Clear();
 
 // Sets output where all generated communicates (including fail messages) by this library will be sent. Can be stdout, stderr or opened file.
 void TTK_SetOutput(FILE* output);
@@ -366,7 +369,7 @@ public:
         m_is_request_abort = true;
     }
 
-    void Count() {
+    void IncNumOfAssertExecutions() {
         m_number_of_executed_asserts += 1;
     }
 
@@ -394,7 +397,7 @@ private:
 
 //------------------------------------------------------------------------------
 
-TTK_Suite& TTK_ToSuite() {
+inline TTK_Suite& TTK_ToSuite() {
     static TTK_Suite s_suite;
     return s_suite;
 }
@@ -403,16 +406,16 @@ inline bool TTK_Run() {
     return TTK_ToSuite().Run();
 }
 
+inline void TTK_Clear() {
+    TTK_ToSuite().Clear();
+}
+
 inline void TTK_SetOutput(FILE* output) {
     TTK_ToSuite().SetOutput(output);
 }
 
 inline void TTK_ForceOutputOrientation(int orientation) {
     TTK_ToSuite().ForceOutputOrientation(orientation);
-}
-
-inline void TTK_Clear() {
-    TTK_ToSuite().Clear();
 }
 
 #endif // TRIVIALTESTKIT_H_

@@ -71,12 +71,18 @@ enum : uint64_t {
 
 // Adds test functions to be executed.
 // TestFunction         Existing test function of type: void (*)().
-// mode                 Bitfield made from any combination of flags: 0, TTK_DEFAULT, TTK_DISABLE, TTK_NO_ABORT.
+// mode                 Bitfield made from any combination of flags: 
+//                          0, TTK_DEFAULT      - no changes to default behaviour, 
+//                          TTK_DISABLE         - this test function will be skipped, 
+//                          TTK_NO_ABORT        - execution of remaining tests will be continued even if this test function fails.
 #define TTK_ADD_TEST(TestFunction, mode) TTK_ToSuite().AddTest({TestFunction, #TestFunction, mode})
 
 // Declares test function and adds it to be executed.
 // TestFunction         Not-existing test function.
-// mode                 Bitfield made from any combination of flags: 0, TTK_DEFAULT, TTK_DISABLE, TTK_NO_ABORT.
+// mode                 Bitfield made from any combination of flags: 
+//                          0, TTK_DEFAULT      - no changes to default behaviour, 
+//                          TTK_DISABLE         - this test function will be skipped, 
+//                          TTK_NO_ABORT        - execution of remaining tests will be continued even if this test function fails.
 #define TTK_TEST(TestFunction, mode) \
     void TestFunction(); \
     static bool s_is_force_called_before_main_##TestFunction = (TTK_ADD_TEST(TestFunction, mode), true); \

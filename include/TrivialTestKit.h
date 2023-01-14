@@ -70,6 +70,7 @@ enum : uint64_t {
 };
 
 // Adds test functions to be executed.
+// Tests added this way will be executed in order of adding.
 // TestFunction         Existing test function of type: void (*)().
 // mode                 Bitfield made from any combination of flags: 
 //                          0, TTK_DEFAULT      - no changes to default behavior, 
@@ -78,6 +79,7 @@ enum : uint64_t {
 #define TTK_ADD_TEST(TestFunction, mode) TTK_ToSuite().AddTest({TestFunction, #TestFunction, mode})
 
 // Declares test function and adds it to be executed.
+// Tests added this way will be executed in order of adding.
 // TestFunction         Not-existing test function.
 // mode                 Bitfield made from any combination of flags: 
 //                          0, TTK_DEFAULT      - no changes to default behavior, 

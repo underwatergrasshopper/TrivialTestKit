@@ -28,7 +28,7 @@
  * @details This file is a part of project: TrivialTestKit. Can be distributed separately.
  */
 
-// Targeted language version: C++11.
+// Targeted minimal language version: C++11.
 
 #ifndef TRIVIALTESTKIT_H_
 #define TRIVIALTESTKIT_H_
@@ -45,19 +45,21 @@
 #include <vector>
 #include <utility>
 
-// Test function pointer type.
-using TTK_TestFnP_T = void (*)();
-
-// Checks a condition. If the condition failed (is false), then information about fail is displayed.
+// Checks the condition. If the condition failed (is false), then information about fail is displayed.
 // Further execution of current test function is aborted. Further execution of remaining test functions is aborted.
 // condition            An expression which will be checked if it's equal to 'true'. 
 //                      Must resolve to bool type value.
-// message              (Optional) An addition message which will be displayed when condition fail. 
+// message              (Optional) An addition message, to be displayed when condition fails. 
 //                      Type can by either an c-string or std::string. Encoding can be either ASCII or UTF8.
 #define TTK_ASSERT(condition)               { TTK_ToSuite().Count(); if (!(condition)) { TTK_ToSuite().CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), nullptr); TTK_ToSuite().RequestAbort(); return; } } (void)0
 #define TTK_ASSERT_M(condition, message)    { TTK_ToSuite().Count(); if (!(condition)) { TTK_ToSuite().CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), message); TTK_ToSuite().RequestAbort(); return; } } (void)0
 
-// Checks the condition. If the condition failed (is false), then information about fail is displayed. Further execution of tests is continued (no test abort).
+// Checks the condition. If the condition failed (is false), then information about fail is displayed. 
+// Further execution of current test and remaining tests is continued (no test abort).
+// condition            An expression which will be checked if it's equal to 'true'. 
+//                      Must resolve to bool type value.
+// message              (Optional) An addition message, to be displayed when condition fails. 
+//                      Type can by either an c-string or std::string. Encoding can be either ASCII or UTF8.
 #define TTK_EXPECT(condition)               { TTK_ToSuite().Count(); if (!(condition)) { TTK_ToSuite().CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), nullptr); } } (void)0
 #define TTK_EXPECT_M(condition, message)    { TTK_ToSuite().Count(); if (!(condition)) { TTK_ToSuite().CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), message); } } (void)0
 
@@ -67,26 +69,30 @@ enum : uint64_t {
     TTK_NO_ABORT    =   0x0002,     // no abort or remaining test functions at assertion fail, still aborts current test function
 };
 
-// mode     Bitfield made from any combination of flags: 0, TTK_DEFAULT, TTK_DISABLE, TTK_NO_ABORT.
+// Adds test functions to be executed.
+// TestFunction         Existing test function of type: void (*)().
+// mode                 Bitfield made from any combination of flags: 0, TTK_DEFAULT, TTK_DISABLE, TTK_NO_ABORT.
 #define TTK_ADD_TEST(TestFunction, mode) TTK_ToSuite().AddTest({TestFunction, #TestFunction, mode})
 
-// mode     Bitfield made from any combination of flags: 0, TTK_DEFAULT, TTK_DISABLE, TTK_NO_ABORT.
+// Declares test function and adds it to be executed.
+// TestFunction         Not-existing test function.
+// mode                 Bitfield made from any combination of flags: 0, TTK_DEFAULT, TTK_DISABLE, TTK_NO_ABORT.
 #define TTK_TEST(TestFunction, mode) \
     void TestFunction(); \
     static bool s_is_force_called_before_main_##TestFunction = (TTK_ADD_TEST(TestFunction, mode), true); \
     void TestFunction()
 
-// Runs all tests.
-// return   true - if all tests finished without failing any assertion; 
-//          false - otherwise.
+// Executes all test functions.
+// return   true    - if all tests finished without failing any assertion; 
+//          false   - otherwise.
 bool TTK_Run();
 
-// Sets output where all generated communicates by this library will be sent. Can be stdout, stderr or opened file.
+// Sets output where all generated communicates (including fail messages) by this library will be sent. Can be stdout, stderr or opened file.
 void TTK_SetOutput(FILE* output);
 
 // Sets output stream orientation for character type. Same parameter rules as in fwide function.
 // orientation      > 0     - wide      (wchar_t)
-//                  0       - current 
+//                    0     - current 
 //                  < 0     - narrow    (char)
 void TTK_ForceOutputOrientation(int orientation);
 
@@ -103,6 +109,9 @@ void TTK_ForceOutputOrientation(int orientation);
 #define TTK_U8(text) TTK_INNER_U8(text)
 
 //------------------------------------------------------------------------------
+
+// Test function pointer type.
+using TTK_TestFnP_T = void (*)();
 
 struct TTK_TestData{
     TTK_TestFnP_T   function;
@@ -203,7 +212,7 @@ private:
     std::string m_prev_locale_backup;
 };
 
-// Enables unicode codepage for functions from printf family in a code scope, where it's placed. 
+// Enables unicode codepage for functions which belongs to printf family in a code scope, where it's placed. 
 // Restores previous codepage when exits the code scope.
 #define TTK_GuardLocaleUTF8() TTK_LocaleGuardianUTF8 locale_guardian_utf8
 

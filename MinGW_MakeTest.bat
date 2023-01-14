@@ -1,6 +1,4 @@
-@echo off
-setlocal EnableDelayedExpansion
-set ERR_PASS=0
+:: Runs specific unit tests (MinGW).
 :: MinGW_MakeTest <action> <mode> <architecture>
 ::      <action>
 ::          build
@@ -15,6 +13,10 @@ set ERR_PASS=0
 ::          64
 ::      <test_flags>
 ::          <word>( <word>)*
+
+@echo off
+setlocal EnableDelayedExpansion
+set ERR_PASS=0
 
 cd TrivialTestKit_Test
 call MinGW_Make.bat %*

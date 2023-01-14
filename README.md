@@ -3,13 +3,32 @@ A simple C++ library for testing code.
 Allows to create unit tests and execute them with check if they compleated with or without fail.
 
 ## HOWTO: Run tests manualy
-To run tests. Select in ***TrivialTestKIt/Test*** project a one of following ***Solution Configuration***:
-- ***Release***, for test without definied `WIDE_ORIENTATION` \*;
-- ***ReleaseWide***, for test with definied `WIDE_ORIENTATION`;
-- ***Debug***, for test without definied `WIDE_ORIENTATION`;
-- ***DebugWide***, for test with definied `WIDE_ORIENTATION`.
-
-And then ***Start Without Debugging***.
+To run all tests for Visual Studio, call `Test.bat`.             
+To run all tests for MinGW)\*, call `MinGW_Test.bat`.     
+To run selected tests for MinGW\*, call `MinGW_MakeTest.bat run <build_target> <architecture> (<flag> )*`, where
+```
+<build_target>
+    Release
+    Debug
+<architecture>
+    64
+    32
+<flag>
+    WIDE                        - Tests will use function from wprintf family only.
+    IN_PLACE                    - Runs test with adding test function to running 
+                                  at place where are declared them.
+    NO_TEST_IN_UNICODE_FOLDER   - Skip tests where tested code is placed in folder 
+                                  which name contains unicode characters.
+```
+.
+            
+<sup>\*) To be able compile with 64 bit and 32 bit gcc, add paths to mingw bin folder in `TrivialTestKit/TrivialTestKit_Test/MinGW_MakeCache.bat`:
+```
+set MINGW32_BIN_PATH=<path>
+set MINGW64_BIN_PATH=<path>
+```
+.
+</sup>
 
 ## Builds and tests results
 
@@ -28,265 +47,266 @@ Compiler: **MSVC** (automated)
 <sup>\* Narrow for a stream when first function which operate on the stream is from `printf` family.
 Wide for a stream when first function which operate on the stream is from `wprintf` family. See also documentation of `fwide`.</sup>
 
-## HOWTO: Use library and make unit tests
-### Example: Until First Assertion Fail
-Runs tests until first assertion fails.
+## HOWTO: Use library and make unit tests (examples)
+Following example adds `TestA` and `TestB` to run at the place of definition. Test functions are run in the order they were added. 
+Second argument in `TTK_TEST` is execution mode of test function. Value `0` means - test function will be executed. 
 
-Code:
-```C++
-#include "TrivialTestKit.h"
+```c++
+#include <TrivialTestKit.h>
 
-#define _USE_MATH_DEFINES 
-#include <math.h>
-
-template <typename T>
-inline bool IsReal(T&&) {
-    return true;
+TTK_TEST(TestA, 0) {
+    TTK_ASSERT(1 + 1 == 2);
+    TTK_ASSERT(2 + 2 == 4);
 }
 
-void TestA() {
-    TTK_NotifyTest();
-
-    TTK_Assert(IsReal(M_PI));
-    TTK_Assert(IsReal(0));
-    TTK_Assert(IsReal("This text."));
-}
-
-void TestB() {
-    TTK_NotifyTest();
-
-    TTK_Assert(1 + 1 == 2);
-    TTK_AssertM(2 + 2 == 5, "Surprising result!");
-    TTK_Assert(3 + 3 == 6);
-}
-
-void TestC() {
-    TTK_NotifyTest();
-
-    TTK_Assert(false);
-}
-
-void TestD() {
-    TTK_NotifyTest();
-
-    TTK_Assert(true);
+TTK_TEST(TestB, 0) {
+    TTK_ASSERT(3 + 3 == 6);
+    TTK_ASSERT(4 + 4 == 8);
 }
 
 int main() {
-    return TTK_RunTests({
-        TestA,
-        TestB,
-        TestC,
-        TestD,
-    });
+    TTK_Run();
+    TTK_Clear();
+    return 0;
 }
 ```
-Printed result:
 ```
 --- TEST ---
 [test] TestA
 [test] TestB
-    [fail] [file:C:\Path\To\Test\main.cpp] [line:23] [condition:2 + 2 == 5] [message:Surprising result!]
+--- TEST SUCCESS ---
+number of executed asserts      : 4
+number of failed asserts        : 0
+number of executed tests        : 2
+number of failed tests          : 0
+```
+
+If condition in assertion fails (is false) then current test function and all remaining test functions are aborted. Information about fail is displayed.
+
+```c++
+#include <TrivialTestKit.h>
+
+TTK_TEST(TestA, 0) {
+    TTK_ASSERT(1 + 1 == 2);
+    TTK_ASSERT(2 + 2 == 9000); // will fail
+}
+
+TTK_TEST(TestB, 0) {
+    TTK_ASSERT(3 + 3 == 6);
+    TTK_ASSERT(4 + 4 == 8);
+}
+
+int main() {
+    TTK_Run();
+    TTK_Clear();
+    return 0;
+}
+```
+```
+--- TEST ---
+[test] TestA
+    [fail] [file:main.cpp] [line:50] [condition:2 + 2 == 9000]
 --- TEST FAIL ---
-number of runned notified tests : 2
+number of executed asserts      : 2
+number of failed asserts        : 1
+number of executed tests        : 1
 number of failed tests          : 1
 ```
-### Example: All
-Runs all tests, regardless occurred assertions fails, by calling `TTK_SetIsAbortAtFail(false)`.
 
-Code:
-```C++
-#include "TrivialTestKit.h"
+To assertion can be added message which will be displayed when condition fails. Message can be c-string literal, c-string variable, std::string variable, with coding in either ASCII or UTF8.
 
-#define _USE_MATH_DEFINES 
-#include <math.h>
+```c++
+#include <TrivialTestKit.h>
 
-template <typename T>
-inline bool IsReal(T&&) {
-    return true;
+TTK_TEST(TestA, 0) {
+    TTK_ASSERT(1 + 1 == 2);
+    TTK_ASSERT_M(2 + 2 == 9000, "How this can be!"); // will fail
 }
 
-void TestA() {
-    TTK_NotifyTest();
-
-    TTK_Assert(IsReal(M_PI));
-    TTK_Assert(IsReal(0));
-    TTK_Assert(IsReal("This text."));
-}
-
-void TestB() {
-    TTK_NotifyTest();
-
-    TTK_Assert(1 + 1 == 2);
-    TTK_AssertM(2 + 2 == 5, "Surprising result!");
-    TTK_Assert(3 + 3 == 6);
-}
-
-void TestC() {
-    TTK_NotifyTest();
-
-    TTK_Assert(false);
-}
-
-void TestD() {
-    TTK_NotifyTest();
-
-    TTK_Assert(true);
+TTK_TEST(TestB, 0) {
+    TTK_ASSERT(3 + 3 == 6);
+    TTK_ASSERT(4 + 4 == 8);
 }
 
 int main() {
-    TTK_SetIsAbortAtFail(false);
-
-    return TTK_RunTests({
-        TestA,
-        TestB,
-        TestC,
-        TestD,
-    });
+    TTK_Run();
+    TTK_Clear();
+    return 0;
 }
 ```
-Printed result:
 ```
 --- TEST ---
 [test] TestA
-[test] TestB
-    [fail] [file:C:\Path\To\Test\main.cpp] [line:23] [condition:2 + 2 == 5] [message:Surprising result!]
-[test] TestC
-    [fail] [file:C:\Path\To\Test\main.cpp] [line:31] [condition:false]
-[test] TestD
+    [fail] [file:main.cpp] [line:70] [condition:2 + 2 == 9000] [message:How this can be!]
 --- TEST FAIL ---
-number of runned notified tests : 4
-number of failed tests          : 2
+number of executed asserts      : 2
+number of failed asserts        : 1
+number of executed tests        : 1
+number of failed tests          : 1
 ```
 
-### Example: Mixed
-Runs test `TestA`, `TestB` and doesn't abort test execution at assertion fail, by using `TTK_DisableAbortAtFail`.
+If `TTK_EXPECT` is used instead `TTK_ASSERT`, then execution of current test function and remaining test functions is not aborted when condition fails. 
+Information about fail is still displayed.
 
-Runs test `TestC`, `TestD` and aborts test execution at first assertion fail, by using `TTK_EnableAbortAtFail`.
+```c++
+#include <TrivialTestKit.h>
 
-Code:
-```C++
-#include "TrivialTestKit.h"
-
-#define _USE_MATH_DEFINES 
-#include <math.h>
-
-template <typename T>
-inline bool IsReal(T&&) {
-    return true;
+TTK_TEST(TestA, 0) {
+    TTK_EXPECT(1 + 1 == 2);
+    TTK_EXPECT_M(2 + 2 == 9000, "How this can be!"); // will fail, but still continue
 }
 
-void TestA() {
-    TTK_NotifyTest();
-
-    TTK_Assert(IsReal(M_PI));
-    TTK_Assert(IsReal(0));
-    TTK_Assert(IsReal("This text."));
-}
-
-void TestB() {
-    TTK_NotifyTest();
-
-    TTK_Assert(1 + 1 == 2);
-    TTK_AssertM(2 + 2 == 5, "Surprising result!");
-    TTK_Assert(3 + 3 == 6);
-}
-
-void TestC() {
-    TTK_NotifyTest();
-
-    TTK_Assert(false);
-}
-
-void TestD() {
-    TTK_NotifyTest();
-
-    TTK_Assert(true);
+TTK_TEST(TestB, 0) {
+    TTK_ASSERT(3 + 3 == 6);
+    TTK_ASSERT(4 + 4 == 8);
 }
 
 int main() {
-    return TTK_RunTests({
-        // Runs tests regardless assertions fails.
-        TTK_DisableAbortAtFail,
-        TestA,
-        TestB,
-
-        // Stops execution of tests at first assertion fail.
-        TTK_EnableAbortAtFail,
-        TestC,
-        TestD,
-    });
+    TTK_Run();
+    TTK_Clear();
+    return 0;
 }
 ```
-Printed result:
 ```
 --- TEST ---
 [test] TestA
+    [fail] [file:main.cpp] [line:90] [condition:2 + 2 == 9000] [message:How this can be!]
 [test] TestB
-    [fail] [file:C:\Path\To\Test\main.cpp] [line:23] [condition:2 + 2 == 5] [message:Surprising result!]
-[test] TestC
-    [fail] [file:C:\Path\To\Test\main.cpp] [line:31] [condition:false]
 --- TEST FAIL ---
-number of runned notified tests : 3
-number of failed tests          : 2
+number of executed asserts      : 4
+number of failed asserts        : 1
+number of executed tests        : 2
+number of failed tests          : 1
+
 ```
 
-### Example: No fail
-Run without fail.
+Test function will be skipped from execution if `TTK_DISABLE` is used as second argument in `TTK_TEST`.
 
-Code:
-```C++
-#include "TrivialTestKit.h"
+```c++
+#include <TrivialTestKit.h>
 
-#define _USE_MATH_DEFINES 
-#include <math.h>
-
-template <typename T>
-inline bool IsReal(T&&) {
-    return true;
+TTK_TEST(TestA, TTK_DISABLE) {
+    TTK_ASSERT(1 + 1 == 2);
+    TTK_ASSERT(2 + 2 == 4);
 }
 
-void TestA() {
-    TTK_NotifyTest();
-
-    TTK_Assert(IsReal(M_PI));
-    TTK_Assert(IsReal(0));
-    TTK_Assert(IsReal("This text."));
-}
-
-void TestB() {
-    TTK_NotifyTest();
-
-    TTK_Assert(1 + 1 == 2);
-    TTK_AssertM(2 + 2 == 5, "Surprising result!");
-    TTK_Assert(3 + 3 == 6);
-}
-
-void TestC() {
-    TTK_NotifyTest();
-
-    TTK_Assert(false);
-}
-
-void TestD() {
-    TTK_NotifyTest();
-
-    TTK_Assert(true);
+TTK_TEST(TestB, 0) {
+    TTK_ASSERT(3 + 3 == 6);
+    TTK_ASSERT(4 + 4 == 8);
 }
 
 int main() {
-    return TTK_RunTests({
-        TestA,
-        TestD,
-    });
+    TTK_Run();
+    TTK_Clear();
+    return 0;
 }
 ```
-Printed result:
 ```
 --- TEST ---
-[test] TestA
-[test] TestD
+[test] TestB
 --- TEST SUCCESS ---
-number of runned notified tests : 2
+number of executed asserts      : 2
+number of failed asserts        : 0
+number of executed tests        : 1
+number of failed tests          : 0
+```
+
+If `TTK_NO_ABORT` is used as second argument in `TTK_TEST`, then execution of remaining test functions will continue if assertion fail. 
+Rest of current test function will be skipped from execution, in that case.
+
+```c++
+#include <TrivialTestKit.h>
+
+TTK_TEST(TestA, TTK_NO_ABORT) {
+    TTK_ASSERT(1 + 1 == 9000); // fails
+    TTK_ASSERT(2 + 2 == 4);
+}
+
+TTK_TEST(TestB, 0) {
+    TTK_ASSERT(3 + 3 == 6);
+    TTK_ASSERT(4 + 4 == 8);
+}
+
+int main() {
+    TTK_Run();
+    TTK_Clear();
+    return 0;
+}
+```
+```
+--- TEST ---
+[test] TestA
+    [fail] [file:main.cpp] [line:129] [condition:1 + 1 == 9000]
+[test] TestB
+--- TEST FAIL ---
+number of executed asserts      : 3
+number of failed asserts        : 1
+number of executed tests        : 2
+number of failed tests          : 1
+```
+
+Both `TTK_NO_ABORT` and `TTK_DISABLE` can be combined. 
+
+```c++
+#include <TrivialTestKit.h>
+
+TTK_TEST(TestA, TTK_NO_ABORT | TTK_DISABLE) {
+    TTK_ASSERT(1 + 1 == 9000); // fails
+    TTK_ASSERT(2 + 2 == 4);
+}
+
+TTK_TEST(TestB, 0) {
+    TTK_ASSERT(3 + 3 == 6);
+    TTK_ASSERT(4 + 4 == 8);
+}
+
+int main() {
+    TTK_Run();
+    TTK_Clear();
+    return 0;
+}
+```
+```
+--- TEST ---
+[test] TestB
+--- TEST SUCCESS ---
+number of executed asserts      : 2
+number of failed asserts        : 0
+number of executed tests        : 1
+number of failed tests          : 0
+```
+
+Test functions can be added after their definition.
+
+```c++
+#include <TrivialTestKit.h>
+
+void TestA() {
+    TTK_ASSERT(1 + 1 == 2);
+    TTK_ASSERT(2 + 2 == 4);
+}
+
+void TestB() {
+    TTK_ASSERT(3 + 3 == 6);
+    TTK_ASSERT(4 + 4 == 8);
+}
+
+int main() {
+    TTK_ADD_TEST(TestA, 0);
+    TTK_ADD_TEST(TestB, 0);
+    
+    TTK_Run();
+    TTK_Clear();
+    return 0;
+}
+```
+```
+--- TEST ---
+[test] TestA
+[test] TestB
+--- TEST SUCCESS ---
+number of executed asserts      : 4
+number of failed asserts        : 0
+number of executed tests        : 2
 number of failed tests          : 0
 ```

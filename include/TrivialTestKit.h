@@ -45,22 +45,36 @@
 #include <vector>
 #include <utility>
 
+// Test function pointer type.
+using TTK_TestFnP_T = void (*)();
+
 // Checks a condition. If the condition failed (is false), then information about fail is displayed.
 // Further execution of current test function is aborted. Further execution of remaining test functions is aborted.
 // condition            An expression which will be checked if it's equal to 'true'. 
 //                      Must resolve to bool type value.
 // message              (Optional) An addition message which will be displayed when condition fail. 
 //                      Type can by either an c-string or std::string. Encoding can be either ASCII or UTF8.
-#define TTK_ASSERT(condition)               if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), nullptr);  TTK_ToData().is_request_abort = true; return; } TTK_ToData().number_of_executed_asserts += 1; (void)0
-#define TTK_ASSERT_M(condition, message)    if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), message);  TTK_ToData().is_request_abort = true; return; } TTK_ToData().number_of_executed_asserts += 1; (void)0
+#define TTK_ASSERT(condition)               { TTK_ToSuite().Count(); if (!(condition)) { TTK_ToSuite().CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), nullptr); TTK_ToSuite().RequestAbort(); return; } } (void)0
+#define TTK_ASSERT_M(condition, message)    { TTK_ToSuite().Count(); if (!(condition)) { TTK_ToSuite().CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), message); TTK_ToSuite().RequestAbort(); return; } } (void)0
 
 // Checks the condition. If the condition failed (is false), then information about fail is displayed. Further execution of tests is continued (no test abort).
-#define TTK_EXPECT(condition)               if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), nullptr); } TTK_ToData().number_of_executed_asserts += 1; (void)0
-#define TTK_EXPECT_M(condition, message)    if (!(condition)) { TKK_CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), message); } TTK_ToData().number_of_executed_asserts += 1; (void)0
+#define TTK_EXPECT(condition)               { TTK_ToSuite().Count(); if (!(condition)) { TTK_ToSuite().CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), nullptr); } } (void)0
+#define TTK_EXPECT_M(condition, message)    { TTK_ToSuite().Count(); if (!(condition)) { TTK_ToSuite().CommunicateAssertFail(__LINE__, #condition, TTK_L(__FILE__), TTK_U8(__FILE__), message); } } (void)0
 
+enum : uint64_t {
+    TTK_DEFAULT     =   0x0000,
+    TTK_DISABLE     =   0x0001,     // disable test
+    TTK_NO_ABORT    =   0x0002,     // no abort or remaining test functions at assertion fail, still aborts current test function
+};
 
-// Test function pointer type.
-using TTK_TestFnP_T = void (*)();
+// mode     Bitfield made from any combination of flags: 0, TTK_DEFAULT, TTK_DISABLE, TTK_NO_ABORT.
+#define TTK_ADD_TEST(TestFunction, mode) TTK_ToSuite().AddTest({TestFunction, #TestFunction, mode})
+
+// mode     Bitfield made from any combination of flags: 0, TTK_DEFAULT, TTK_DISABLE, TTK_NO_ABORT.
+#define TTK_TEST(TestFunction, mode) \
+    void TestFunction(); \
+    static bool s_is_force_called_before_main_##TestFunction = (TTK_ADD_TEST(TestFunction, mode), true); \
+    void TestFunction()
 
 // Runs all tests.
 // return   true - if all tests finished without failing any assertion; 
@@ -90,17 +104,13 @@ void TTK_ForceOutputOrientation(int orientation);
 
 //------------------------------------------------------------------------------
 
-enum : uint64_t {
-    TTK_DEFAULT     =   0x0000,
-    TTK_DISABLE     =   0x0001,     // disable test
-    TTK_NO_ABORT    =   0x0002,     // no abort or remaining test functions at assertion fail, still aborts current test function
-};
-
 struct TTK_TestData{
     TTK_TestFnP_T   function;
     const char*     name;
     uint64_t        mode;      // bitfield
 };
+
+//------------------------------------------------------------------------------
 
 class TTK_Register {
 public:
@@ -174,70 +184,7 @@ private:
     }
 };
 
-struct TTK_Data {
-    FILE*           output;
-
-    uint64_t        number_of_executed_asserts;
-    uint64_t        number_of_failed_asserts;
-
-    uint64_t        number_of_executed_tests;
-    uint64_t        number_of_failed_tests;
-
-    int             forced_orientation;
-
-    bool            is_request_abort;
-
-    TTK_Register    tests;
-};
-
-inline TTK_Data TTK_MakeDefaultData() {
-    TTK_Data data = {};
-
-    data.output                         = stdout;
-
-    data.number_of_executed_asserts     = 0;
-    data.number_of_failed_asserts       = 0;
-
-    data.number_of_executed_tests       = 0;
-    data.number_of_failed_tests         = 0;
-
-    data.forced_orientation             = false;
-
-    data.is_request_abort               = false;
-
-    return data;
-}
-
-inline TTK_Data& TTK_ToData() {
-    static TTK_Data s_data = TTK_MakeDefaultData();
-    return s_data;
-}
-
 //------------------------------------------------------------------------------
-
-inline bool TTK_AddTest(const TTK_TestData& test_data) {
-    auto& data = TTK_ToData();
-    
-    data.tests.AddTest(test_data);
-    return true;
-}
-
-inline void TTK_Clear() {
-    auto& data = TTK_ToData();
-
-    data.tests.Clear();
-}
-
-// mode     Bitfield made from any combination of flags: 0, TTK_DEFAULT, TTK_DISABLE, TTK_NO_ABORT.
-#define TTK_ADD_TEST(TestFunction, mode) TTK_AddTest({TestFunction, #TestFunction, mode})
-
-// mode     Bitfield made from any combination of flags: 0, TTK_DEFAULT, TTK_DISABLE, TTK_NO_ABORT.
-#define TTK_TEST(TestFunction, mode) \
-    void TestFunction(); \
-    static bool s_is_added_##TestFunction = TTK_ADD_TEST(TestFunction, mode); \
-    void TestFunction()
-
-
 
 class TTK_LocaleGuardianUTF8 {
 public:
@@ -262,17 +209,6 @@ private:
 
 //------------------------------------------------------------------------------
 
-inline void TTK_ForceOutputOrientation(int orientation) {
-    TTK_ToData().forced_orientation = orientation;
-}
-
-inline int TTK_SolveOutputOrientation() {
-    TTK_Data& data = TTK_ToData();
-    if (data.forced_orientation != 0) return data.forced_orientation;
-    return fwide(data.output, 0);
-}
-
-//------------------------------------------------------------------------------
 #if defined(_MSC_VER)      
 #define TTK_TRY_FORCE_NON_INLINE __declspec(noinline)
 #elif defined(__GNUC__) 
@@ -281,107 +217,187 @@ inline int TTK_SolveOutputOrientation() {
 #define TTK_TRY_FORCE_NON_INLINE
 #endif
 
-TTK_TRY_FORCE_NON_INLINE 
-inline void TKK_CommunicateAssertFail(unsigned line, const char* condition, const wchar_t* file_name_utf16, const char* file_name_utf8, const char* message) {
-    TTK_GuardLocaleUTF8();
-
-    TTK_Data& data = TTK_ToData();
-
-    data.number_of_failed_asserts += 1;
-
-    if (data.output) {
-        if (TTK_SolveOutputOrientation() > 0) {
-            fwprintf(data.output, L"    [fail] [file:%s] [line:%d] [condition:%hs]", file_name_utf16, line, condition);
-            if (message) {
-                fwprintf(data.output, L" [message:%hs]\n", message);
-            } else {
-                fwprintf(data.output, L"\n");
-            }
-        } else {
-            fprintf(data.output, "    [fail] [file:%s] [line:%d] [condition:%s]", file_name_utf8, line, condition);
-            if (message) {
-                fprintf(data.output, " [message:%s]\n", message);
-            } else {
-                fprintf(data.output, "\n");
-            }
-        }
-        fflush(data.output);
-    }
-}
-
-inline void TKK_CommunicateAssertFail(unsigned line, const char* condition, const wchar_t* file_name_utf16, const char* file_name_utf8, const std::string& message) {
-    TKK_CommunicateAssertFail(line, condition, file_name_utf16, file_name_utf8, message.c_str());
-}
-
 //------------------------------------------------------------------------------
 
-inline bool TTK_Run() {
-    TTK_Data& data = TTK_ToData();
+class TTK_Suite {
+public:
+    TTK_Suite() {
+        m_output                        = stdout;
 
-    data.number_of_executed_asserts = 0;
-    data.number_of_failed_asserts   = 0;
+        m_number_of_executed_asserts    = 0;
+        m_number_of_failed_asserts      = 0;
 
-    data.number_of_executed_tests   = 0;
-    data.number_of_failed_tests     = 0;
+        m_number_of_executed_tests      = 0;
+        m_number_of_failed_tests        = 0;
 
-    data.is_request_abort           = false;
+        m_forced_orientation            = false;
 
-    if (TTK_SolveOutputOrientation() > 0) {
-        fwprintf(data.output, L"%hs", "--- TEST ---\n");
-    } else {
-        fprintf(data.output, "%s", "--- TEST ---\n");
+        m_is_request_abort              = false;
     }
 
-    uint64_t previous_number_of_failed_asserts = 0;
+    virtual ~TTK_Suite() {
+        if (m_output) fclose(m_output);
+    }
 
-    for (uint64_t index = 0; index < data.tests.GetNumberOfTests(); ++index) {
-        TTK_TestData& test_data = data.tests.ToTest(index);
+    void AddTest(const TTK_TestData& test_data) {
+        m_tests.AddTest(test_data);
+    }
 
-        if (!(test_data.mode & TTK_DISABLE)) {
-            if (TTK_SolveOutputOrientation() > 0) {
-                fwprintf(data.output, L"[test] %hs\n", test_data.name);
+    void Clear() {
+        m_tests.Clear();
+    }
+
+    TTK_TRY_FORCE_NON_INLINE
+    void CommunicateAssertFail(unsigned line, const char* condition, const wchar_t* file_name_utf16, const char* file_name_utf8, const char* message) {
+        TTK_GuardLocaleUTF8();
+
+        m_number_of_failed_asserts += 1;
+
+        if (m_output) {
+            if (SolveOutputOrientation() > 0) {
+                fwprintf(m_output, L"    [fail] [file:%s] [line:%d] [condition:%hs]", file_name_utf16, line, condition);
+                if (message) {
+                    fwprintf(m_output, L" [message:%hs]\n", message);
+                } else {
+                    fwprintf(m_output, L"\n");
+                }
             } else {
-                fprintf(data.output, "[test] %s\n", test_data.name);
+                fprintf(m_output, "    [fail] [file:%s] [line:%d] [condition:%s]", file_name_utf8, line, condition);
+                if (message) {
+                    fprintf(m_output, " [message:%s]\n", message);
+                } else {
+                    fprintf(m_output, "\n");
+                }
             }
-            fflush(data.output);
-   
-            test_data.function();
-   
-            data.number_of_executed_tests += 1;
-            if (data.number_of_failed_asserts != previous_number_of_failed_asserts) { 
-                previous_number_of_failed_asserts = data.number_of_failed_asserts;
-                data.number_of_failed_tests += 1;
-                
-                if (data.is_request_abort) {
-                    data.is_request_abort = false;
-                    if (!(test_data.mode & TTK_NO_ABORT)) break; // abort all tests
+            fflush(m_output);
+        }
+    }
+
+    void CommunicateAssertFail(unsigned line, const char* condition, const wchar_t* file_name_utf16, const char* file_name_utf8, const std::string& message) {
+        CommunicateAssertFail(line, condition, file_name_utf16, file_name_utf8, message.c_str());
+    }
+
+    bool Run() {
+        m_number_of_executed_asserts = 0;
+        m_number_of_failed_asserts   = 0;
+
+        m_number_of_executed_tests   = 0;
+        m_number_of_failed_tests     = 0;
+
+        m_is_request_abort           = false;
+
+        if (SolveOutputOrientation() > 0) {
+            fwprintf(m_output, L"%hs", "--- TEST ---\n");
+        } else {
+            fprintf(m_output, "%s", "--- TEST ---\n");
+        }
+
+        uint64_t previous_number_of_failed_asserts = 0;
+
+        for (uint64_t index = 0; index < m_tests.GetNumberOfTests(); ++index) {
+            TTK_TestData& test_data = m_tests.ToTest(index);
+
+            if (!(test_data.mode & TTK_DISABLE)) {
+                if (SolveOutputOrientation() > 0) {
+                    fwprintf(m_output, L"[test] %hs\n", test_data.name);
+                } else {
+                    fprintf(m_output, "[test] %s\n", test_data.name);
+                }
+                fflush(m_output);
+
+                test_data.function();
+
+                m_number_of_executed_tests += 1;
+                if (m_number_of_failed_asserts != previous_number_of_failed_asserts) { 
+                    previous_number_of_failed_asserts = m_number_of_failed_asserts;
+                    m_number_of_failed_tests += 1;
+
+                    if (m_is_request_abort) {
+                        m_is_request_abort = false;
+                        if (!(test_data.mode & TTK_NO_ABORT)) break; // abort all tests
+                    }
                 }
             }
         }
+
+        const bool is_success = m_number_of_failed_tests == 0;
+
+        if (SolveOutputOrientation() > 0) {
+            fwprintf(m_output, L"%hs", (is_success ? "--- TEST SUCCESS ---\n" : "--- TEST FAIL ---\n"));
+            fwprintf(m_output, L"number of executed asserts      : %lld\n", m_number_of_executed_asserts);
+            fwprintf(m_output, L"number of failed asserts        : %lld\n", m_number_of_failed_asserts);
+            fwprintf(m_output, L"number of executed tests        : %lld\n", m_number_of_executed_tests);
+            fwprintf(m_output, L"number of failed tests          : %lld\n", m_number_of_failed_tests);
+        } else {
+            fprintf(m_output, "%s", (is_success ? "--- TEST SUCCESS ---\n" : "--- TEST FAIL ---\n"));
+            fprintf(m_output, "number of executed asserts      : %lld\n", m_number_of_executed_asserts);
+            fprintf(m_output, "number of failed asserts        : %lld\n", m_number_of_failed_asserts);
+            fprintf(m_output, "number of executed tests        : %lld\n", m_number_of_executed_tests);
+            fprintf(m_output, "number of failed tests          : %lld\n", m_number_of_failed_tests);
+        }
+        return is_success;
     }
 
-    const bool is_success = data.number_of_failed_tests == 0;
 
-    if (TTK_SolveOutputOrientation() > 0) {
-        fwprintf(data.output, L"%hs", (is_success ? "--- TEST SUCCESS ---\n" : "--- TEST FAIL ---\n"));
-        fwprintf(data.output, L"number of executed asserts      : %lld\n", data.number_of_executed_asserts);
-        fwprintf(data.output, L"number of failed asserts        : %lld\n", data.number_of_failed_asserts);
-        fwprintf(data.output, L"number of executed tests        : %lld\n", data.number_of_executed_tests);
-        fwprintf(data.output, L"number of failed tests          : %lld\n", data.number_of_failed_tests);
-    } else {
-        fprintf(data.output, "%s", (is_success ? "--- TEST SUCCESS ---\n" : "--- TEST FAIL ---\n"));
-        fprintf(data.output, "number of executed asserts      : %lld\n", data.number_of_executed_asserts);
-        fprintf(data.output, "number of failed asserts        : %lld\n", data.number_of_failed_asserts);
-        fprintf(data.output, "number of executed tests        : %lld\n", data.number_of_executed_tests);
-        fprintf(data.output, "number of failed tests          : %lld\n", data.number_of_failed_tests);
+    void SetOutput(FILE* output) {
+        m_output = output;
     }
-    return is_success;
-}
+
+    void ForceOutputOrientation(int orientation) {
+        m_forced_orientation = orientation;
+    }
+
+    void RequestAbort() {
+        m_is_request_abort = true;
+    }
+
+    void Count() {
+        m_number_of_executed_asserts += 1;
+    }
+
+private:
+    int SolveOutputOrientation() {
+        if (m_forced_orientation != 0) return m_forced_orientation;
+        return fwide(m_output, 0);
+    }
+
+    FILE*           m_output;
+
+    uint64_t        m_number_of_executed_asserts;
+    uint64_t        m_number_of_failed_asserts;
+
+    uint64_t        m_number_of_executed_tests;
+    uint64_t        m_number_of_failed_tests;
+
+    int             m_forced_orientation;
+
+    bool            m_is_request_abort;
+
+    TTK_Register    m_tests;
+};
+
 
 //------------------------------------------------------------------------------
 
+TTK_Suite& TTK_ToSuite() {
+    static TTK_Suite s_suite;
+    return s_suite;
+}
+
+inline bool TTK_Run() {
+    return TTK_ToSuite().Run();
+}
+
 inline void TTK_SetOutput(FILE* output) {
-    TTK_ToData().output = output;
+    TTK_ToSuite().SetOutput(output);
+}
+
+inline void TTK_ForceOutputOrientation(int orientation) {
+    TTK_ToSuite().ForceOutputOrientation(orientation);
+}
+
+inline void TTK_Clear() {
+    TTK_ToSuite().Clear();
 }
 
 #endif // TRIVIALTESTKIT_H_

@@ -379,7 +379,7 @@ void Test_TTK_AssertFail() {
         "[test] AssertFail\n"
         "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:" + std::to_string(g_line[0]) + "] [condition:10 != 10]\n"
         "--- TEST FAIL ---\n"
-        "number of executed asserts      : 1\n"
+        "number of executed asserts      : 2\n"
         "number of failed asserts        : 1\n"
         "number of executed tests        : 1\n"
         "number of failed tests          : 1\n";
@@ -411,7 +411,7 @@ void Test_TTK_AssertFailInUnicodeFolder() {
         "[test] AssertFailInUnicodeFolder\n"                    
         "    [fail] [file:" + GetSourceFileName_UTF8(!IsMSVC(), u8"\\TrivialTestKit_Test\\src\\Folder\u0444\\InUnicodeFolder.h") + "] [line:" + std::to_string(g_line[0]) + "] [condition:10 != 10]\n"
         "--- TEST FAIL ---\n"
-        "number of executed asserts      : 1\n"
+        "number of executed asserts      : 2\n"
         "number of failed asserts        : 1\n"
         "number of executed tests        : 1\n"
         "number of failed tests          : 1\n";
@@ -451,7 +451,7 @@ void Test_TTK_AssertFailMessage() {
         "[test] AssertFailMessage\n"
         "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:" + std::to_string(g_line[0]) + "] [condition:10 != 10] [message:Message 2.]\n"
         "--- TEST FAIL ---\n"
-        "number of executed asserts      : 1\n"
+        "number of executed asserts      : 2\n"
         "number of failed asserts        : 1\n"
         "number of executed tests        : 1\n"
         "number of failed tests          : 1\n";
@@ -490,7 +490,7 @@ void Test_TTK_AssertFailMessageString() {
         "[test] AssertFailMessageString\n"
         "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:" + std::to_string(g_line[0]) + "] [condition:10 != 10] [message:Message 2.]\n"
         "--- TEST FAIL ---\n"
-        "number of executed asserts      : 1\n"
+        "number of executed asserts      : 2\n"
         "number of failed asserts        : 1\n"
         "number of executed tests        : 1\n"
         "number of failed tests          : 1\n";
@@ -529,7 +529,7 @@ void Test_TTK_AssertFailMessageUTF8() {
         "[test] AssertFailMessageUTF8\n"
         "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:" + std::to_string(g_line[0]) + "] [condition:10 != 10] [message:Message 2.]\n"
         "--- TEST FAIL ---\n"
-        "number of executed asserts      : 1\n"
+        "number of executed asserts      : 2\n"
         "number of failed asserts        : 1\n"
         "number of executed tests        : 1\n"
         "number of failed tests          : 1\n";
@@ -965,7 +965,7 @@ void Test_TTK_RunFail() {
         "[test] TestAssertFail\n"
         "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:" + std::to_string(g_line[0]) + "] [condition:200 > 200] [message:Message 1.]\n"
         "--- TEST FAIL ---\n"
-        "number of executed asserts      : 5\n"
+        "number of executed asserts      : 6\n"
         "number of failed asserts        : 1\n"
         "number of executed tests        : 2\n"
         "number of failed tests          : 1\n";
@@ -1006,7 +1006,7 @@ void Test_TTK_RunFailNoAbort() {
         "[test] TestAssertFail\n"
         "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:" + std::to_string(g_line[0]) + "] [condition:200 > 200] [message:Message 1.]\n"
         "--- TEST FAIL ---\n"
-        "number of executed asserts      : 10\n"
+        "number of executed asserts      : 12\n"
         "number of failed asserts        : 2\n"
         "number of executed tests        : 4\n"
         "number of failed tests          : 2\n";
@@ -1173,7 +1173,7 @@ void Test_TTK_RunFail_InPlace() {
         "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:" + std::to_string(g_line[10]) + "] [condition:200 > 200] [message:Message 1.]\n"
         "    [fail] [file:" + GetSourceFileName_UTF8() + "] [line:" + std::to_string(g_line[11]) + "] [condition:300 > 300] [message:Message 2.]\n"
         "--- TEST FAIL ---\n"
-        "number of executed asserts      : 17\n"
+        "number of executed asserts      : 18\n"
         "number of failed asserts        : 3\n"
         "number of executed tests        : 5\n"
         "number of failed tests          : 2\n";

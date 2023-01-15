@@ -1,3 +1,5 @@
+# v2.0.1 (15-01-2023)
+- Updated date in license.
 # v2.0.0 (14-01-2023)
 - General restructurization of code.
 - Added TTK_EXPECT.

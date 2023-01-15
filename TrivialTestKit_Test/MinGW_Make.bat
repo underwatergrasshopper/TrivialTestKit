@@ -1,6 +1,13 @@
 @echo off
 setlocal EnableDelayedExpansion
 
+::------------------------------------------------------------------------------
+:: User Section
+
+set TEST_PROJECT_NAME=TrivialTestKit_Test
+
+::------------------------------------------------------------------------------
+
 :: <none>, build, rebuild, clean, run
 set ACTION=%1
 if "%ACTION%" equ "" set ACTION=run
@@ -49,7 +56,7 @@ if "!ARCHITECTURE!" equ "32" set ARCH_PRE=Win32
 
 set BUILD_SUB_DIR=..\\build\\mingw_llvm
 set BUILD_PATH=!BUILD_SUB_DIR!\\!ARCH_PRE!\\!BUILD_TYPE!
-set RETURN_PATH=..\\..\\..\\..\\TrivialTestKit_Test
+set RETURN_PATH=..\\..\\..\\..\\!TEST_PROJECT_NAME!
 
 set ERR_PASS=0
 
@@ -93,7 +100,7 @@ goto :EOF
 :BUILD
     if not exist !BUILD_PATH! md !BUILD_PATH!
     set BUILD_PATH=!BUILD_PATH:\\=/!
-    cmake -G "MinGW Makefiles" -D CMAKE_BUILD_TYPE=!BUILD_TYPE! -D  ARCHITECTURE=!ARCHITECTURE! -S . -B !BUILD_PATH! && cmake --build !BUILD_PATH!
+    cmake -G "MinGW Makefiles" -D CMAKE_BUILD_TYPE=!BUILD_TYPE! -D  ARCHITECTURE=!ARCHITECTURE! -D CMAKE_COLOR_MAKEFILE=OFF -S . -B !BUILD_PATH! && cmake --build !BUILD_PATH! --parallel 32 -- --output-sync 
     if !ERRORLEVEL! neq 0 exit /B !ERRORLEVEL!
     exit /B
 

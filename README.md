@@ -4,7 +4,7 @@ Allows to create unit tests and execute them with check if they compleated with 
 
 ## HOWTO: Run tests manualy
 To run all tests for Visual Studio, call `Test.bat`.             
-To run all tests for MinGW)\*, call `MinGW_Test.bat`.     
+To run all tests for MinGW\*, call `MinGW_Test.bat`.     
 To run selected tests for MinGW\*, call `MinGW_MakeTest.bat run <build_target> <architecture> (<flag> )*`, where
 ```
 <build_target>

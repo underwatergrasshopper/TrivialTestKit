@@ -1,4 +1,5 @@
 :: Runs specific unit tests (MinGW).
+
 :: MinGW_MakeTest <action> <mode> <architecture>
 ::      <action>
 ::          build
@@ -16,9 +17,17 @@
 
 @echo off
 setlocal EnableDelayedExpansion
+
+::------------------------------------------------------------------------------
+:: User Section
+
+set TEST_PROJECT_NAME=TrivialTestKit_Test
+
+::------------------------------------------------------------------------------
+
 set ERR_PASS=0
 
-cd TrivialTestKit_Test
+cd !TEST_PROJECT_NAME!
 call MinGW_Make.bat %*
 if !ERRORLEVEL! neq 0 set ERR_PASS=!ERRORLEVEL!
 cd ..

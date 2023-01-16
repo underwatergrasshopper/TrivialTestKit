@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // MIT License
 // 
-// Copyright (c) 2023 underwatergrasshopper
+// Copyright (c) 2022-2023 underwatergrasshopper
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@
 /**
  * @file TrivialTestKit.h
  * @author underwatergrasshopper
- * @version 2.0.1
+ * @version 2.0.2
  * @details This file is a part of project: TrivialTestKit. Can be distributed separately.
  */
 

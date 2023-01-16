@@ -1,3 +1,5 @@
+# v2.0.2 (15-01-2023)
+- - Fixed date in licenses and some lack of license placement.
 # v2.0.1 (15-01-2023)
 - Updated date in license.
 # v2.0.0 (14-01-2023)

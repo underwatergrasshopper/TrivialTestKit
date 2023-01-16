@@ -5,7 +5,7 @@ setlocal EnableDelayedExpansion
 ::------------------------------------------------------------------------------
 :: User Section
 
-set VERSION=2.0.1
+set VERSION=2.0.2
 set NAME=TrivialTestKit
 
 ::------------------------------------------------------------------------------

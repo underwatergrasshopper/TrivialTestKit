@@ -167,8 +167,6 @@ private:
 #define GuardLocaleUTF8() LocaleGuradianUTF8 locale_gurardian_utf8
 
 inline std::string LoadFromFile_UTF8(const std::string& file_name, bool* is_success = nullptr) {
-    GuardLocaleUTF8();
-
     std::string content;
 
     FILE* file = nullptr;
@@ -189,8 +187,6 @@ inline std::string LoadFromFile_UTF8(const std::string& file_name, bool* is_succ
 }
 
 inline bool SaveToFile_UTF8(const std::string& file_name, const std::string& content) {
-    GuardLocaleUTF8();
-
     FILE* file = nullptr;
 
     if (fopen_s(&file, file_name.c_str(), "w") == 0 && file) {

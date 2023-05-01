@@ -1,3 +1,6 @@
+# v2.0.3 (01-05-2023)
+- Fixed uint64_t to uint32_t narrowing conversion occurrences.
+- Added signaling when max possible number of tests has be reached.
 # v2.0.2 (16-01-2023)
 - Fixed date in licenses and some lack of license placement.
 # v2.0.1 (15-01-2023)

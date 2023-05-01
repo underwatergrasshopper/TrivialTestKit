@@ -24,7 +24,7 @@
 /**
  * @file TrivialTestKit.h
  * @author underwatergrasshopper
- * @version 2.0.2
+ * @version 2.0.3
  * @details This file is a part of project: TrivialTestKit. Can be distributed separately.
  */
 
@@ -134,74 +134,41 @@ struct TTK_TestData{
 
 class TTK_Register {
 public:
-    TTK_Register() {
-        m_tests             = nullptr;
-        m_num_of_tests      = 0;
+    using SizeType = std::vector<TTK_TestData>::size_type;
 
-        m_max_num_of_tests  =  DEF_MAX_NUM_OF_TESTS;
+    TTK_Register() {}
+    virtual ~TTK_Register() {}
+
+    bool AddTest(const TTK_TestData& test_data) {
+        if (m_tests.max_size() == m_tests.size()) {
+            return false;
+        }
+        m_tests.push_back(test_data);
+        return true;
     }
 
-    void AddTest(const TTK_TestData& test_data) {
-        if (!m_tests) {
-            m_tests = new TTK_TestData[m_max_num_of_tests];
-        }
-
-        if (m_num_of_tests >= m_max_num_of_tests) {
-            TTK_TestData*   old_tests               = m_tests;
-            uint64_t        old_max_num_of_tests    = m_max_num_of_tests;
-
-            m_max_num_of_tests *= 2;
-            m_tests = new TTK_TestData[m_max_num_of_tests];
-
-            if (m_num_of_tests > 0) {
-                for (uint64_t index = 0; index < m_num_of_tests; ++index) {
-                    m_tests[index] = old_tests[index];
-                }
-            }
-            delete[] old_tests;
-        }
-
-        m_tests[m_num_of_tests] = test_data;
-        m_num_of_tests += 1;
-    }
-
-    TTK_TestData& ToTest(uint64_t index) {
+    TTK_TestData& ToTest(SizeType index) {
         return m_tests[index];
     }
 
-    const TTK_TestData& ToTest(uint64_t index) const {
+    const TTK_TestData& ToTest(SizeType index) const {
         return m_tests[index];
     }
 
-    uint64_t GetNumberOfTests() const {
-        return m_num_of_tests;
+    SizeType GetNumberOfTests() const {
+        return m_tests.size();
+    }
+
+    SizeType GetMaxNumberOfTests() const {
+        return m_tests.max_size();
     }
 
     void Clear() {
-        delete[] m_tests;
-
-        m_tests             = nullptr;
-        m_num_of_tests      = 0;
-
-        m_max_num_of_tests  =  DEF_MAX_NUM_OF_TESTS;
+        m_tests.clear();
     }
 
-    virtual ~TTK_Register() {
-        delete[] m_tests;
-    }
 private:
-    enum { DEF_MAX_NUM_OF_TESTS = 4096 };
-
-    TTK_TestData*   m_tests;
-    uint64_t        m_num_of_tests;
-
-    uint64_t        m_max_num_of_tests;
-
-    void DisplayDBG(FILE* out = stdout) const {
-        for (uint64_t index = 0; index < m_num_of_tests; ++index) {
-            fprintf(out, "%s\n", m_tests[index].name);
-        }
-    }
+    std::vector<TTK_TestData> m_tests;
 };
 
 //------------------------------------------------------------------------------
@@ -253,6 +220,8 @@ public:
         m_forced_orientation            = false;
 
         m_is_request_abort              = false;
+        m_is_max_test_num_reached       = false;
+        
     }
 
     virtual ~TTK_Suite() {
@@ -260,11 +229,14 @@ public:
     }
 
     void AddTest(const TTK_TestData& test_data) {
-        m_tests.AddTest(test_data);
+        if (!m_tests.AddTest(test_data)) {
+            m_is_max_test_num_reached = true;
+        }
     }
 
     void Clear() {
         m_tests.Clear();
+        m_is_max_test_num_reached = false;
     }
 
     TTK_TRY_FORCE_NON_INLINE
@@ -298,63 +270,74 @@ public:
     }
 
     bool Run() {
-        m_number_of_executed_asserts = 0;
-        m_number_of_failed_asserts   = 0;
+        bool is_success = false;
 
-        m_number_of_executed_tests   = 0;
-        m_number_of_failed_tests     = 0;
-
-        m_is_request_abort           = false;
-
-        if (SolveOutputOrientation() > 0) {
-            fwprintf(m_output, L"%hs", "--- TEST ---\n");
+        if (m_is_max_test_num_reached) {
+            if (SolveOutputOrientation() > 0) {
+                fwprintf(m_output, L"TTK Error: Max number of test (%llu) has been reached.", m_tests.GetMaxNumberOfTests());
+            } else {
+                fprintf(m_output, "TTK Error: Max number of test (%llu) has been reached.", m_tests.GetMaxNumberOfTests());
+            }
         } else {
-            fprintf(m_output, "%s", "--- TEST ---\n");
-        }
+            m_number_of_executed_asserts = 0;
+            m_number_of_failed_asserts   = 0;
 
-        uint64_t previous_number_of_failed_asserts = 0;
+            m_number_of_executed_tests   = 0;
+            m_number_of_failed_tests     = 0;
 
-        for (uint64_t index = 0; index < m_tests.GetNumberOfTests(); ++index) {
-            TTK_TestData& test_data = m_tests.ToTest(index);
+            m_is_request_abort           = false;
 
-            if (!(test_data.mode & TTK_DISABLE)) {
-                if (SolveOutputOrientation() > 0) {
-                    fwprintf(m_output, L"[test] %hs\n", test_data.name);
-                } else {
-                    fprintf(m_output, "[test] %s\n", test_data.name);
-                }
-                fflush(m_output);
+            if (SolveOutputOrientation() > 0) {
+                fwprintf(m_output, L"%hs", "--- TEST ---\n");
+            } else {
+                fprintf(m_output, "%s", "--- TEST ---\n");
+            }
 
-                test_data.function();
+            uint64_t previous_number_of_failed_asserts = 0;
 
-                m_number_of_executed_tests += 1;
-                if (m_number_of_failed_asserts != previous_number_of_failed_asserts) { 
-                    previous_number_of_failed_asserts = m_number_of_failed_asserts;
-                    m_number_of_failed_tests += 1;
+            for (TTK_Register::SizeType index = 0; index < m_tests.GetNumberOfTests(); ++index) {
+                TTK_TestData& test_data = m_tests.ToTest(index);
 
-                    if (m_is_request_abort) {
-                        m_is_request_abort = false;
-                        if (!(test_data.mode & TTK_NO_ABORT)) break; // abort all tests
+                if (!(test_data.mode & TTK_DISABLE)) {
+                    if (SolveOutputOrientation() > 0) {
+                        fwprintf(m_output, L"[test] %hs\n", test_data.name);
+                    } else {
+                        fprintf(m_output, "[test] %s\n", test_data.name);
+                    }
+                    fflush(m_output);
+
+                    test_data.function();
+
+                    m_number_of_executed_tests += 1;
+                    if (m_number_of_failed_asserts != previous_number_of_failed_asserts) { 
+                        previous_number_of_failed_asserts = m_number_of_failed_asserts;
+                        m_number_of_failed_tests += 1;
+
+                        if (m_is_request_abort) {
+                            m_is_request_abort = false;
+                            if (!(test_data.mode & TTK_NO_ABORT)) break; // abort all tests
+                        }
                     }
                 }
             }
+
+            is_success = m_number_of_failed_tests == 0;
+
+            if (SolveOutputOrientation() > 0) {
+                fwprintf(m_output, L"%hs", (is_success ? "--- TEST SUCCESS ---\n" : "--- TEST FAIL ---\n"));
+                fwprintf(m_output, L"number of executed asserts      : %lld\n", m_number_of_executed_asserts);
+                fwprintf(m_output, L"number of failed asserts        : %lld\n", m_number_of_failed_asserts);
+                fwprintf(m_output, L"number of executed tests        : %lld\n", m_number_of_executed_tests);
+                fwprintf(m_output, L"number of failed tests          : %lld\n", m_number_of_failed_tests);
+            } else {
+                fprintf(m_output, "%s", (is_success ? "--- TEST SUCCESS ---\n" : "--- TEST FAIL ---\n"));
+                fprintf(m_output, "number of executed asserts      : %lld\n", m_number_of_executed_asserts);
+                fprintf(m_output, "number of failed asserts        : %lld\n", m_number_of_failed_asserts);
+                fprintf(m_output, "number of executed tests        : %lld\n", m_number_of_executed_tests);
+                fprintf(m_output, "number of failed tests          : %lld\n", m_number_of_failed_tests);
+            }
         }
 
-        const bool is_success = m_number_of_failed_tests == 0;
-
-        if (SolveOutputOrientation() > 0) {
-            fwprintf(m_output, L"%hs", (is_success ? "--- TEST SUCCESS ---\n" : "--- TEST FAIL ---\n"));
-            fwprintf(m_output, L"number of executed asserts      : %lld\n", m_number_of_executed_asserts);
-            fwprintf(m_output, L"number of failed asserts        : %lld\n", m_number_of_failed_asserts);
-            fwprintf(m_output, L"number of executed tests        : %lld\n", m_number_of_executed_tests);
-            fwprintf(m_output, L"number of failed tests          : %lld\n", m_number_of_failed_tests);
-        } else {
-            fprintf(m_output, "%s", (is_success ? "--- TEST SUCCESS ---\n" : "--- TEST FAIL ---\n"));
-            fprintf(m_output, "number of executed asserts      : %lld\n", m_number_of_executed_asserts);
-            fprintf(m_output, "number of failed asserts        : %lld\n", m_number_of_failed_asserts);
-            fprintf(m_output, "number of executed tests        : %lld\n", m_number_of_executed_tests);
-            fprintf(m_output, "number of failed tests          : %lld\n", m_number_of_failed_tests);
-        }
         return is_success;
     }
 
@@ -392,6 +375,7 @@ private:
     int             m_forced_orientation;
 
     bool            m_is_request_abort;
+    bool            m_is_max_test_num_reached;
 
     TTK_Register    m_tests;
 };

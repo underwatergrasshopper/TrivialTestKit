@@ -24,7 +24,7 @@
 /**
  * @file TrivialTestKit.h
  * @author underwatergrasshopper
- * @version 2.0.3
+ * @version 2.0.4
  * @details This file is a part of project: TrivialTestKit. Can be distributed separately.
  */
 
@@ -274,9 +274,9 @@ public:
 
         if (m_is_max_test_num_reached) {
             if (SolveOutputOrientation() > 0) {
-                fwprintf(m_output, L"TTK Error: Max number of test (%llu) has been reached.", m_tests.GetMaxNumberOfTests());
+                fwprintf(m_output, L"TTK Error: Max number of test (%llu) has been reached.", (uint64_t)m_tests.GetMaxNumberOfTests());
             } else {
-                fprintf(m_output, "TTK Error: Max number of test (%llu) has been reached.", m_tests.GetMaxNumberOfTests());
+                fprintf(m_output, "TTK Error: Max number of test (%llu) has been reached.", (uint64_t)m_tests.GetMaxNumberOfTests());
             }
         } else {
             m_number_of_executed_asserts = 0;
